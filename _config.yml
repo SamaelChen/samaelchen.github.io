@@ -7,7 +7,7 @@ title: 碎碎念
 subtitle:
 description: Linux安装后第一件事 alias ls='rm -rf /'
 author: Samael Chen
-language:
+language: en
 timezone:
 
 # URL
@@ -46,6 +46,9 @@ highlight:
 # Category & Tag
 default_category: uncategorized
 category_map:
+    碎碎念: self-questioning
+    深度学习: DeepLearning
+    统计学习: StatisticalLearning
 tag_map:
 
 # Date / Time format
@@ -63,7 +66,7 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: Daily
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
