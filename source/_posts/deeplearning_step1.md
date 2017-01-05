@@ -22,3 +22,36 @@ In deep learning context, we can also add a vector to a matrix: $\boldsymbol{C}=
 2) Multiplying Matrices and Vectors
 
 $\boldsymbol{C}=\boldsymbol{AB}$ where $C_{i,j} = \sum \limits_k A_{i,k}B_{k,j}$.
+
+The element-wise product or Hadamard product is denoted as $\boldsymbol{A} \odot \boldsymbol{B}$, where $C_{i,j} = A_{i, j} \cdot B_{i,j}$.
+
+We can regard $\boldsymbol{C}=\boldsymbol{AB}$ as the Hadamard product of the $i$-th row of $\boldsymbol{A}$ with the $i$-th column of $\boldsymbol{B}$.
+
+There are some properties of matrix product.
+
++ $\boldsymbol{A}(\boldsymbol{B} + \boldsymbol{C})=\boldsymbol{AB}+\boldsymbol{AC}$
++ $\boldsymbol{A}(\boldsymbol{BC}) = (\boldsymbol{AB})\boldsymbol{C}$
++ $\boldsymbol{x^{\top}y} = \boldsymbol{y^{\top}x}$
++ $(\boldsymbol{AB})^{\top} = \boldsymbol{B^{\top}A^{\top}}$
+
+The equivalent of $\boldsymbol{Ax}=\boldsymbol{b}$ is $$\begin{align}
+A_{1,:} \boldsymbol{x} &= b_1 \\
+A_{2,:} \boldsymbol{x} &= b_2 \\
+& \vdots \\
+A_{m,:} \boldsymbol{x} &= b_m ,
+\end{align}$$
+that is $$\begin{align}
+A_{1,1}x_1 + A_{1,2}x_2 + &\cdots + A_{1,n}x_n = b_1 \\
+A_{2,1}x_1 + A_{2,2}x_2 + &\cdots + A_{2,n}x_n = b_2 \\
+&\vdots \\
+A_{m,1}x_1 + A_{m,2}x_2 + &\cdots + A_{m,n}x_n = b_m
+\end{align}$$
+
+3) Identity and Inverse Matrices
+
+We denote identity matrix as $\boldsymbol{I}$. All the diagonal elements are $1$, and all the others are zero.
+
+The inverse matrix of $\boldsymbol{A}$ is denoted as $\boldsymbol{A}^{-1}$, and it is defined as
+$$
+\boldsymbol{A}^{-1}\boldsymbol{A}=\boldsymbol{I}
+$$
