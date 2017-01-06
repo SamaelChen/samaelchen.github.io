@@ -55,3 +55,23 @@ The inverse matrix of $\boldsymbol{A}$ is denoted as $\boldsymbol{A}^{-1}$, and 
 $$
 \boldsymbol{A}^{-1}\boldsymbol{A}=\boldsymbol{I}
 $$
+
+4）Linear Dependence and Span
+
+The solution of equivalent $\boldsymbol{A}\boldsymbol{x} = \boldsymbol{b}$ is $\boldsymbol{x} = \boldsymbol{A}^{-1} \boldsymbol{b}$. If $\boldsymbol{A}^{-1}$ exists, the equivalent has exactly one solution. But for some values of $\boldsymbol{b}$, there may exist infinitely solutions or have no solutions. It is not possible to have more than one but less than infinitely many solutions; if $\boldsymbol{x}$ and $\boldsymbol{y}$ both are solutions, then $\boldsymbol{z} = \alpha \boldsymbol{x} + (1-\alpha)\boldsymbol{y}$ is also a solution for any real $\alpha$.
+
+We can use *linear combination* to analyze how many solutions the equivalent has. We write it as $\sum \limits_i c_i \boldsymbol{v}^{(i)}$.
+
+The *span* of a set of vectors is the set of all points obtainable by linear combination of the original vectors.
+
+If $\boldsymbol{Ax} = \boldsymbol{b}$ has a solution, $\boldsymbol{b}$ is the span of the columns of $\boldsymbol{A}$. This particular span is known as the *columns space* or the *range* of $\boldsymbol{A}$.
+
+If $m=n$ and $\textrm{rank}(\boldsymbol{A})=n$, there must exist a solution, but if $\textrm{rank}(\boldsymbol{A}) < n$, there may exist infinitely many solutions. The $\textrm{rank}$ of $\boldsymbol{A}$ is how many linearly independent columns.
+
+No set of $m$-dimensional vectors can have more than $m$-mutually linearly independent columns, but a matrix with more than $m$ columns may have more than one such set.
+
+That means we need a square matrix. A square matrix with linearly dependent columns is known as *singular*.
+
+If $\boldsymbol{A}$ is not square or is square but singular, it can still be possible to solve the equation. However, we can not use matrix inversion to find the solution.
+
+Well, it is possible to define a inverse that is multiplied on the right: $\boldsymbol{AA}^{-1} = \boldsymbol{I}$. For square matrices, the left inverse and right inverse are equal.
