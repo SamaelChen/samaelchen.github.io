@@ -56,7 +56,7 @@ $$
 \boldsymbol{A}^{-1}\boldsymbol{A}=\boldsymbol{I}
 $$
 
-4）Linear Dependence and Span
+4) Linear Dependence and Span
 
 The solution of equivalent $\boldsymbol{A}\boldsymbol{x} = \boldsymbol{b}$ is $\boldsymbol{x} = \boldsymbol{A}^{-1} \boldsymbol{b}$. If $\boldsymbol{A}^{-1}$ exists, the equivalent has exactly one solution. But for some values of $\boldsymbol{b}$, there may exist infinitely solutions or have no solutions. It is not possible to have more than one but less than infinitely many solutions; if $\boldsymbol{x}$ and $\boldsymbol{y}$ both are solutions, then $\boldsymbol{z} = \alpha \boldsymbol{x} + (1-\alpha)\boldsymbol{y}$ is also a solution for any real $\alpha$.
 
@@ -75,3 +75,56 @@ That means we need a square matrix. A square matrix with linearly dependent colu
 If $\boldsymbol{A}$ is not square or is square but singular, it can still be possible to solve the equation. However, we can not use matrix inversion to find the solution.
 
 Well, it is possible to define a inverse that is multiplied on the right: $\boldsymbol{AA}^{-1} = \boldsymbol{I}$. For square matrices, the left inverse and right inverse are equal.
+
+5) Norms
+
+We can use
+$$
+\| \boldsymbol{x} \|_p = \Big( \sum \limits_i |x_i|^p \Big)^{\frac{1}{p}}, \quad p \in \mathbb{R}, \  p \ge 1
+$$
+to measure the size of a vector, called it $L^p$ norm.
+
+Norms are functions mapping vectors to non-negative values. A norm satisfies the following properties:
++ $f(\boldsymbol{x}) = 0 \Rightarrow \boldsymbol{x}=\boldsymbol{0}$
++ $f(\boldsymbol{x} + \boldsymbol{y}) \le f(\boldsymbol{x}) + f(\boldsymbol{y})$
++ $\forall \alpha \in \mathbb{R}, f(\alpha \boldsymbol{x}) = |\alpha|f(\boldsymbol{x})$.
+
+The $L^2$ norm is known as the *Euclidean norm* and often denoted as $\| \boldsymbol{x} \|$. It is also common using squared $L^2$ norm to measure the size of a vector. Squared $L^2$ norm can be calculated simply as $\boldsymbol{x}^{\top}\boldsymbol{x}$.
+
+The squared $L^2$ norm increases very slowly near the origin. If we wanna to discriminate between elements that are exactly zero and elements that are small but nonzero. In these case, we turn to use $L^1$ norm. Every time an element of $\boldsymbol{x}$ moves away from $0$ by $\varepsilon$, the $L^1$ norm increases by $\varepsilon$. The $L^1$ norm is often used as a substitute for the number of nonzero entries. We can calculate it easily in R/Python.
+
+The other norm commonly uses is the $L^{\infty}$ norm, also known as the *max norm*. It simplifies the absolute value of the element with the largest magnitude in the vector.
+$$
+\| \boldsymbol{x} \|_{\infty} = \max \limits_i |x_i|
+$$
+
+We also use *Frobenius norm* to measure the size of a matrix.
+$$
+\| \boldsymbol{A} \|_F = \sqrt{\sum \limits_{i,j} A_{i,j}^2}
+$$
+
+The dot product of two vectors can be rewritten in
+$$
+\boldsymbol{x}^{\top} \boldsymbol{y} = \| \boldsymbol{x}\|_2 \| \boldsymbol{y}\|_2 \cos \theta
+$$
+where $\theta$ is the angle between $\boldsymbol{x}$ and $\boldsymbol{y}$.
+
+6) Special Kinds of Matrices and Vectors
+
+The matrix only the main diagonal contains nonzero entries and the others are zero is called *diagonal* matrix. We can also use $\mathrm{diag}(\boldsymbol{v})$ to represent it, where $\boldsymbol{v}$ is the diagonal of matrix.
+$\mathrm{diag}(\boldsymbol{v})\boldsymbol{x} = \boldsymbol{v} \odot \boldsymbol{x}, \mathrm{diag}(\boldsymbol{v})^{-1} = \mathrm{diag}([1/v_1, \dots, 1/v_n]^T)$.
+
+Not all diagonal matrix should be square. The rectangular diagonal matrices do not have inverses. But when we calculate $\boldsymbol{Dx}$, if the rows of $\boldsymbol{D}$ greater than the columns of $\boldsymbol{D}$, some zero results will be created. On the other hand, some of the last elements will be discarding if the number columns is greater than the number of rows.
+
+If the matrix $\boldsymbol{A} = \boldsymbol{A}^T$, we call the matrix $\boldsymbol{A}$ as *symmetric* matrix.
+
+We called the vector whose $L^2$ norm equals to 1 as *unit vector*.
+
+If two vectors are *orthogonal*, their dot product should equals to zero. $\boldsymbol{x}^T \boldsymbol{y} = 0$.
+
+The *orthonormal matrix* is a square matrix whose rows are mutually orthogonal, and columns are mutually orthogonal:
+$$
+\boldsymbol{A}^T \boldsymbol{A}= \boldsymbol{A} \boldsymbol{A}^T \Rightarrow \boldsymbol{A}^{-1} = \boldsymbol{A}^T
+$$
+
+7) Eigendecomposition
