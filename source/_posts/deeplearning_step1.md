@@ -128,3 +128,28 @@ $$
 $$
 
 7) Eigendecomposition
+
+We use *eigen-decomposition* to decompose the matrix into a set of eigenvectors and eigenvalues.
+
+An eigenvector of a square matrix $\boldsymbol{A}$ is a non-zero vector $\boldsymbol{v}$ such that multiplication by $\boldsymbol{A}$ alters only the scale of $\boldsymbol{v}$:
+$$
+\boldsymbol{Av} = \lambda \boldsymbol{v}.
+$$
+
+The scalar $\lambda$ is known as the *eigenvalue* corresponding to this eigenvector. We usually only look for unit eigenvectors.
+
+The eigen-decomposition is given by
+$$
+\boldsymbol{A} = \boldsymbol{V} \mathrm{diag}(\boldsymbol{\lambda}) \boldsymbol{V}^{-1}.
+$$
+Where $\boldsymbol{V} = [\boldsymbol{v}^{(1)}, \dots, \boldsymbol{v}^{(n)}], \  \boldsymbol{\lambda}=[\lambda_1, \dots, \lambda_n]^{\top}.$
+
+Not every matrix can be decomposed into eigenvalues and eigenvectors. However, we usually need to decompose only a specific class of matrices that have a simple decomposition. Specifically, every real symmetric matrix can be decomposed into an expression using only real-valued eigenvectors and eigenvalues:
+$$
+\boldsymbol{A} = \boldsymbol{Q \Lambda Q}^{\top},
+$$
+where $\boldsymbol{Q}$ is an orthogonal matrix composed of eigenvectors of $\boldsymbol{A}$, and $\boldsymbol{\Lambda}$ is a diagonal matrix. Since $\boldsymbol{Q}$ is an orthogonal matrix, we can think of $\boldsymbol{A}$ as scaling space by $\lambda_i$ in direction $\boldsymbol{v}^{(i)}$.
+
+While any real symmetric matrix $\boldsymbol{A}$ is guaranteed to have an eigendecomposition, the eigendecomposition may not be unique. If any two or more eigenvectors share the same eigenvalue, then any set of orthogonal vectors lying in their span are also eigenvectors with that eigenvalue, and we could equivalently choose a $\boldsymbol{Q}$ using those eigenvectors instead.
+
+A matrix whose eigenvalues are all positive is called *positive definite*. A matrix whose eigenvalues are all positive or zero-valued is called *positive semidefinite*. If all eigenvalues are negative, the matrix is *negative definite*, and if all eigenvalues are negative or zero-valued, it is *negative semidefinite*. Positive semidefinite matrices guarantee that $\forall \boldsymbol{x}, \  \boldsymbol{x}^{\top} \boldsymbol{Ax} \ge 0$. Positive definite matrices gurarantee that $\boldsymbol{x}^{\top} \boldsymbol{Ax}=0 \Rightarrow \boldsymbol{x} = \boldsymbol{0}$.
