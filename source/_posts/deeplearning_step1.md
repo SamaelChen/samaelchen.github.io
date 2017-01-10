@@ -60,13 +60,13 @@ $$
 
 The solution of $\boldsymbol{A}\boldsymbol{x} = \boldsymbol{b}$ is $\boldsymbol{x} = \boldsymbol{A}^{-1} \boldsymbol{b}$. If $\boldsymbol{A}^{-1}$ exists, the equation has exact one solution. But for some values of $\boldsymbol{b}$, there may exist infinite solutions or have no solutions. It's not possible to have more than one but less than infinite solutions; if $\boldsymbol{x}$ and $\boldsymbol{y}$ both are solutions, then $\boldsymbol{z} = \alpha \boldsymbol{x} + (1-\alpha)\boldsymbol{y}$ is also a solution for any real $\alpha$.
 
-We can use the *linear combination* to analyze how many solutions the equation has. We write it as $\sum \limits_i c_i \boldsymbol{v}^{(i)}$.
+We can use the *linear combination* to analyze the exact numbers of solutions the equation has. We write it as $\sum \limits_i c_i \boldsymbol{v}^{(i)}$.
 
 The *span* of a set of vectors is the set of all points obtainable by linear combination of the original vectors.
 
 If $\boldsymbol{Ax} = \boldsymbol{b}$ has a solution, $\boldsymbol{b}$ is the span of the columns of $\boldsymbol{A}$. This particular span is the *columns space* or the *range* of $\boldsymbol{A}$.
 
-If $m=n$ and $\textrm{rank}(\boldsymbol{A})=n$, there must exist a solution, but if $\textrm{rank}(\boldsymbol{A}) < n$, there may exist infinitely many solutions. The $\textrm{rank}$ of $\boldsymbol{A}$ is the number of linearly independent columns.
+If $m=n$ and $\textrm{rank}(\boldsymbol{A})=n$, there must exist a solution, but if $\textrm{rank}(\boldsymbol{A}) < n$, there may exist infinite solutions. The $\textrm{rank}$ of $\boldsymbol{A}$ is the number of linearly independent columns.
 
 No set of $m$-dimensional vectors can have more than $m$-mutually linearly independent columns, but a matrix with more than $m$ columns may have more than one such set.
 
@@ -91,9 +91,9 @@ Norms are functions mapping vectors to non-negative values. A norm satisfies the
 
 The $L^2$ norm is also called as the *Euclidean norm* and often denoted as $\| \boldsymbol{x} \|$. It's also common using squared $L^2$ norm to measure the size of a vector. We can calculate squared $L^2$ norm as $\boldsymbol{x}^{\top}\boldsymbol{x}$.
 
-The squared $L^2$ norm increases slowly near the origin. If we wanna to discriminate between elements that are exactly zero and elements that are small but nonzero. In these case, we turn to use $L^1$ norm. Every time an element of $\boldsymbol{x}$ moves away from $0$ by $\varepsilon$, the $L^1$ norm increases by $\varepsilon$. The $L^1$ norm is often used as a substitute for the number of nonzero entries. We can calculate it easily in R/Python.
+The squared $L^2$ norm increases slow near the origin. If we wanna to discriminate between elements that are zero and elements that are small but nonzero. In these case, we turn to use $L^1$ norm. Every time an element of $\boldsymbol{x}$ moves away from $0$ by $\varepsilon$, the $L^1$ norm increases by $\varepsilon$. The $L^1$ norm is often used as a substitute for the number of nonzero entries. We can calculate it pretty easy in R/Python.
 
-The other norm commonly uses is the $L^{\infty}$ norm, also known as the *max norm*. It simplifies the absolute value of the element with the largest magnitude in the vector.
+The other norm commonly uses is the $L^{\infty}$ norm, also known as the *max norm*. It simplifies the absolute value of the element with the largest value in the vector.
 $$
 \| \boldsymbol{x} \|_{\infty} = \max \limits_i |x_i|
 $$
@@ -144,14 +144,14 @@ $$
 $$
 Where $\boldsymbol{V} = [\boldsymbol{v}^{(1)}, \dots, \boldsymbol{v}^{(n)}], \  \boldsymbol{\lambda}=[\lambda_1, \dots, \lambda_n]^{\top}.$
 
-We cannot decompose every matrix into eigenvalues and eigenvectors. But, we often need to decompose a specific class of matrices that have a simple decomposition. Specifically, every real symmetric matrix can be decomposed into an expression using real-valued eigenvectors and eigenvalues:
+We cannot decompose every matrix into eigenvalues and eigenvectors. But, we often need to decompose a specific class of matrices that have a simple decomposition. Specifically, we can decompose every real symmetric matrix into an expression using real-valued eigenvectors and eigenvalues:
 $$
 \boldsymbol{A} = \boldsymbol{Q \Lambda Q}^{\top},
 $$
 where $\boldsymbol{Q}$ is an orthogonal matrix composed of eigenvectors of $\boldsymbol{A}$, and $\boldsymbol{\Lambda}$ is a diagonal matrix. Since $\boldsymbol{Q}$ is an orthogonal matrix, we can think of $\boldsymbol{A}$ as scaling space by $\lambda_i$ in direction $\boldsymbol{v}^{(i)}$. See the figure below
 <img src=http://image18.poco.cn/mypoco/myphoto/20170109/23/18449013420170109231523094.png?1196x916_130>
 
-While any real symmetric matrix $\boldsymbol{A}$ have an eigendecomposition, the eigendecomposition may not be unique. If any two or more eigenvectors share the same eigenvalue, then any set of orthogonal vectors lying in their span are also eigenvectors with that eigenvalue, and we could equivalently choose a $\boldsymbol{Q}$ using those eigenvectors instead. This can be proofed as below:
+While any real symmetric matrix $\boldsymbol{A}$ have an eigendecomposition, the eigendecomposition may not be unique. If any two or more eigenvectors share the same eigenvalue, then any set of orthogonal vectors lying in their span are also eigenvectors with that eigenvalue, and we could equivalently choose a $\boldsymbol{Q}$ using those eigenvectors instead. We proof it as below:
 $$
 \textrm{suppose } \lambda_1=\lambda_2=\lambda, \textrm{ and eigenvector } \boldsymbol{v}_1, \boldsymbol{v}_2, \textrm{ and thsy share the same eigenvalue } \lambda \\
 \boldsymbol{Av}_1 = \lambda \boldsymbol{v}_1 \\
@@ -166,4 +166,24 @@ $$
 \end{align}
 $$
 
-A matrix whose eigenvalues are all positive is called *positive definite*. A matrix whose eigenvalues are all positive or zero-valued is called *positive semidefinite*. If all eigenvalues are negative, the matrix is *negative definite*, and if all eigenvalues are negative or zero-valued, it is *negative semidefinite*. Positive semidefinite matrices guarantee that $\forall \boldsymbol{x}, \  \boldsymbol{x}^{\top} \boldsymbol{Ax} \ge 0$. Positive definite matrices gurarantee that $\boldsymbol{x}^{\top} \boldsymbol{Ax}=0 \Rightarrow \boldsymbol{x} = \boldsymbol{0}$.
+A matrix whose eigenvalues are all positive is *positive definite*. A matrix whose eigenvalues are all positive or zero-valued is *positive semidefinite*. If all eigenvalues are negative, the matrix is *negative definite*, and if all eigenvalues are negative or zero-valued, it's *negative semidefinite*. Positive semidefinite matrices guarantee that $\forall \boldsymbol{x}, \  \boldsymbol{x}^{\top} \boldsymbol{Ax} \ge 0$. Positive definite matrices gurarantee that $\boldsymbol{x}^{\top} \boldsymbol{Ax}=0 \Rightarrow \boldsymbol{x} = \boldsymbol{0}$.
+
+8) SVD
+
+We can use eigenvectors and eigenvalues to decompose a matrix:
+$$
+\boldsymbol{A} = \boldsymbol{V}\mathrm{diag}(\boldsymbol{\lambda}) \boldsymbol{V}^{-1}
+$$
+
+The singular value decomposition provides another way to factorize a matrix:
+$$
+\boldsymbol{A} = \boldsymbol{UDV}^{\top}
+$$
+
+Suppose that $\boldsymbol{A}$ is an $m \times n$ matrix. Define $\boldsymbol{U}$ to be an $m \times m$ matrix, $\boldsymbol{D}$ as $m \times n$ matrix, and $\boldsymbol{V}$ as $n \times n$ matrix.
+
+Note that, $\boldsymbol{D}$ is not necessarily square. If use R/Python, the dimension of $\boldsymbol{D}$ is $\min \{m, n\} \times \min \{m, n\}$. In R, it's $\boldsymbol{U}_{m \times \min \{m, n\}}, \  \boldsymbol{D}_{\min \{m, n\} \times \min \{m, n\}}, \  \boldsymbol{V}_{n \times \min \{m, n\}}$. In Python, it's $\boldsymbol{U}_{m \times m}, \  \boldsymbol{D}_{\min \{m, n\} \times \min \{m, n\}}, \  \boldsymbol{V}_{n \times n}.$
+
+The elements along the diagonal of $\boldsymbol{D}$ are the *singular values* of the matrix $\boldsymbol{A}$. The columns of $\boldsymbol{U}$ are the *left-singular vectors*. The columns of $\boldsymbol{V}$ are the *right-singular vectors*.
+
+The left-singular vectors of $\boldsymbol{A}$ are the eigenvectors of $\boldsymbol{AA}^{\top}$. The right-singular vectors of $\boldsymbol{A}$ are the eigenvectors of $\boldsymbol{A}^{\top} \boldsymbol{A}$. The non-zero singular vector of $\boldsymbol{A}$ are the square roots of the eigenvalues of $\boldsymbol{A}^{\top} \boldsymbol{A}$. The same is true for $\boldsymbol{AA}^{\top}$.
