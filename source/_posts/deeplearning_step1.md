@@ -1,6 +1,7 @@
 ---
 title: 深度学习线性代数基础
 categories: 深度学习
+mathjax: true
 ---
 深度学习入门线性代数基础部分
 
