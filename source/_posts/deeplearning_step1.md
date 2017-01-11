@@ -7,23 +7,23 @@ categories: 深度学习
 1) Scalars, Vectors, Matrices and Tensors
 
 **Scalars**: A scalar is a single number.
-**Vectors**: A vector is an array of numbers which arranged in order. We can denote it as $\boldsymbol{x} =\begin{bmatrix} x\_1 \\\ x\_2 \\\ \vdots \\\ x\_n \end{bmatrix}$. If we wanna index a set of elements of a vector, we can define a set $S=\\{1,3,6\\}$, and write $\boldsymbol{x}\_S$ to access $x\_1,\ x\_3,\ x\_6$. And $\boldsymbol{x}\_{-S}$ is the vector containing all the elements without $x\_1,\ x\_3,\ x\_6$.
-**Matrices**: A matrix is a 2-D array of numbers. Denoted as $\boldsymbol{A}$, and $\boldsymbol{A} \in \mathbb{R}^{m \times n}$ means the matrix $\boldsymbol{A}$ has $m$ rows and $n$ columns. We use $A\_{i,j}$ to represent the element of $\boldsymbol{A}$. $\boldsymbol{A}\_{i,:}$ known as the $i$-th row, likewise, $\boldsymbol{A}\_{:,j}$ is the $j$-th column. If we need to index matrix-valued expression that not a single letter, we can use subscripts after the expression. Like $f(\boldsymbol{A})\_{i,j}$ gives element $(i,j)$ of the matrix computed by applying the function $f$ to $\boldsymbol{A}$.
-**Tensors**: In the general case, an array of numbers arranged on a regular grid with a variable number of axes known as a tensor. We denote a tensor $\mathbf{A}$ and the element is $A\_{i,j,k}$.
+**Vectors**: A vector is an array of numbers which arranged in order. We can denote it as $\boldsymbol{x} =\begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}$. If we wanna index a set of elements of a vector, we can define a set $S=\{1,3,6\}$, and write $\boldsymbol{x}_S$ to access $x_1,\ x_3,\ x_6$. And $\boldsymbol{x}_{-S}$ is the vector containing all the elements without $x_1,\ x_3,\ x_6$.
+**Matrices**: A matrix is a 2-D array of numbers. Denoted as $\boldsymbol{A}$, and $\boldsymbol{A} \in \mathbb{R}^{m \times n}$ means the matrix $\boldsymbol{A}$ has $m$ rows and $n$ columns. We use $A_{i,j}$ to represent the element of $\boldsymbol{A}$. $\boldsymbol{A}_{i,:}$ known as the $i$-th row, likewise, $\boldsymbol{A}_{:,j}$ is the $j$-th column. If we need to index matrix-valued expression that not a single letter, we can use subscripts after the expression. Like $f(\boldsymbol{A})_{i,j}$ gives element $(i,j)$ of the matrix computed by applying the function $f$ to $\boldsymbol{A}$.
+**Tensors**: In the general case, an array of numbers arranged on a regular grid with a variable number of axes known as a tensor. We denote a tensor $\mathbf{A}$ and the element is $A_{i,j,k}$.
 
-One important operation is *transpose*. Denoted as: $\boldsymbol{A}^{\top}$ defined such that $(A^{\top})\_{i,j}=A\_{j,i}$. We can write a vector into $\boldsymbol{x} = [x\_1, x\_2, \dots, x\_n]^{\top}$.
+One important operation is *transpose*. Denoted as: $\boldsymbol{A}^{\top}$ defined such that $(A^{\top})_{i,j}=A_{j,i}$. We can write a vector into $\boldsymbol{x} = [x_1, x_2, \dots, x_n]^{\top}$.
 
-We can add matrices to each other, as long as they have the same shape. $\boldsymbol{C} = \boldsymbol{A}+\boldsymbol{B}$ where $C\_{i,j} = A\_{i,j} + B\_{i,j}$.
+We can add matrices to each other, as long as they have the same shape. $\boldsymbol{C} = \boldsymbol{A}+\boldsymbol{B}$ where $C_{i,j} = A_{i,j} + B_{i,j}$.
 
-We can also add a scalar or multiply a matrix by a scalar. $\boldsymbol{D} = a \cdot \boldsymbol{B} + c$ where $D\_{i,j} = a \cdot B\_{i,j} + c$.
+We can also add a scalar or multiply a matrix by a scalar. $\boldsymbol{D} = a \cdot \boldsymbol{B} + c$ where $D_{i,j} = a \cdot B_{i,j} + c$.
 
-In deep learning context, we can also add a vector to a matrix: $\boldsymbol{C}= \boldsymbol{A}+\boldsymbol{b}$ where $C\_{i,j} = A\_{i,j}+b\_j$. The implicit copying of $\boldsymbol{b}$ to lots locations called *broadcasting*.
+In deep learning context, we can also add a vector to a matrix: $\boldsymbol{C}= \boldsymbol{A}+\boldsymbol{b}$ where $C_{i,j} = A_{i,j}+b_j$. The implicit copying of $\boldsymbol{b}$ to lots locations called *broadcasting*.
 
 2) Multiplying Matrices and Vectors
 
-$\boldsymbol{C}=\boldsymbol{AB}$ where $C\_{i,j} = \sum \limits\_k A\_{i,k}B\_{k,j}$.
+$\boldsymbol{C}=\boldsymbol{AB}$ where $C_{i,j} = \sum \limits_k A_{i,k}B_{k,j}$.
 
-The element-wise product or Hadamard product  denoted as $\boldsymbol{A} \odot \boldsymbol{B}$, where $C\_{i,j} = A\_{i, j} \cdot B\_{i,j}$.
+The element-wise product or Hadamard product  denoted as $\boldsymbol{A} \odot \boldsymbol{B}$, where $C_{i,j} = A_{i, j} \cdot B_{i,j}$.
 
 We can regard $\boldsymbol{C}=\boldsymbol{AB}$ as the Hadamard product of the $i$-th row of $\boldsymbol{A}$ with the $i$-th column of $\boldsymbol{B}$.
 
@@ -35,16 +35,16 @@ The followings are some properties of matrix product.
 + $(\boldsymbol{AB})^{\top} = \boldsymbol{B^{\top}A^{\top}}$
 
 The $\boldsymbol{Ax}=\boldsymbol{b}$ is $$\begin{align}
-A\_{1,:} \boldsymbol{x} &= b\_1 \\\
-A\_{2,:} \boldsymbol{x} &= b\_2 \\\
-& \vdots \\\
-A\_{m,:} \boldsymbol{x} &= b\_m ,
+A_{1,:} \boldsymbol{x} &= b_1 \\
+A_{2,:} \boldsymbol{x} &= b_2 \\
+& \vdots \\
+A_{m,:} \boldsymbol{x} &= b_m ,
 \end{align}$$
 that is $$\begin{align}
-A\_{1,1}x\_1 + A\_{1,2}x\_2 + &\cdots + A\_{1,n}x\_n = b\_1 \\\
-A\_{2,1}x\_1 + A\_{2,2}x\_2 + &\cdots + A\_{2,n}x\_n = b\_2 \\\
-&\vdots \\\
-A\_{m,1}x\_1 + A\_{m,2}x\_2 + &\cdots + A\_{m,n}x\_n = b\_m
+A_{1,1}x_1 + A_{1,2}x_2 + &\cdots + A_{1,n}x_n = b_1 \\
+A_{2,1}x_1 + A_{2,2}x_2 + &\cdots + A_{2,n}x_n = b_2 \\
+&\vdots \\
+A_{m,1}x_1 + A_{m,2}x_2 + &\cdots + A_{m,n}x_n = b_m
 \end{align}$$
 
 3) Identity and Inverse Matrices
@@ -60,7 +60,7 @@ $$
 
 The solution of $\boldsymbol{A}\boldsymbol{x} = \boldsymbol{b}$ is $\boldsymbol{x} = \boldsymbol{A}^{-1} \boldsymbol{b}$. If $\boldsymbol{A}^{-1}$ exists, the equation has exact one solution. But for some values of $\boldsymbol{b}$, there may exist infinite solutions or have no solutions. It's not possible to have more than one but less than infinite solutions; if $\boldsymbol{x}$ and $\boldsymbol{y}$ both are solutions, then $\boldsymbol{z} = \alpha \boldsymbol{x} + (1-\alpha)\boldsymbol{y}$ is also a solution for any real $\alpha$.
 
-We can use the *linear combination* to analyze the exact numbers of solutions the equation has. We write it as $\sum \limits\_i c\_i \boldsymbol{v}^{(i)}$.
+We can use the *linear combination* to analyze the exact numbers of solutions the equation has. We write it as $\sum \limits_i c_i \boldsymbol{v}^{(i)}$.
 
 The *span* of a set of vectors is the set of all points obtainable by linear combination of the original vectors.
 
@@ -80,7 +80,7 @@ Well, it's possible to define a inverse that multiplied on the right: $\boldsymb
 
 We can use
 $$
-\\| \boldsymbol{x} \\|\_p = \Big( \sum \limits\_i |x\_i|^p \Big)^{\frac{1}{p}}, \quad p \in \mathbb{R}, \  p \ge 1
+\| \boldsymbol{x} \|_p = \Big( \sum \limits_i |x_i|^p \Big)^{\frac{1}{p}}, \quad p \in \mathbb{R}, \  p \ge 1
 $$
 to measure the size of a vector, called it $L^p$ norm.
 
@@ -89,30 +89,30 @@ Norms are functions mapping vectors to non-negative values. A norm satisfies the
 + $f(\boldsymbol{x} + \boldsymbol{y}) \le f(\boldsymbol{x}) + f(\boldsymbol{y})$
 + $\forall \alpha \in \mathbb{R}, f(\alpha \boldsymbol{x}) = |\alpha|f(\boldsymbol{x})$.
 
-The $L^2$ norm is also called as the *Euclidean norm* and often denoted as $\\| \boldsymbol{x} \\|$. It's also common using squared $L^2$ norm to measure the size of a vector. We can calculate squared $L^2$ norm as $\boldsymbol{x}^{\top}\boldsymbol{x}$.
+The $L^2$ norm is also called as the *Euclidean norm* and often denoted as $\| \boldsymbol{x} \|$. It's also common using squared $L^2$ norm to measure the size of a vector. We can calculate squared $L^2$ norm as $\boldsymbol{x}^{\top}\boldsymbol{x}$.
 
 The squared $L^2$ norm increases slow near the origin. If we wanna to discriminate between elements that are zero and elements that are small but nonzero. In these case, we turn to use $L^1$ norm. Every time an element of $\boldsymbol{x}$ moves away from $0$ by $\varepsilon$, the $L^1$ norm increases by $\varepsilon$. The $L^1$ norm is often used as a substitute for the number of nonzero entries. We can calculate it pretty easy in R/Python.
 
 The other norm commonly uses is the $L^{\infty}$ norm, also known as the *max norm*. It simplifies the absolute value of the element with the largest value in the vector.
 $$
-\\| \boldsymbol{x} \\|\_{\infty} = \max \limits\_i |x\_i|
+\| \boldsymbol{x} \|_{\infty} = \max \limits_i |x_i|
 $$
 
 We also use *Frobenius norm* to measure the size of a matrix.
 $$
-\\| \boldsymbol{A} \\|\_F = \sqrt{\sum \limits\_{i,j} A\_{i,j}^2}
+\| \boldsymbol{A} \|_F = \sqrt{\sum \limits_{i,j} A_{i,j}^2}
 $$
 
 The dot product of two vectors can be rewritten in
 $$
-\boldsymbol{x}^{\top} \boldsymbol{y} = \\| \boldsymbol{x}\\|\_2 \\| \boldsymbol{y}\\|\_2 \cos \theta
+\boldsymbol{x}^{\top} \boldsymbol{y} = \| \boldsymbol{x}\|_2 \| \boldsymbol{y}\|_2 \cos \theta
 $$
 where $\theta$ is the angle between $\boldsymbol{x}$ and $\boldsymbol{y}$.
 
 6) Special Kinds of Matrices and Vectors
 
 The matrix's main diagonal contains nonzero entries and the others are zero is *diagonal* matrix. We can also use $\mathrm{diag}(\boldsymbol{v})$ to represent it, where $\boldsymbol{v}$ is the diagonal of matrix.
-$\mathrm{diag}(\boldsymbol{v})\boldsymbol{x} = \boldsymbol{v} \odot \boldsymbol{x}, \mathrm{diag}(\boldsymbol{v})^{-1} = \mathrm{diag}([1/v\_1, \dots, 1/v\_n]^T)$.
+$\mathrm{diag}(\boldsymbol{v})\boldsymbol{x} = \boldsymbol{v} \odot \boldsymbol{x}, \mathrm{diag}(\boldsymbol{v})^{-1} = \mathrm{diag}([1/v_1, \dots, 1/v_n]^T)$.
 
 Not all diagonal matrix should be square. The rectangular diagonal matrices do not have inverses. But when we calculate $\boldsymbol{Dx}$, if the rows of $\boldsymbol{D}$ greater than the columns of $\boldsymbol{D}$, will create some of zeros. And, some of the last elements will be discarding if the number columns is greater than the number of rows.
 
@@ -142,27 +142,27 @@ The eigen-decomposition is
 $$
 \boldsymbol{A} = \boldsymbol{V} \mathrm{diag}(\boldsymbol{\lambda}) \boldsymbol{V}^{-1}.
 $$
-Where $\boldsymbol{V} = [\boldsymbol{v}^{(1)}, \dots, \boldsymbol{v}^{(n)}], \  \boldsymbol{\lambda}=[\lambda\_1, \dots, \lambda\_n]^{\top}.$
+Where $\boldsymbol{V} = [\boldsymbol{v}^{(1)}, \dots, \boldsymbol{v}^{(n)}], \  \boldsymbol{\lambda}=[\lambda_1, \dots, \lambda_n]^{\top}.$
 
 We cannot decompose every matrix into eigenvalues and eigenvectors. But, we often need to decompose a specific class of matrices that have a simple decomposition. Specifically, we can decompose every real symmetric matrix into an expression using real-valued eigenvectors and eigenvalues:
 $$
 \boldsymbol{A} = \boldsymbol{Q \Lambda Q}^{\top},
 $$
-where $\boldsymbol{Q}$ is an orthogonal matrix composed of eigenvectors of $\boldsymbol{A}$, and $\boldsymbol{\Lambda}$ is a diagonal matrix. Since $\boldsymbol{Q}$ is an orthogonal matrix, we can think of $\boldsymbol{A}$ as scaling space by $\lambda\_i$ in direction $\boldsymbol{v}^{(i)}$. See the figure below
-<img src=http://image18.poco.cn/mypoco/myphoto/20170109/23/18449013420170109231523094.png?1196x916\_130>
+where $\boldsymbol{Q}$ is an orthogonal matrix composed of eigenvectors of $\boldsymbol{A}$, and $\boldsymbol{\Lambda}$ is a diagonal matrix. Since $\boldsymbol{Q}$ is an orthogonal matrix, we can think of $\boldsymbol{A}$ as scaling space by $\lambda_i$ in direction $\boldsymbol{v}^{(i)}$. See the figure below
+<img src=http://image18.poco.cn/mypoco/myphoto/20170109/23/18449013420170109231523094.png?1196x916_130>
 
 While any real symmetric matrix $\boldsymbol{A}$ have an eigendecomposition, the eigendecomposition may not be unique. If any two or more eigenvectors share the same eigenvalue, then any set of orthogonal vectors lying in their span are also eigenvectors with that eigenvalue, and we could equivalently choose a $\boldsymbol{Q}$ using those eigenvectors instead. We proof it as below:
 $$
-\textrm{suppose } \lambda\_1=\lambda\_2=\lambda, \textrm{ and eigenvector } \boldsymbol{v}\_1, \boldsymbol{v}\_2, \textrm{ and thsy share the same eigenvalue } \lambda \\\
-\boldsymbol{Av}\_1 = \lambda \boldsymbol{v}\_1 \\\
-\boldsymbol{Av}\_2 = \lambda \boldsymbol{v}\_2 \\\
-\textrm{Assume } \boldsymbol{\alpha}\_1=a\_1\boldsymbol{v}\_1 + b\_1 \boldsymbol{v}\_2 \textrm{ and } \boldsymbol{\alpha}\_2=a\_2\boldsymbol{v}\_1 + b\_2 \boldsymbol{v}\_2. \textrm{ Let } \boldsymbol{\alpha}\_1 \perp \boldsymbol{\alpha}\_2. \\\
+\textrm{suppose } \lambda_1=\lambda_2=\lambda, \textrm{ and eigenvector } \boldsymbol{v}_1, \boldsymbol{v}_2, \textrm{ and thsy share the same eigenvalue } \lambda \\
+\boldsymbol{Av}_1 = \lambda \boldsymbol{v}_1 \\
+\boldsymbol{Av}_2 = \lambda \boldsymbol{v}_2 \\
+\textrm{Assume } \boldsymbol{\alpha}_1=a_1\boldsymbol{v}_1 + b_1 \boldsymbol{v}_2 \textrm{ and } \boldsymbol{\alpha}_2=a_2\boldsymbol{v}_1 + b_2 \boldsymbol{v}_2. \textrm{ Let } \boldsymbol{\alpha}_1 \perp \boldsymbol{\alpha}_2. \\
 \begin{align}
-\boldsymbol{A \alpha}\_1 &= \boldsymbol{A}(a\_1 \boldsymbol{v}\_1 + b\_1 \boldsymbol{v}\_2) \\\
-&= a\_1\boldsymbol{A}\boldsymbol{v}\_1 + b\_1\boldsymbol{A}\boldsymbol{v}\_2 \\\
-&= a\_1 \lambda \boldsymbol{v}\_1 + b\_1 \lambda \boldsymbol{v}\_2 \\\
-&= \lambda(a\_1 \boldsymbol{v}\_1 + b\_1 \boldsymbol{v}\_2) \\\
-&= \lambda \boldsymbol{\alpha}\_1
+\boldsymbol{A \alpha}_1 &= \boldsymbol{A}(a_1 \boldsymbol{v}_1 + b_1 \boldsymbol{v}_2) \\
+&= a_1\boldsymbol{A}\boldsymbol{v}_1 + b_1\boldsymbol{A}\boldsymbol{v}_2 \\
+&= a_1 \lambda \boldsymbol{v}_1 + b_1 \lambda \boldsymbol{v}_2 \\
+&= \lambda(a_1 \boldsymbol{v}_1 + b_1 \boldsymbol{v}_2) \\
+&= \lambda \boldsymbol{\alpha}_1
 \end{align}
 $$
 
@@ -182,7 +182,7 @@ $$
 
 Suppose that $\boldsymbol{A}$ is an $m \times n$ matrix. Define $\boldsymbol{U}$ to be an $m \times m$ matrix, $\boldsymbol{D}$ as $m \times n$ matrix, and $\boldsymbol{V}$ as $n \times n$ matrix.
 
-Note that, $\boldsymbol{D}$ is not necessarily square. If use R/Python, the dimension of $\boldsymbol{D}$ is $\min \\{m, n\\} \times \min \\{m, n\\}$. In R, it's $\boldsymbol{U}\_{m \times \min \\{m, n\\}}, \  \boldsymbol{D}\_{\min \\{m, n\\} \times \min \\{m, n\\}}, \  \boldsymbol{V}\_{n \times \min \\{m, n\\}}$. In Python, it's $\boldsymbol{U}\_{m \times m}, \  \boldsymbol{D}\_{\min \\{m, n\\} \times \min \\{m, n\\}}, \  \boldsymbol{V}\_{n \times n}.$
+Note that, $\boldsymbol{D}$ is not necessarily square. If use R/Python, the dimension of $\boldsymbol{D}$ is $\min \{m, n\} \times \min \{m, n\}$. In R, it's $\boldsymbol{U}_{m \times \min \{m, n\}}, \  \boldsymbol{D}_{\min \{m, n\} \times \min \{m, n\}}, \  \boldsymbol{V}_{n \times \min \{m, n\}}$. In Python, it's $\boldsymbol{U}_{m \times m}, \  \boldsymbol{D}_{\min \{m, n\} \times \min \{m, n\}}, \  \boldsymbol{V}_{n \times n}.$
 
 The elements along the diagonal of $\boldsymbol{D}$ are the *singular values* of the matrix $\boldsymbol{A}$. The columns of $\boldsymbol{U}$ are the *left-singular vectors*. The columns of $\boldsymbol{V}$ are the *right-singular vectors*.
 
@@ -196,7 +196,7 @@ If $\boldsymbol{A}$ is taller than its wide, this equation may have no solutions
 
 We define *Moore-Penrose Pseudoinverse* as:
 $$
-\boldsymbol{A}^+ = \lim \limits\_{\alpha \rightarrow 0}(\boldsymbol{A}^{\top}\boldsymbol{A} + \alpha \boldsymbol{I})^{-1} \boldsymbol{A}^{\top}
+\boldsymbol{A}^+ = \lim \limits_{\alpha \rightarrow 0}(\boldsymbol{A}^{\top}\boldsymbol{A} + \alpha \boldsymbol{I})^{-1} \boldsymbol{A}^{\top}
 $$
 
 We don't use this definition in practices, but rather the formula:
@@ -205,18 +205,18 @@ $$
 $$
 where $\boldsymbol{U}, \boldsymbol{D}, \boldsymbol{V}$ are the singular value decomposition of $\boldsymbol{A}$, and we can get $\boldsymbol{D}^+$ of a diagonal matrix $\boldsymbol{D}$ by taking the reciprocal of its non-zero elements then taking the transpose of the resulting matrix.
 
-When $\boldsymbol{A}$ has more columns than rows, we choose the minimal $\\| \boldsymbol{x} \\|\_2$ among all possible solutions. When $\boldsymbol{A}$ has more rows than columns, using pseudoinverse gives us the $\boldsymbol{x}$ for which $\boldsymbol{Ax}$ is as close as possible to $\boldsymbol{y}$ based on $\\| \boldsymbol{Ax} - \boldsymbol{y} \\|\_2$
+When $\boldsymbol{A}$ has more columns than rows, we choose the minimal $\| \boldsymbol{x} \|_2$ among all possible solutions. When $\boldsymbol{A}$ has more rows than columns, using pseudoinverse gives us the $\boldsymbol{x}$ for which $\boldsymbol{Ax}$ is as close as possible to $\boldsymbol{y}$ based on $\| \boldsymbol{Ax} - \boldsymbol{y} \|_2$
 
 10) The Trace Operator
 
 The trace operator gives us the sum of all the diagonal entries of a matrix:
 $$
-\mathrm{Tr}(\boldsymbol{A}) = \sum \limits\_i A\_{i,i}
+\mathrm{Tr}(\boldsymbol{A}) = \sum \limits_i A_{i,i}
 $$
 
 By using this operator, we can rewrite the Frobenius norm as:
 $$
-\\| \boldsymbol{A} \\|\_F = \sqrt{\mathrm{Tr(\boldsymbol{AA}^{\top})}}
+\| \boldsymbol{A} \|_F = \sqrt{\mathrm{Tr(\boldsymbol{AA}^{\top})}}
 $$
 
 The trace operator is invariant to the transpose operator.
@@ -230,7 +230,7 @@ $$
 $$
 more generally,
 $$
-\mathrm{Tr}(\prod \limits\_{i=1}^{n} \boldsymbol{F}^{(i)}) = \mathrm{Tr}(\boldsymbol{F}^{(i)} \prod \limits\_{i=1}^{n-1} \boldsymbol{F}^{(i)}).
+\mathrm{Tr}(\prod \limits_{i=1}^{n} \boldsymbol{F}^{(i)}) = \mathrm{Tr}(\boldsymbol{F}^{(i)} \prod \limits_{i=1}^{n-1} \boldsymbol{F}^{(i)}).
 $$
 
 11) The Determinant
@@ -252,28 +252,24 @@ Let $g(\boldsymbol{x}) = \boldsymbol{Dc}$, PCA constrains the columns of $\bolds
 
 This algorithm works like that:
 $$
-\boldsymbol{c}^* = \underset{c}{\arg \min} \\| \boldsymbol{x} - g(\boldsymbol{c}) \\|\_2.
+\boldsymbol{c}^* = \underset{c}{\arg \min} \| \boldsymbol{x} - g(\boldsymbol{c}) \|_2.
 $$
 
 We switch $L^2$ norm to the squared $L^2$ norm.
 $$
-\boldsymbol{c}^* = \underset{c}{\arg \min} \\| \boldsymbol{x} - g(\boldsymbol{c}) \\|\_2^2 \\\
-$$
-
-$$
-\begin{align}
-\\| \boldsymbol{x} - g(\boldsymbol{c}) \\|\_2^2 &= (\boldsymbol{x} - g(\boldsymbol{c}))^{\top} (\boldsymbol{x} = g(\boldsymbol{c})) \\\
-&= \boldsymbol{x}^{\top} \boldsymbol{x} - \boldsymbol{x}^{\top}g(\boldsymbol{c}) - g(\boldsymbol{c})^{\top} \boldsymbol{x} + g(\boldsymbol{c})^{\top} g(\boldsymbol{c}) \\\
+\boldsymbol{c}^* = \underset{c}{\arg \min} \| \boldsymbol{x} - g(\boldsymbol{c}) \|_2^2 \\
+\begin{alignat}{3}
+\| \boldsymbol{x} - g(\boldsymbol{c}) \|_2^2 &= (\boldsymbol{x} - g(\boldsymbol{c}))^{\top} (\boldsymbol{x} = g(\boldsymbol{c})) \\
+&= \boldsymbol{x}^{\top} \boldsymbol{x} - \boldsymbol{x}^{\top}g(\boldsymbol{c}) - g(\boldsymbol{c})^{\top} \boldsymbol{x} + g(\boldsymbol{c})^{\top} g(\boldsymbol{c}) \\
 &= \boldsymbol{x}^{\top}\boldsymbol{x} - 2 \boldsymbol{x}^{\top} g(\boldsymbol{c}) + g(\boldsymbol{c})^{\top} g(\boldsymbol{c})
-\end{align}\\\
+\end{alignat}\\
 $$
-
 $$
 \begin{align}
-\boldsymbol{c}^* &= \underset{c}{\arg \min}(-2 \boldsymbol{x}^{\top}g(\boldsymbol{c}) + g(\boldsymbol{c})^{\top}g(\boldsymbol{c}))\\\
-&= \underset{c}{\arg \min}(-2\boldsymbol{x}^{\top} \boldsymbol{Dc}+ \boldsymbol{c}^{\top} \boldsymbol{D}^{\top} \boldsymbol{Dc}) \\\
+\boldsymbol{c}^* &= \underset{c}{\arg \min}(-2 \boldsymbol{x}^{\top}g(\boldsymbol{c}) + g(\boldsymbol{c})^{\top}g(\boldsymbol{c}))\\
+&= \underset{c}{\arg \min}(-2\boldsymbol{x}^{\top} \boldsymbol{Dc}+ \boldsymbol{c}^{\top} \boldsymbol{D}^{\top} \boldsymbol{Dc}) \\
 &= \underset{c}{\arg \min}(-2\boldsymbol{x}^{\top}\boldsymbol{Dc} + \boldsymbol{c}^{\top}\boldsymbol{c})
-\end{align} \\\
+\end{align} \\
 \text{That is } \frac{\partial({-2\boldsymbol{x}^{\top}\boldsymbol{Dc} + \boldsymbol{c}^{\top}\boldsymbol{c})}}{\partial{\boldsymbol{c}}} = -2 \boldsymbol{D}^{\top} \boldsymbol{x} + 2 \boldsymbol{c} = \boldsymbol{0} \Rightarrow \boldsymbol{c} = \boldsymbol{D}^{\top}\boldsymbol{x}
 $$
 
@@ -283,22 +279,17 @@ r(\boldsymbol{x}) = g(f(\boldsymbol{x})) = \boldsymbol{D} \boldsymbol{D}^{\top} 
 $$
 
 We can get:
-
 $$
-\boldsymbol{D}^* = \underset{D}{\arg \min} \sqrt{\sum \limits\_{i,j}(x\_j^{(i)}-r(x^{(i)})\_j)^2},\  \text{subject to } \boldsymbol{D}^{\top}\boldsymbol{D} = \boldsymbol{I}\_l \\\
+\boldsymbol{D}^* = \underset{D}{\arg \min} \sqrt{\sum \limits_{i,j}(x_j^{(i)}-r(x^{(i)})_j)^2},\  \text{subject to } \boldsymbol{D}^{\top}\boldsymbol{D} = \boldsymbol{I}_l \\
+(l \text{ is the number of components.}) \\
+\boldsymbol{D}^* = \underset{D}{\arg \min} \sum \limits_i \| \boldsymbol{x}^{(i)} - \boldsymbol{x}^{(i)} \boldsymbol{DD}^{\top} \|_2 = \underset{D}{\arg \min} \| \boldsymbol{X} - \boldsymbol{XDD}^{\top} \|_F^2, \text{subject to } \boldsymbol{D}^{\top} \boldsymbol{D} = \boldsymbol{I}_l
 $$
-
-$$
-(l \text{ is the number of components.}) \\\
-\boldsymbol{D}^* = \underset{D}{\arg \min} \sum \limits\_i \\| \boldsymbol{x}^{(i)} - \boldsymbol{x}^{(i)} \boldsymbol{DD}^{\top} \\|\_2 = \underset{D}{\arg \min} \\| \boldsymbol{X} - \boldsymbol{XDD}^{\top} \\|\_F^2, \text{subject to } \boldsymbol{D}^{\top} \boldsymbol{D} = \boldsymbol{I}\_l
-$$
-
 $$
 \begin{align}
-\underset{D}{\arg \min} \\| \boldsymbol{X} - \boldsymbol{XDD}^{\top} \\|\_F^2 &=  \underset{D}{\arg \min} (\mathrm{Tr}[(\boldsymbol{X} - \boldsymbol{XDD}^{\top})^{\top}(\boldsymbol{X} - \boldsymbol{XDD}^{\top})]) \\\
-&=\underset{D}{\arg \min} (\mathrm{Tr}(\boldsymbol{X}^{\top}\boldsymbol{X} -2\boldsymbol{X}^{\top}\boldsymbol{XDD}^{\top}+\boldsymbol{D}^{\top}\boldsymbol{DX}^{\top}\boldsymbol{XDD}^{\top})) \\\
-&= \underset{D}{\arg \min}(-\mathrm{Tr}(\boldsymbol{X}^{\top}\boldsymbol{XDD}^{\top})) \\\
-&= \underset{D}{\arg \max}(\mathrm{Tr}(\boldsymbol{X}^{\top}\boldsymbol{XDD}^{\top})), \text{subject to } \boldsymbol{D}^{\top} \boldsymbol{D} = \boldsymbol{I}\_l
+\underset{D}{\arg \min} \| \boldsymbol{X} - \boldsymbol{XDD}^{\top} \|_F^2 &=  \underset{D}{\arg \min} (\mathrm{Tr}[(\boldsymbol{X} - \boldsymbol{XDD}^{\top})^{\top}(\boldsymbol{X} - \boldsymbol{XDD}^{\top})]) \\
+&=\underset{D}{\arg \min} (\mathrm{Tr}(\boldsymbol{X}^{\top}\boldsymbol{X} -2\boldsymbol{X}^{\top}\boldsymbol{XDD}^{\top}+\boldsymbol{D}^{\top}\boldsymbol{DX}^{\top}\boldsymbol{XDD}^{\top})) \\
+&= \underset{D}{\arg \min}(-\mathrm{Tr}(\boldsymbol{X}^{\top}\boldsymbol{XDD}^{\top})) \\
+&= \underset{D}{\arg \max}(\mathrm{Tr}(\boldsymbol{X}^{\top}\boldsymbol{XDD}^{\top})), \text{subject to } \boldsymbol{D}^{\top} \boldsymbol{D} = \boldsymbol{I}_l
 \end{align}
 $$
-The $l$ eigenvectors corresponding to the largest eigenvalues is the matrix $\boldsymbol{D}$
+The $l$ eigenvectors corresponding to the largest eigenvalues is the matrix $\boldsymbol{D}$.
