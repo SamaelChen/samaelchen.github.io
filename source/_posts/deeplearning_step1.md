@@ -2,8 +2,12 @@
 title: 深度学习线性代数基础
 categories: 深度学习
 mathjax: true
+date: 2017-01-11
 ---
+
 深度学习入门线性代数基础部分
+
+<!-- more -->
 
 1) Scalars, Vectors, Matrices and Tensors
 
@@ -236,7 +240,7 @@ $$
 
 11) The Determinant
 
-We denote determinant of a square matrix as $\det{A}$. It's a function mapping matrices to real scalars. The $\det{A}$ is equal to the product of all the eigenvalues of the matrix. It's a measure of how much multiplication by the matrix expends or contracts space.
+We denote determinant of a square matrix as $\det(A)$. It's a function mapping matrices to real scalars. The $\det(A)$ is equal to the product of all the eigenvalues of the matrix. It's a measure of how much multiplication by the matrix expends or contracts space.
 
 12) PCA
 

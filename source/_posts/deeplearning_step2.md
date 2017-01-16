@@ -3,6 +3,11 @@ title: 深度学习概率论基础
 categories: 深度学习
 mathjax: true
 ---
+
+深度学习概率论基础
+
+<!-- more -->
+
 1) We use probability to represent a *degree of belief*. The probability relates to the rates at which events occur is *frequentist probability*, while relates to qualitative levels of certainty is *Bayesian probability*.
 
 2) *Random variable* is a variable that can take on different values randomly. Random variable may be discrete or continuous. We use $\textrm{x}$ to denote it, and $x$ as one value.
