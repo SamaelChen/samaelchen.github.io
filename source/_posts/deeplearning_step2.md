@@ -120,3 +120,123 @@ Cov(x,y) &= E(xy)-E(x)E(y) \\
 \end{align},
 $$
 but $x$ and $y$ are not independent.
+
+8) Common Probability Distribution
+
+8.1) Bernoulli Distribution
+
+If $P(x=1)=p, P(x=0)=1-p, p(\text{x}=x)=p^x(1-p)^{1-x}$.
+
+And we can get $\text{E}_{\text{x}}(x)=p, \text{Var}_{\text{x}}(x)=p(1-p)$.
+
+It's a special *Binomial distribution*. We denote it as $X \sim B(n,p)$.
+
+$f(x;n,p)=P(\text{x}=x)=C_n^x p^x(1-p)^{(n-x)}, \text{E}_{\text{x}}(x)=np, \text{Var}_{\text{x}}(x)=np(1-p)$.
+
+8.2) Multinoulli Distribution
+It's a special *Multinomial distribution*. The multinomial distribution is:
+$$
+\begin{align}
+f(x_1, \dots, x_k; n ,p_1, \dots, p_k) &= P(\text{x}_1=x_1 \text{and } \dots \text{ and} \text{x}_n=x_n) \\
+&=\begin{cases}
+\frac{n!}{x_1! \dots x_k!} p_1^{x_1}\dots p_k^{x_k} &\text{when } \sum_{i=1}^k x_i=n \\
+0 &\text{otherwise}
+\end{cases}
+\end{align}
+$$
+
+We can get this PMF from the following way:
+$$
+(p_1 + p_2 + \dots + p_k)=1 \\
+\Downarrow \\
+(p_1 + p_2 + \dots + p_k)^N = 1
+$$
+
+We choose $p_1$ $x_1$ times and $p_2$ $x_2$ times $\dots$ $p_k$ $x_k$ times. And $x_1+x_2+\dots+x_k=N$. It's like a problem about how to put $n$ balls into $k$ different boxes. Then we can get:
+$$
+C_n^{x_1} C_{n-x_1}^{x_2} \dots C_{n-x_1-\dots-x_{k-1}}^{x_k} = \frac{n!}{x_1!x_2! \dots x_k!}
+$$
+
+We can get the PMF. The expectation is $\text{E}_{\text{x}}(x_i)=np_i, \text{Var}_{\text{x}}(\text{X}_i) = np_i(1-p_i)$
+
+And we can get
+$$
+\begin{align}
+\text{Cov}(x_i, x_j) &= \frac{\text{Var}(x_i+x_j)-\text{Var}(x_i)-\text{Var}(x_j)}{2} \\
+&= \frac{n(1-p_i-p_j)(p_i+p_j)-np_i(1-p_i)-np_j(1-p_j)}{2} \\
+&= -n p_i p_j
+\end{align}
+$$
+
+8.3) Gaussian Distribution
+
+It's *normal distribution*:
+$$
+N(x;\mu,\sigma^2) = \sqrt{\frac{1}{2 \pi \sigma^2}}\exp(-\frac{1}{2\sigma^2}(x-\mu)^2)
+$$
+We can use precision $\beta = \sigma^{-2} \in (0, \infty)$ to replace $\sigma^2$.
+$$
+N(x;\mu,\beta^{-1}) = \sqrt{\frac{\beta}{2 \pi}} \exp(-\frac{1}{2} \beta (x - \mu)^2)
+$$
+
+The *multivariate normal distribution* is:
+$$
+N(\mathbf{x};\mathbf{\mu},\Sigma) = \sqrt{\frac{1}{(2 \pi)^2 \det(\Sigma)}} \exp(-\frac{1}{2}(\mathbf{x}-\mathbf{\mu})^{\top}\Sigma^{-1}(\mathbf{x}-\mathbf{\mu}))
+$$
+
+Similarly, we can use *precision matrix* $\beta$:
+$$
+N(\mathbf{x};\mathbf{\mu}, \beta^{-1})=\sqrt{\frac{\det{\beta}}{(2 \pi)^n}} \exp(-\frac{1}{2}(\mathbf{x}-\mathbf{\mu})^{\top} \beta (\mathbf{x}-\mathbf{\mu}))
+$$
+
+8.4) Exponential and Laplace Distributions
+
+The exponential distribution has a sharp point at $x=0$.
+$$
+p(x;\lambda) = \lambda \mathbf{1}_{x \ge 0} \exp(-\lambda x)
+$$
+
+The indicator function $\mathbf{1}_{x \ge 0}$ assigns probability zero to all negative values of $x$.
+
+The exponential distribution describes the time between events in a Poisson process(a process in which events occur continuously and independently at a constant average rate). And Poisson distribution is:
+$$
+p(N(t)=n) = \frac{(\lambda t)^n e^{-\lambda t}}{n!},
+$$
+where $N$ is a random variable, $t$ is the time, $n$ is the number of events. So when $n=0$:
+$$
+P(N(t)=0) = \frac{(\lambda t)^0 e^{-\lambda t}}{0!} = e^{-\lambda t}
+$$
+that means, when $k$-th event happened, in time $t$, the probability of $k+n$-th $(n=1, 2, 3, \dots)$ event is $1-e^{-\lambda t}$.
+
+A related distribution is *Laplace distribution*
+$$
+Laplace(x; \mu, \gamma) = \frac{1}{2\gamma} \exp(-\frac{|x-\mu|}{\gamma})
+$$
+
+8.5) The Dirac Distribution and Empirical Distribution
+
+The Dirac delta function can help us to specify that all the mass in a probability distribution clusters around a single point. The Dirac delta function is such a function that it's zero-valued everywhere except $0$, yet integrates to $1$. We define a PDF using it as:
+$$
+p(x) = \delta(x-\mu)
+$$
+
+A common use of the Dirac delta distribution is as a component of an *empirical distribution*,
+$$
+\hat{p}(\boldsymbol{x}) = \frac{1}{m} \sum_{i=1}^m \delta(\boldsymbol{x}-\boldsymbol{x}^{(i)}
+$$
+which puts probability mass $\frac{1}{m}$ on each of the $m$ points $\boldsymbol{x}^{(1)}, \dots \boldsymbol{x}^{(m)}$ forming a given data set or collection of samples.
+
+The Dirac delta distribution is define the empirical distribution over continuous variables. For discrete variables, we can conceptualize an empirical distribution as a multinoulli distribution.
+
+8.6) Mixtures of Distribution
+
+One common way of combining distributions is to construct a *mixture distribution*.
+
+A mixture distribution contains lots component distributions. On each trial, sampling a component identity from a multinoulli distribution determine the choice of which component distribution generates the sample:
+$$
+P(x)=\sum_i p(c=i)p(x|c=i)
+$$
+
+The mixture model allow us to briefly glimpse a concept of the *latent variable*. A latent variable is a random variable that we cannot observe directly.
+
+A powerful and common mixture model is *Gaussian mixture* model, in which the components $p(\boldsymbol{x}|c=i)$ are Gaussian.
