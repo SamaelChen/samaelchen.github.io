@@ -240,3 +240,78 @@ $$
 The mixture model allow us to briefly glimpse a concept of the *latent variable*. A latent variable is a random variable that we cannot observe directly.
 
 A powerful and common mixture model is *Gaussian mixture* model, in which the components $p(\boldsymbol{x}|c=i)$ are Gaussian.
+
+9) Useful Properties of Common Functions
+
++ logistic sigmoid:
+
+$$
+\sigma(x) = \frac{1}{1+\exp(-x)}
+$$
+This function becomes flat and insensitive to small changes in its input when its argument is positive infinity or negative infinity.
+
++ softplus function:
+
+$$
+\zeta(x) = \log(1+\exp(x))
+$$
+
+The following properties are all useful:
+$$
+\begin{align}
+\sigma(x) &= \frac{\exp(x)}{1+\exp(x)} \\
+\frac{d}{dx} \sigma(x) &= \sigma(x)(1-\sigma(x)) \\
+1-\sigma(x) &= \sigma(-x) \\
+\log(\sigma(x)) &= -\zeta(-x) \\
+\frac{d}{dx} \zeta(x) &= \sigma(x) \\
+\forall x \in (1,0), &\sigma^{-1}(x) = \log(\frac{x}{1-x}) \\
+\forall x > 0, &\zeta^{-1}(x) = \log(\exp(x)-1) \\
+\zeta(x) &= \int_{-\infty}^x \sigma(y)dy \\
+\zeta(x) - \zeta(-x) &= x
+\end{align}
+$$
+
+10) Bayes' Rule
+
+Bayes' rule:
+$$
+P(\text{x}|y) = \frac{P(\text{x})P(y|\text{x})}{P(y)}
+$$
+And $P(y) = \sum \limits_{\text{x}} P(y|x)P(x)$.
+
+11) Information Theory
+
+We wanna quantify information like below:
++ Similar events should have low information content, and in the extreme case, events that are guaranteed to happen should have no information content whatsoever.
++ Less likely events should have higher information content.
++ Independent events should have additive information.
+
+We define the *self-information* of an event $\text{x} = x$ to be:
+$$
+\text{I}(x) = -\log P(x)
+$$
+The units of I(x) is *nats*. One nat is the amount of information gained by observing an event of probability $\frac{1}{e}$. If we use base-$2$ logarithms and units called *bits* or *shannons*
+
+We can quantify the amount of uncertainty in an entire probability distribution using the *Shannon Entropy*:
+$$
+H(\text{x}) = \sum_{i=1}^n P(x_i)I(x_i) = - \sum_{i=1}^n P(x_i)\log_b P(x_i)
+$$
+where $b = 2 \text{ or } e \text{ or } 10$.
+
+If we have two separate probability distributions $P(\text{x})$ and $Q(\text{x})$ over the same random variable $\text{x}$, we can measure how different these two distributions are using
+the *Kullback-Leibler (KL) divergence*:
+$$
+D_{KL}(P \| Q) = E_{x \sim P} \Big[ log \frac{P(x)}{Q(x)} \Big] = E_{x \sim P}[\log P(x) - \log Q(x)]
+$$
+
+The KL divergence is 0 if and only if P and Q are the same distribution in the case of discrete variables, or equal "almost everywhere" in the case of continuous variables. However, it is not a true distance measure because it is not symmetric: $D_{KL}(P \| Q) \ne D_{KL}(Q \| P)$ for some $P$ and $Q$.
+
+A quantity that is closely related to the KL divergence is the *cross-entropy* $H (P, Q) = H(P) + D_{KL}(P \| Q)$, which is similar to the KL divergence but lacking
+the term on the left:
+$$
+H(P, Q) = -E_{x \sim P} \log Q(x).
+$$
+
+12) Structured Probabilistic Models
+
+Probabilistic Graphical Models?! It's too hard for me right now. I'll finish it in the future.
