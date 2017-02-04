@@ -90,6 +90,7 @@ $$
 to measure the size of a vector, called it $L^p$ norm.
 
 Norms are functions mapping vectors to non-negative values. A norm satisfies the following properties:
+
 + $f(\boldsymbol{x}) = 0 \Rightarrow \boldsymbol{x}=\boldsymbol{0}$
 + $f(\boldsymbol{x} + \boldsymbol{y}) \le f(\boldsymbol{x}) + f(\boldsymbol{y})$
 + $\forall \alpha \in \mathbb{R}, f(\alpha \boldsymbol{x}) = |\alpha|f(\boldsymbol{x})$.

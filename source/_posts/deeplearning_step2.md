@@ -22,6 +22,7 @@ Probability distributions is a description of how possibly a random variable or 
 We denote probability mass functions with a capital $P$. It maps from a state of a random variable to the probability of that random variable taking on that state. We write it as $P(\textrm{x}=x)$, and we can also write it as $P(x)$. Similarly, the *joint probability distribution* is $P(x, y)$.
 
 The function $P$ has the following properties:
+
 + The domain of $P$ must be the set of all possible states of $\text{x}$.
 + $\forall x \in \text{x}, 0 \le P \le 1$
 + $\sum_{x \in \text{x}} P(x) = 1$. We refer to this property as being *normalized*.
@@ -29,6 +30,7 @@ The function $P$ has the following properties:
 3.2) Continuous Variables and Probability Density Functions
 
 We use $p$ to represent probability density functions. It has the following properties:
+
 + The domain of $p$ must be the set of all possible states of $\text{x}$.
 + $\forall x \in \text{x}, p(x) \ge 0$. We do not require $p(x) \le 1$
 + $\int p(x) dx = 1$
@@ -283,6 +285,7 @@ And $P(y) = \sum \limits_{\text{x}} P(y|x)P(x)$.
 11) Information Theory
 
 We wanna quantify information like below:
+
 + Similar events should have low information content, and in the extreme case, events that are guaranteed to happen should have no information content whatsoever.
 + Less likely events should have higher information content.
 + Independent events should have additive information.
