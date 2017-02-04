@@ -2,6 +2,7 @@
 title: 深度学习概率论基础
 categories: 深度学习
 mathjax: true
+date: 2017-01-17
 ---
 
 深度学习概率论基础
