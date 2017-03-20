@@ -56,5 +56,13 @@ date: 2017-03-17
 
 ## 梯度下降
 + 加强版爬山法。爬山法的步长不容易控制，方向不定。梯度下降指定了爬山最快的方向，即导数方向，沿着该方向按照指定步长移动。
-
++ 梯度下降的数学表达就是：
+$$
+\boldsymbol{\theta}:= \boldsymbol{\theta} - \alpha \nabla f(\boldsymbol{\theta}) \\
+\text{or} \\
+\boldsymbol{\theta}:= \boldsymbol{\theta} - \alpha \frac{\partial{f}}{\partial{\boldsymbol{\theta}}}
+$$
++ BGD（批梯度下降）就是最原始的梯度下降，每次更新的时候都是处理全量数据。需要的计算量大。但可以保证收敛到局部最优。
++ SGD（随机梯度下降）每次下降按照某一个点更新。需要迭代次数多，但是计算量小，收敛快。可以收敛到局部最优附近。
++ MBGD（小批梯度下降）一个介于BGD和SGD之间的优化算法，兼顾二者的优点。
 ## 未完待续，梯度下降就有BGD，SGD，MBGD，还有牛顿法，拟牛顿法等，后面再补充。
