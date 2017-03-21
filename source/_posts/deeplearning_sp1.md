@@ -5,7 +5,7 @@ mathjax: true
 date: 2017-03-17
 ---
 
-上班被迫看运筹，顺便就把常见的优化算法复习一下。
+上班需要看运筹，顺便就把常见的优化算法复习一下。
 
 <!-- more -->
 
@@ -52,7 +52,7 @@ date: 2017-03-17
 
 + 通俗表达：一只单身狗要爬山看日出，每次都往高的地方爬，最后爬到一个往前挪一步就是下降的地方停止。（最后举起了FFF团的旗帜）
 
-<font size='5' color='#F08080'>在这之前的三个算法都可以在《集体智慧编程》第五章找到实现代码。如果愿意也可以看我fork的<a href='https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/optimization.py'>这部分代码</a></font>
+<font size='5' color='#F08080'>在这之前的三个算法都可以在《集体智慧编程》第五章找到实现代码。如果愿意也可以看我fork的<a href='https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/optimization.py'>这部分代码</a>。如果有人用R的话，有个叫genalg的包是提供遗传算法的，代码质量肯定比自己实现的好。</font>
 
 ## 梯度下降
 + 加强版爬山法。爬山法的步长不容易控制，方向不定。梯度下降指定了爬山最快的方向，即导数方向，沿着该方向按照指定步长移动。
@@ -65,4 +65,5 @@ $$
 + BGD（批梯度下降）就是最原始的梯度下降，每次更新的时候都是处理全量数据。需要的计算量大。但可以保证收敛到局部最优。
 + SGD（随机梯度下降）每次下降按照某一个点更新。需要迭代次数多，但是计算量小，收敛快。可以收敛到局部最优附近。
 + MBGD（小批梯度下降）一个介于BGD和SGD之间的优化算法，兼顾二者的优点。
-## 未完待续，梯度下降就有BGD，SGD，MBGD，还有牛顿法，拟牛顿法等，后面再补充。
+
+<font size='5' color='#F08080'>实现了一个<a href='https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/optimization/gd.py'>非常简单的梯度下降</a>，高质量的随机梯度下降实现可以看Machine Learning in Action，或者Data Science from Scratch。</font>
