@@ -262,10 +262,10 @@ mathjax:
 #baidu_analytics:
 
 # Duoshuo ShortName
-duoshuo_shortname: samaelchen
+# duoshuo_shortname: samaelchen
 
 # Disqus
-#disqus_shortname:
+disqus_shortname: samaelchen
 
 # Hypercomments
 #hypercomments_id:
