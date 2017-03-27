@@ -49,6 +49,7 @@ category_map:
     碎碎念: self-questioning
     深度学习: DeepLearning
     统计学习: StatisticalLearning
+    LeetCode: LeetCode
 tag_map:
 
 # Date / Time format
