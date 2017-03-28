@@ -28,6 +28,12 @@ solved list：
 
 + No.26 [Remove Duplicates from Sorted Array](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Remove_Duplicates_from_Sorted_Array.py)
 
++ No.27 [Remove Element](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Remove_Element.py)
+
++ No.35 [Search Insert Position](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Search_Insert_Position.py)
+
 + No.38 [Count and Say](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Count_and_Say.py)
+
++ No.58 [Length of Last Word](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Length_of_Last_Word.py)
 
 + No.191 [Number of 1 Bits](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Number_of_1_Bits.py)
