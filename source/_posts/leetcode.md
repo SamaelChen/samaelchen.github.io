@@ -34,6 +34,12 @@ solved list：
 
 + No.38 [Count and Say](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Count_and_Say.py)
 
++ No.53 [Maximum Subarray](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Maximum_Subarray.py)
+
 + No.58 [Length of Last Word](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Length_of_Last_Word.py)
+
++ No.66 [Plus One](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Plus_One.py)
+
++ No.67 [Add Binary](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Add_Binary.py)
 
 + No.191 [Number of 1 Bits](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Number_of_1_Bits.py)
