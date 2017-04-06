@@ -42,4 +42,6 @@ solved list：
 
 + No.67 [Add Binary](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Add_Binary.py)
 
++ No.88 [Merge Sorted Array](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Merge_Sorted_Array.py)
+
 + No.191 [Number of 1 Bits](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Number_of_1_Bits.py)
