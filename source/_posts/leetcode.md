@@ -16,6 +16,8 @@ solved list：
 
 + No.2 [Add Two Numbers](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Add_Two_Numbers.py)
 
++ No.3 [Longest Substring Without Repeating Characters](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Longest_Substring_Without_Repeating_Characters.py)
+
 + No.7 [Reverse Integer](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Reverse_Integer.py)
 
 + No.9 [Palindrom Number](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Palindrome_Number.py)
@@ -29,6 +31,8 @@ solved list：
 + No.26 [Remove Duplicates from Sorted Array](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Remove_Duplicates_from_Sorted_Array.py)
 
 + No.27 [Remove Element](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Remove_Element.py)
+
++ No.29 [Divide Two Integers](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Divide_Two_Integers.py) 这一个没解决好，效率太低，待优化
 
 + No.35 [Search Insert Position](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Search_Insert_Position.py)
 
