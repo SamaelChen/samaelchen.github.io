@@ -50,6 +50,8 @@ category_map:
     深度学习: DeepLearning
     统计学习: StatisticalLearning
     LeetCode: LeetCode
+    MXNet: MXNet
+    TensorFlow&Keras: TensorFlow&Keras
 tag_map:
 
 # Date / Time format
