@@ -52,6 +52,7 @@ category_map:
     LeetCode: LeetCode
     MXNet: MXNet
     TensorFlow&Keras: TensorFlow&Keras
+    搞着玩: fun
 tag_map:
 
 # Date / Time format
