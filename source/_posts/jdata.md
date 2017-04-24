@@ -1,6 +1,7 @@
 ---
 title: 京东消费预测搞着玩
 categories: 搞着玩
+mathjax: true
 data: 2017-04-17
 ---
 
