@@ -220,5 +220,14 @@ self.provide_label = [('softmax_label', (self.batch_size, num_label))]
 
 那么问题来了，自杀到底是Epoch不够还是learning rate太大？
 
+---
+
+2017-04-25更新：
+我做了一个282字的识别，learning rate设定为0.0005的情况下，在32个epoch时候跳崖自杀，39个epoch爬回来，40个epoch又自杀，从此一蹶不振。于是被我提前掐死了。但是当我将lr改到0.0001，到了168个epoch，已经到了97%了。所以目测跳崖自杀是lr太大了。
+
+<img src=http://image18.poco.cn/mypoco/myphoto/20170425/10/18449013420170425102152016.png?1251x189_130>
+
+不过这种防止自杀的手段是有明显短板的，那就是lr太小收敛很慢。如果跟我一样仅有一块1080卡，然后像我多放几个filter和hidden，速度就是上图，呵呵哒了。
+
 [^1]: 端到端的OCR：基于CNN的实现 http://blog.csdn.net/acdreamers/article/details/24883305
 [^2]: PIL模块与随机生成中文验证码 http://blog.csdn.net/acdreamers/article/details/24883305
