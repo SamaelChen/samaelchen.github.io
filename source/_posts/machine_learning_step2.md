@@ -23,7 +23,7 @@ But one data set only fit one model, why we have so many estimators? In fact, if
 
 Now if we sample 5000 times, what is the relationship between errors and model's complexity?
 
-<img src=../../images/blog/ml001.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml001.png>
 
 And we can see the more complexity the more variance and the less bias. However, the less complexity the more bias and the less variance.
 
@@ -33,10 +33,10 @@ If we have large bias, we should redesign our model to make it more complex, or 
 
 If we have large variance, we should collect more sample data or regularization.
 
-<img src=../../images/blog/ml002.png>
-<img src=../../images/blog/ml003.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml002.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml003.png>
 
 But we should note that, the larger regularization, the larger bias. This is a trade-off between bias and variance. That means we should split our data into training set and testing set. A more useful way is N-fold cross validation. It works like
-<img src=../../images/blog/ml004.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml004.png>
 
 The zen of building model, do not focus on training data set too much, then you may get a good estimator on testing data set.
