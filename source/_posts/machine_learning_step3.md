@@ -25,7 +25,7 @@ $\boldsymbol{\theta}^1 = \boldsymbol{\theta}^0 - \eta \begin{bmatrix} \frac{\par
 
 那么是否有办法来自适应调节 learning rate？
 
-比如，一开始我们通常离最优解很远，那么可以让 learning rate 大一点，随着迭代次数增加，可以减少 learning rate。因此我们可以这样设计 $\eta^t = \eta^0 / \sqrt{t+1}$。
++ 比如，一开始我们通常离最优解很远，那么可以让 learning rate 大一点，随着迭代次数增加，可以减少 learning rate。因此我们可以这样设计 $\eta^t = \eta^0 / \sqrt{t+1}$。
 
 事实上有很多种自适应的方法，例如Adagrad，Adam等。李老师介绍了Adagrad。定义为每个 parameter 都去除之前所有的微分的 root mean square。
 
