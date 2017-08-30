@@ -19,7 +19,7 @@ $\boldsymbol{\theta}^1 = \boldsymbol{\theta}^0 - \eta \begin{bmatrix} \frac{\par
 
 这里我们发现有个$\eta$参数。这个参数我们称为 Learning Rate。Learning Rate 本身是机器学习中需要调节的一个重要参数。
 
-<img src=../../images/blog/ml005.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml005.png>
 
 上图显示了，如果我们有个很大的learning rate，那么我们可能无法迭代到最优解，相反，很小的 learning rate 可以让你到达最优解，但是将消耗大量的时间。
 
@@ -40,19 +40,19 @@ $$
 
 所以 adagrad 这样更新 $w$：
 
-<img src=../../images/blog/ml006.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml006.png>
 
-<img src=../../images/blog/ml007.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml007.png>
 
 这里要注意一点，adagram中，梯度算出来越大，说明在这个参数方向上离最优解越远。直观上步长应该越大越快收敛，但是分母部分，梯度越大，步长越小。如果现在考虑多个参数，那么梯度越大，不一定离最优解越远，如下图：
 
-<img src=../../images/blog/ml008.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml008.png>
 
 因此最好的 step 应该是还要考虑二次微分，最好的步长是一阶微分的绝对值除以二阶微分，这样才能在不同参数之间比较。
 
 回过头来，adagrad 里面的分母起到的作用就是来替代二阶微分的作用。为什么这样的设计能够work？
 
-<img src=../../images/blog/ml009.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml009.png>
 
 如图所示，我们画出一阶微分的绝对值，只要我们 sample 足够多的数据，我们就能得到，由于二阶微分较小，所以左边的函数一阶微分的 root mean square 就比较小。
 
@@ -60,13 +60,13 @@ $$
 
 从图上看，两者的差别就在于 SGD 更散乱，但更快收敛。
 
-<img src=../../images/blog/ml010.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml010.png>
 
 实践上，为了让模型收敛不是太散乱，同时兼顾效率，会考虑使用 mini-batch SGD。
 
 另外一个可以加速收敛的方法是做 feature scaling。考虑下图的情况
 
-<img src=../../images/blog/ml011.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml011.png>
 
 在做 scaling 前，左边的 $x_2$ 导致 $w_2$ 的变动对 loss function 的影响非常大，所以左图最后收敛方向都会沿着 $w_1$ 缓慢下降。因此不用 adagrad 的话，左图的收敛非常慢。而右图因为接近正圆形，沿着任意方向都能快速接近最优解。
 
@@ -87,7 +87,7 @@ $$
 
 那么，基于泰勒公式，我们的 Loss function 就可以用泰勒展开为一阶多项式。
 
-<img src=../../images/blog/ml012.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml012.png>
 
 那么在图上一个红色的圆圈内，如何让 Loss 最小？我们可以发现，Loss 只跟两个向量有关，一个是$(u, v)$，另一个是$(\theta_1 - a, \theta_2 - b)$。我们用$(\Delta \theta_1$, $\Delta \theta_2)$ 表示第二个向量。
 
@@ -118,6 +118,6 @@ $$
 优化方法有很多，之前博客里面写的遗传算法，退火算法，蚁群算法等都是，但是 mini-batch SGD 是目前最常用的方法，因为效率极高。但是这不意味着 SGD 就是最好的方法，因为这是一个很典型的贪心算法，大部分情况下只能接近局部最优。
 如下图：
 
-<img src=../../images/blog/ml013.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml013.png>
 
 通常我们发现梯度下降很慢的时候，就会停止迭代了，但实际上，可能我们离局部最优都很远，更不用说全局最优。深度学习常见的一个坑。
