@@ -13,7 +13,7 @@ $$
 \sigma(z) = \frac{1}{1+\exp(-z)}.
 $$
 $\sigma$函数的作用就是将二分类的值平滑成一条曲线。
-<img src=../../images/blog/ml019.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml019.png>
 
 在开始逻辑回归之前，先回顾一下上一节课的内容。上一节课大致介绍了贝叶斯方法。贝叶斯方法是按照 posterior probability 来进行分类的。
 
@@ -116,7 +116,7 @@ $$
 
 下图就是这个结果的原因：
 
-<img src=../../images/blog/ml020.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml020.png>
 
 一般情况下，逻辑回归这类的模型称为 Discriminative ，而上一节里的LDA，或者贝叶斯方法被称为 Generative。
 
@@ -127,11 +127,11 @@ $$
 那么事实上逻辑回归有很明显的缺点，那就是逻辑回归无法解决 XOR 问题。如何解决 XOR 问题呢？最简单的方法是做坐标映射，将原线性不可分的坐标映射到线性可分的空间中。但是事实上，这种坐标映射是非常 tricky 的，一般有 domain knowledge 会有很大的帮助，但是如果什么都不会怎么办呢？
 我们就可以使用两个逻辑回归来将原来的坐标进行转换。示例图如下：
 
-<img src=../../images/blog/ml021.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml021.png>
 
-<img src=../../images/blog/ml022.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml022.png>
 
-<img src=../../images/blog/ml023.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml023.png>
 
 我们构造这样的一个模型，先用两个逻辑回归进行 feature transform，再用一个逻辑回归进行分类。
 
