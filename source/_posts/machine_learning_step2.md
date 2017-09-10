@@ -5,38 +5,42 @@ mathjax: true
 date: 2017-08-28
 ---
 
-Now let's figure out what cause the errors.
+现在我们来看看误差从何而来
 
 <!-- more -->
 
-The error of our model comes from **bias** and **variance**.
+模型误差来源于 **bias** and **variance**.
 
-If we wanna estimate the mean of a variable $x$, assume the mean of $x$ is $\mu$, the variance is $\sigma^2$.
+假设有一组数据 $x$, 均值是 $\mu$，方差是 $\sigma^2$。
 
-Estimator of mean, sample N points: $\{x^1, x^2, \dots , x^N \}$, $m = \frac{1}{N} \sum_n x^n \ne \mu$, but $E(m) = E\Big(\frac{1}{N} \sum_n x^n \Big) = \frac{1}{N} \sum_n E(x^n) = \mu$ and $Var(m) = \frac{\sigma^2}{N}$. The more data point, the less bias.
+我们现在估计均值。抽样 N 个样本 $\{x^1, x^2, \dots , x^N \}$，$m = \frac{1}{N} \sum_n x^n \ne \mu$，但是 $E(m) = E\Big(\frac{1}{N} \sum_n x^n \Big) = \frac{1}{N} \sum_n E(x^n) = \mu$ 且 $Var(m) = \frac{\sigma^2}{N}$。数据越多bias越小。
 
-Estimator of variance, sample N points: $\{x^1, x^2, \dots , x^N \}$. $s^2 = \frac{1}{N} \sum_n(x^n - m)^2$, it is a biased estimator, which is $E(s^2) = \frac{N-1}{N} \sigma^2$, and the more data points the less bias.
+为了估计方差，同样抽 N 个样本， $\{x^1, x^2, \dots , x^N \}$。 $s^2 = \frac{1}{N} \sum_n(x^n - m)^2$。这是一个有偏估计，样本方差的均值$E(s^2) = \frac{N-1}{N} \sigma^2$，同样当抽样的数据越多，bias越小。
 
-Such that, the bias of model is the distance between the center point of estimators and the target function; the variance of model is the distance between each estimator and the center point of estimators.
+因此，模型的bias就是估计值的中心点到实际值中心点的距离，而模型的方差就是各个估计点到其中心点的距离。
 
-But one data set only fit one model, why we have so many estimators? In fact, if we sample different data, that will fit different estimators.
+那我们只有一组数据，为什么会有方差呢？实际上当我们抽样不同的数据，就会得到不同的模型，这样我们的估计值就会不同。所以模型存在方差（这已经是集成算法方面的东西了，boosting方法）。
 
-Now if we sample 5000 times, what is the relationship between errors and model's complexity?
+现在假设我们抽样 5000 次，模型的复杂度和错误率会是什么样的关系呢？
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml001.png>
 
-And we can see the more complexity the more variance and the less bias. However, the less complexity the more bias and the less variance.
+如上图，当模型复杂度较低的时候，模型的variance很小，但是bias很大。当模型复杂度很高的时候，模型的variance很大，但是bias很小。
 
-Now let's discuss how to deal with bias and variance.
+那么我们要如何解决这个问题？
 
-If we have large bias, we should redesign our model to make it more complex, or add more features.
+如果我们的模型有很大的bias，那么我们应该增加模型的复杂度，或者增加模型的feature。
 
-If we have large variance, we should collect more sample data or regularization.
+如果我们模型的variance很大，那么应该增加样本数量，或者做regularization。如下图，我们抽了100个样本，那么variance比10个样本的小很多。
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml002.png>
+
+而不增加样本，直接做regularization如下：
+
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml003.png>
 
-But we should note that, the larger regularization, the larger bias. This is a trade-off between bias and variance. That means we should split our data into training set and testing set. A more useful way is N-fold cross validation. It works like
+但是我们需要注意到一点，regularization越大，bias会越大，因为模型复杂度降低了。这是一个trade-off。所以我们需要将数据分为 training 和 testing。一个比较有用的方法是 cross validation。它的原理如下：
+
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml004.png>
 
-The zen of building model, do not focus on training data set too much, then you may get a good estimator on testing data set.
+建模的禅道就是，别太在意training的效果，有时候validation和testing的效果反而不错。
