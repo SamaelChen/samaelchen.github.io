@@ -41,7 +41,7 @@ $$
 
 我们这里讨论了最简单的一个模型，如果现在提高模型复杂度会怎么样呢？如果我们假设 $y = b + w_1 \cdot x + w_2 \cdot x^2$，我们就能得到 $\text{error}_{\text{training}} = 15.4, \ \text{error}_{\text{test}} = 18.4$，看起来好了不少。如果进一步假设 $y = b + w_1 \cdot x + w_2 \cdot x^2 + w_3 \cdot x^3$， 则 $\text{error}_{\text{training}} = 15.3,\  \text{error}_{\text{test}} = 18.1$。
 
-如果现在假设 $x$ 是四次方的一个方程，则 $\text{error}_{\text{training}} = 14.9, \ \text{error}_{\text{test}} = 28.8$. 如果假设$y = b + w_1 \cdot x + w_2 + \cdot x^2 + w_3 \cdot x^3 + w_4 \cdot x^4 + w_5 \cdot x^5$，则$\text{error}_{\text{training}} = 12.8，\ \text{error}_{\text{test}} = 232.1$.
+如果现在假设 $x$ 是四次方的一个方程，则 $\text{error}_{\text{training}} = 14.9, \ \text{error}_{\text{test}} = 28.8$. 如果假设$y = b + w_1 \cdot x + w_2 \cdot x^2 + w_3 \cdot x^3 + w_4 \cdot x^4 + w_5 \cdot x^5$，则$\text{error}_{\text{training}} = 12.8，\ \text{error}_{\text{test}} = 232.1$.
 
 当模型复杂度提高的时候，模型在训练集的错误会下降，测试集的也会下降，但是当模型复杂度到了一定程度，随着训练集错误下降，测试集错误上升，我们称之为 **overfitting**。
 
