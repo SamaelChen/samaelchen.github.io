@@ -52,7 +52,7 @@ date: 2017-09-10
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml027.png>
 
-那么$\frac{\partial l}{\partial z} = \frac{\partial a}{\partial z} \frac{\partial l}{\partial a}$，而因为$a$会影响后面的参数，因此 $\frac{\partial l}{\partial a} = \frac{\partial z'}{\partial a} \frac{\partial l}{\partial z'} + \frac{\partial z''}{\partial a} \frac{\partial l}{\partial z''}$。那事实上，$frac{\partial z'}{\partial a}$就是$w_3$，其他相应可以算出来。如下图：
+那么$\frac{\partial l}{\partial z} = \frac{\partial a}{\partial z} \frac{\partial l}{\partial a}$，而因为$a$会影响后面的参数，因此 $\frac{\partial l}{\partial a} = \frac{\partial z'}{\partial a} \frac{\partial l}{\partial z'} + \frac{\partial z''}{\partial a} \frac{\partial l}{\partial z''}$。那事实上，$\frac{\partial z'}{\partial a}$就是$w_3$，其他相应可以算出来。如下图：
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml028.png>
 
