@@ -17,13 +17,16 @@
     margin-top: 2px;
   }
 }
-  
+
+.post-wordcount {
+  if !hexo-config('post_wordcount.separated_meta') { display: inline-block; }
+}
+
 .post-meta-divider {
   margin: 0 .5em;
 }
 
 .post-meta-item-icon {
-  display: none;
   margin-right: 3px;
   +tablet() {
     display: inline-block;

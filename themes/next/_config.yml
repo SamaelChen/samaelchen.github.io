@@ -31,13 +31,14 @@ canonical: true
 
 # When running the site in a subdirectory (e.g. domain.tld/blog), remove the leading slash (/archives -> archives)
 menu:
-  home: /
-  categories: /categories
-  archives: /archives
-  about: /about
-  # tags: /tags
-  #sitemap: /sitemap.xml
-  #commonweal: /404.html
+  home: / || home
+  categories: /categories/ || th
+  archives: /archives/ || archive
+  about: /about/ || user
+  #tags: /tags/ || tags
+  #schedule: /schedule/ || calendar
+  #sitemap: /sitemap.xml || sitemap
+  #commonweal: /404/ || heartbeat
 
 
 # Enable/Disable menu icons.
@@ -48,14 +49,6 @@ menu:
 menu_icons:
   enable: true
   #KeyMapsToMenuItemKey: NameOfTheIconFromFontAwesome
-  home: home
-  about: user
-  categories: th
-  schedule: calendar
-  tags: tags
-  archives: archive
-  sitemap: sitemap
-  commonweal: heartbeat
 
 
 
