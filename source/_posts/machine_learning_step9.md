@@ -28,4 +28,6 @@ date: 2017-09-15
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml058.png>
 
+那么，既然理论上单层就能做到的事情，是不是实践上完全不可能做到多层的效果呢？也不是，微软的Rich提到，如果单层网络不去直接学习真实的label，而是去学习三层网络的output，实际上也能达到三层网络的效果。其实就是让单层网络去学习多层网络的特征。
+
 嗯，今天被教育了，多动手，少逼逼，不要浪。进步从复现论文效果开始。
