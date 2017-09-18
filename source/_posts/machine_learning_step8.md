@@ -102,7 +102,7 @@ $$
 
 那如果我们做一些regularization，比如$x^* = \arg \max_x (a^k + \sum|x_{ij}|)$，这样最后一个layer的输出相对会规则一点。
 
-当然我们还可以用另一个方式来看CNN到底是不是work的，比如我们取image中某个pixel，$x_{ij}$，计算$|\frac{y_k}{x_{ij}}$，如果这个值很大，那么这个pixel是很重要的。将每个pixel算出来，我们就能知道模型到底聚焦在图片的哪个部分。如下图：
+当然我们还可以用另一个方式来看CNN到底是不是work的，比如我们取image中某个pixel，$x_{ij}$，计算$|\frac{\partial y_k}{\partial x_{ij}}|$，如果这个值很大，那么这个pixel是很重要的。将每个pixel算出来，我们就能知道模型到底聚焦在图片的哪个部分。如下图：
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml055.png>
 
