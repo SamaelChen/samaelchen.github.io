@@ -22,7 +22,7 @@ k-means算法是非常简单的算法，后面有了很多新的玩法，现在�
 
 那除了k-means以外，还有一种算法就是层次聚类（HAC），层次聚类就是一开始就计算每个sample两两之间的距离，然后将最近的几个点合并起来，一直合并到只剩下一类。看上去就像是一棵树。那最后我们只要决定在一个什么样的阈值下，将数据分成几类。示意图如下：
 
-<img src=../../images/blog/ml066.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml066.png>
 
 # PCA
 
@@ -59,3 +59,35 @@ $$
 + 第二个主成分最好跟第一个主成分是垂直的，因为这样我们可以保证第二个主成分的信息和第一个主成分的信息之间没有重叠。换句话说，可以保证两个成分之间是完全无关的。
 
 那为了达到这样的目的，我们会发现，如果我们让两个成分相互垂直，那么我们其实很容易就会发现，其实这第二个成分也有可能是协方差矩阵的特征向量，而且就是次大的特征值对应的特征向量。当然这种想法是一种想当然的做法，最保险的方式还是用拉格朗日乘子去求解。那第二个主成分的拉格朗日方程就可以协作是$f(u_2) = u_2^{\top} S u_2 + \alpha(1-u_2^{\top}u_2) + \beta(0-u_2^{\top}u_1)$，然后求偏导一步步得到结果。
+
+那么PCA还剩下最后一个没有解决的问题就是实操的时候，我们要选择留下多少个component呢？这里一般用的方法就是去计算$\frac{\lambda_j}{\sum_i^n \lambda_i}$，然后我们自己觉得大概累计百分比到什么程度我们可以接受，然后就可以保留多少component。
+
+# 矩阵分解
+
+那用PCA我们说是在抽取某种pattern，或者说latent factor。但是实际上因为PCA的系数可以正可以负，所以PCA实际上并不能真正抽取到pattern。举个例子来说，如果我们对面部图像进行PCA分解，我们会得到的是如下的图：
+
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml067.png>
+
+那我们会发现，其实我们没有找到所谓的component，我们反而得到的是各种各样的脸。那其实这是很容易理解的，因为$x = a_1 w_1 + a_2 w_2 + \dots$，那每一个系数可以是正的，也可以是负的，所以我们得到的每一个principle component其实可以是各种复杂的元素相互组合起来的结果。比如一个component是有胡子，然后系数是负的，刚好就把胡子减掉，然后就还原回原来的脸了。
+
+那么我们为了解决这个问题，真正做到抽component，我们可以强制要求，系数是正的，同时每一个分解的component的元素也都是正的。也就是做NMF，就是non-negative matrix factorization。那我们就可以得到下面的图：
+
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml068.png>
+
+这样我们就会发现，比如有抽出眉毛，下巴之类的。
+
+那matrix factorization有很多种抽法，最常见的就是SVD和NMF。那矩阵分解其实就是在抽取某种latent factor。
+
+比如说下图：
+
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml069.png>
+
+我们手上有一个矩阵，就是每个死宅买的手办个数。那我们就可以用这样的方法将这个大矩阵拆解为两个相乘的矩阵，而这两个矩阵的$K$实际上就是latent factor。这里其实课件里有个错误，约等号右边的第一个矩阵应该是M行。
+
+那么我们要怎么解这个公式呢？嗯，一般书上解SVD的方法我表示线代太差，先留着后面再来刚。所以换一条路，我们想要做的事情就让分解后乘回去的矩阵跟原来的矩阵几乎一样，所以我们其实就可以用$L_2$ norm来做梯度下降。也就是求$\arg \min \sum_{(i, j)} (r^i \cdot r^j - a_{ij})^2$。那其实这样把每个元素都加起来，然后用梯度下降来求解就好了。所以看到这里，突然一想，上面PCA其实也可以用梯度下降来做吼。
+
+那上面的做法是只考虑了内在的共同属性，其实有时候某些人就是喜欢买手办，或者说某些手办就是卖得好之类的。那其实这里面就是说可能存在bias。所以我们可以将bias引入，那上面的公式就变成是$\arg \min \sum_{(i, j)} (r^i \cdot r^j + bias_i + bias_j - a_{ij})^2$。那其实这就是SVD++算法。既然可以加bias，那就意味着可以加regularization。
+
+那么矩阵分解其实有很多很多的应用。在NLP里面，如果做无监督文档分类会用到一种非常简单的方法叫LSA(latent semantic analysis)，那其实就是前面的矩阵分解，只是换了个名字而已。另外现在很流行的topic model用的是LDA，全称是latent dirichlet allocation，其实也是LSA的一种变化。跟线性判别LDA（linear discriminant analysis）是两码事情。不过线性判别需要labeled data。
+
+其他还有很多很多的降维方法，基本上都是各种线性变换。嗯，线代少不了。
