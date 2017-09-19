@@ -76,6 +76,14 @@ graph-based的方法的好处是可以将label传递出去，当然这样的做�
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml065.png>
 
-如上图，我们定义一个值叫smooth，smooth越小，就越好。那我们也就可以将这个smooth作为一个惩罚项加入到loss function中。
+如上图，我们定义一个值叫smooth，smooth越小，就越好。这个公式也可以用矩阵的方式来表示：
+$$
+S = \frac{1}{2} \sum_{i,j} w_{i,j}(y^i - y^j)^2 = \boldsymbol{y}^{\top} \boldsymbol{Ly}
+$$
+那这里的$\boldsymbol{y}$是包含了labeled data和unlabeled data的一个向量，所以dimension是$R+U$。那$\boldsymbol{L}$相应的就是一个$(R+U) \times (R+U)$的一个矩阵。那$\boldsymbol{L}$这个矩阵叫做**graph laplacian matrix**，定义为$L = D - W$，其中$D$是原来graph的邻接矩阵，而$W$则是$D$的degree组成的对角矩阵。如下图：
+
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml070.png>
+
+那我们也就可以将这个smooth作为一个惩罚项加入到原来cross entropy这个loss function中，得到$L = \sum_{x^r} C(y^r, \hat{y^r}) + \lambda S$。
 
 上面是三种半监督学习的方法。第四种方法是寻找latent factor。这个在后面的无监督学习里讲。
