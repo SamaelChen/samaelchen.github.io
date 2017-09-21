@@ -20,7 +20,7 @@ date: 2017-09-20
 
 那用LLE一般来说，邻居选太多或者选太少效果都不会太好。如下图：
 
-<img src=../../images/blog/ml071.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml071.png>
 
 ## laplacian eigenmaps
 
@@ -34,7 +34,7 @@ t-SNE全称是T-distributed Stochastic Neighbor Embedding。
 
 那上面两种方法的缺点就是，这两种方法可以找到接近的点，也就是说他们可以保留原来相近点的信息，但是无法保持原来很远的两点的信息。比如这两个算法在mnist上面做降维的时候会得到每一个类别的图像都聚集在一起，但是每一个类别也都堆叠在一起。
 
-<img src=../../images/blog/ml072.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml072.png>
 
 那t-SNE比较强大的地方就是可以同时保留相近点的信息，也能保留两个远的点的信息，同时可以将这种gap放大。
 
@@ -47,10 +47,34 @@ $$
 
 那因为这边用的是probability，所以我们就可以更改我们的similarity function。那t-SNE选用的similarity函数分别是，在原空间上$S(x_i, x_j) = \exp(-||x_i - x_j||_2)$，在新空间上$S'(z_i, z_j) = \frac{1}{1+||z_i - z_j||_2}$。那效果是这样的：
 
-<img src=../../images/blog/ml073.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml073.png>
 
 也就是做到原来近的更近，原来远的更远。目前高位数据可视化最好的方案就是t-SNE。
 
 # deep auto-encoder
 
-深度自编码模型其实在某种程度上而言，跟PCA非常相似。
+深度自编码模型其实在某种程度上而言，跟PCA非常相似。我们回顾一下PCA的过程，PCA本身就可以看做是一个加密解密的过程，如果用神经网络的方式来表现，那就是input layer encoding到一个hidden layer，我们叫做Bottleneck layer。因为在整个网络结构中就是最窄的位置，就像是瓶颈。然后从这个hidden layer还原。所以整个PCA的结构就可以用神经网络的结构表示为：
+
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml074.png>
+
+那这样表示的PCA优化的目标就是之前讲到的用最小误差来做。那实际上如果看深度学习圣经的话，书里面用的就是这个方法来求的。
+
+所以我们就可以从PCA很自然引导到deep auto-encoder。在结构上看，deep auto-encoder就是在bottleneck layer前面加好几个hidden layer。结构大致如下：
+
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml075.png>
+
+那这里需要注意一点，那就是deep auto-encoder已经不需要initialize by RBM了。另外这几层layer之间的weight也没必要保证是之前的transpose，因为这样的限制在早期是为了加速训练，减少需要学习的参数。
+
+deep auto-encoder的效果相对会比PCA更好一点，因为PCA是linear的转换，而deep auto-encoder是非线性的变化，所以效果上会更好一点。
+
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml076.png>
+
+那deep auto-encoder在训练的时候要注意的事情就是，我们一定是要有bottleneck layer的，因为如果我们把每一个hidden layer都设计得比input layer大，那很有可能machine学到的就是直接复制一份input layer出来，这样input跟output的误差就最小了。
+
+那所以如果我们不放bottleneck layer的话，就一定要在input中增加一些noise。
+
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml077.png>
+
+加noise这个事情，其实不管怎么训练deep auto-encoder都可以放，只是说如果没有降维的动作，那一般在实践上是一定要放的。放多少就看缘分吧。后面讲VAE会让模型自己学这个noise。
+
+那模型的训练也就是反向传播，用梯度下降的方法来求。万能的梯度下降。
