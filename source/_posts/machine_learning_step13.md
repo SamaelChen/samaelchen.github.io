@@ -30,13 +30,13 @@ Word embedding之前比较流行的叫法是word vector。那其实要理解word
 
 基于预测的word embedding做法一般是按照输入的单词，预测输出的单词。就像下图表示的：
 
-<img src=../../images/blog/ml078.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml078.png>
 
 这样的方法可以用来文本接龙，当然也可以用于语音辨识上面。
 
 那实践上，我们做的事情就像下面：
 
-<img src=../../images/blog/ml079.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml079.png>
 
 我们实际上得到的word vector就是中间绿色层的output。那理论上而言，我们在这一层得到的vector在某种程度上，可以体现一定程度的语义。因为同样类型的词，后面需要predict的词应该也是类似的。
 
@@ -44,10 +44,14 @@ Word embedding之前比较流行的叫法是word vector。那其实要理解word
 
 现在我们直接考虑这个模型，我们在训练模型的时候，其实会碰到一个很明显的问题，那就是我们做linear transform的时候，每一个input layer需要乘上一个非常大的weight matrix。所以实践上，我们会用共享参数的方法：
 
-<img src=../../images/blog/ml080.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml080.png>
 
-那我们用这样的方法有什么好处呢？第一是我们不需要训练非常多很大的weight matrix，另外同一个word不会得到不一样的vector。训练模型的方法一般有两种，一种是cbow，一种是skip-gram。cbow就是用上下文猜中间的词，skip-gram是按照中间的词猜上下文。
+那我们用这样的方法有什么好处呢？第一是我们不需要训练非常多很大的weight matrix，另外同一个word不会得到不一样的vector。训练模型的方法一般有两种，一种是cbow，一种是skip-gram。cbow就是用上下文猜中间的词，skip-gram是按照中间的词猜上下文。两个结构大概如下：
 
-不过坦白说，课程里面讲的比较少，也不是很深。网上流传最广的是有道团队写的一篇。不过渣渣表示，二十几页拆源码的看起来好累。实践上有很多trick的地方，比如说最后的loss function用的不是softmax，现在用的比较多的是nce。文章及代码可以参考项亮的[专栏](https://zhuanlan.zhihu.com/p/21642643)或者[简书](http://www.jianshu.com/p/e439b43ea464)。
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml081.jpg>
 
-其实整个的word2vec过程是很简单的，但是实践上我一直不能理解的点就是网络要怎么设计，以及喂进去的数据要怎么设计。
+不过坦白说，课程里面讲的比较少，也不是很深。网上流传最广的是有道团队写的一篇。不过渣渣表示，二十几页拆源码的看起来好累。实践上有很多trick的地方，比如说最后的loss function用的不是softmax，现在用的比较多的是nce。文章及代码可以参考项亮的[专栏](https://zhuanlan.zhihu.com/p/21642643)或者[简书](http://www.jianshu.com/p/e439b43ea464)。或者参考TensorFlow的一个实现，代码看起来相对简单一点点^[1]。TensorFlow这个实现可以比较清楚看懂训练数据是如何准备的，之前一直没搞懂的就是不知道训练数据是怎么准备的。
+
+最好理解的就是训练数据在准备的时候需要准备两份，第一份是词表以及词频等数据，另一个就是每个sentence，这样才能找到每个词的上下文。然后根据不同的模型决定如何设计feature和target。
+
+[1] https://fangpin.github.io/2016/08/22/word2vec
