@@ -1,7 +1,7 @@
 ---
 title: CNN中文验证码识别
 categories: MXNet
-data: 2017-04-13
+date: 2017-04-13
 ---
 
 基于CNN的中文验证码识别
