@@ -50,7 +50,7 @@ Word embedding之前比较流行的叫法是word vector。那其实要理解word
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml081.jpg>
 
-不过坦白说，课程里面讲的比较少，也不是很深。网上流传最广的是有道团队写的一篇。不过渣渣表示，二十几页拆源码的看起来好累。实践上有很多trick的地方，比如说最后的loss function用的不是softmax，现在用的比较多的是nce。文章及代码可以参考项亮的[专栏](https://zhuanlan.zhihu.com/p/21642643)或者[简书](http://www.jianshu.com/p/e439b43ea464)。或者参考TensorFlow的一个实现[^1]，代码看起来相对简单一点点。TensorFlow这个实现可以比较清楚看懂训练数据是如何准备的，之前一直没搞懂的就是不知道训练数据是怎么准备的。
+不过坦白说，课程里面讲的比较少，也不是很深。网上流传最广的是有道团队写的一篇。不过渣渣表示，二十几页拆源码的看起来好累。实践上有很多trick的地方，比如说最后的loss function用的不是softmax，现在用的比较多的是nce。文章及代码可以参考项亮的[专栏](https://zhuanlan.zhihu.com/p/21642643)或者[简书](http://www.jianshu.com/p/e439b43ea464)。或者参考TensorFlow的一个实现[^1]，代码看起来相对简单一点点。TensorFlow这个实现可以比较清楚看懂训练数据是如何准备的，之前一直没搞懂的就是不知道训练数据是怎么准备的。不过这个博客里面说用的是cbow，我看了源码，感觉博主写的不是cbow，就是根据上一个词猜下一个词。
 
 最好理解的就是训练数据在准备的时候需要准备两份，第一份是词表以及词频等数据，另一个就是每个sentence，这样才能找到每个词的上下文。然后根据不同的模型决定如何设计feature和target。
 
