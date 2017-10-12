@@ -124,3 +124,22 @@ def sgd(X, y_true, w, eta=0.1, epoch=10, penalty=0.1):
 <img src=../../images/blog/ml093.png>
 
 可以看到的是，其实常数项这边加不加regularization对其他的参数影响是不太大的。所以本质上我们没有必要去对bias做regularization。
+
+既然SGD都实现了，我们干脆把adagrad也实现一下。adagrad其实很容易做，就是在learning rate那里做动作，加上一个系数。所以我们的梯度下降就可以写作：
+
+```python
+def adagrad(X, y_true, w, eta=0.1, epoch=10):
+    rounds = 0
+    while rounds < epoch:
+        sum_error = 0
+        grad = np.array([0., 0., 0., 0., 0., 0., 0.])
+        for i in range(len(X)):
+            error = sum(X.iloc[i, :] * w) - y_true[i]
+            sum_error += error ** 2
+            for j in range(X.shape[1]):
+                grad[j] += ((1 / X.shape[0]) * eta * error * X.iloc[i, j]) ** 2
+                w[j] -= (1 / X.shape[0]) * (eta / np.sqrt(1 / (i + 1) * grad[j])) * error * X.iloc[i, j]
+        rounds += 1
+        print('epoch: ' + str(rounds) + '  weight: ' + str(w) + '   error: ' + str(sum_error))
+    return(w)
+```
