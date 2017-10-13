@@ -11,7 +11,7 @@ override: false
 # ---------------------------------------------------------------
 
 # Put your favicon.ico into `hexo-site/source/` directory.
-favicon: http://image18.poco.cn/mypoco/myphoto/20161225/00/18449013420161225000913055.jpg?500x451_120
+favicon: https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/smile%20man.jpg
 
 # Set default keywords (Use a comma to separate)
 keywords: "无可救药的厌倦"
@@ -119,7 +119,7 @@ social_icons:
 # Sidebar Avatar
 # in theme directory(source/images): /images/avatar.gif
 # in site  directory(source/uploads): /uploads/avatar.gif
-avatar: http://image18.poco.cn/mypoco/myphoto/20161224/23/1844901342016122423463108.jpg?110x110_120
+avatar: https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg
 
 # Table Of Contents in the Sidebar
 toc:

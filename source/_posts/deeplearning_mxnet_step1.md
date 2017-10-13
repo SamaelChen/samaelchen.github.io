@@ -20,10 +20,10 @@ date: 2017-04-13
 作为深度学习门外汉，这里就先做CNN的版本。刚好项亮大神用的是MXNet，而我对MXNet又有蜜汁好感，就在其基础上做了一些修改，变成自己的版本。
 
 首先需要搞定数据。深度学习对数据量的饥渴是很可怕的，我的目标是尽可能模拟新浪的验证码:
-<img src=http://image18.poco.cn/mypoco/myphoto/20170413/10/18449013420170413100615034.png?100x20_130 width=350>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/weibocn2.png width=350>
 
 为了方便生成数据，其实我还是对图片做了二值化，转化之后的图片是这样的：
-<img src=http://image18.poco.cn/mypoco/myphoto/20170413/10/18449013420170413102037025.png?372x104_130>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/weibocn2_wb.png>
 
 通过这样处理，我在生成数据的时候就不需要模拟背景色。另外新浪很友好没加干扰线，所以这一步也省了。
 
@@ -142,10 +142,10 @@ def drawTextV2(self, pos, txt, fill):
 ```
 
 这里要注意的是，原来博客里实现的是RGB的三通道，但是二值化后单通道就可以了，所以后面再压回单通道就好了。另外因为旋转后会有黑边，所以我改成了生成黑底白字。实现后生成的图像是这样婶的：
-<img src=http://image18.poco.cn/mypoco/myphoto/20170413/10/18449013420170413104911044.png?371x102_130>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/generation1.png>
 
 再用255减一下就可以了：
-<img src=http://image18.poco.cn/mypoco/myphoto/20170413/10/18449013420170413105448070.png?372x103_130>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/generation2.png>
 
 乍一看还是有点像的。
 
@@ -197,25 +197,25 @@ self.provide_label = [('softmax_label', (self.batch_size, num_label))]
 这两段必须要有。MXNet做图像需要的是4D-matrix，分别是(batch size, channel, width, length)。因为这里我是单通道，因此channel只用了1，如果是RGB三通道，那就是3。
 
 然后这里定义了一个简单的卷积网络：
-<img src=http://image18.poco.cn/mypoco/myphoto/20170413/11/18449013420170413112816084.png?742x2048_120>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/network.png>
 
 三个Full Connect层用来做三个汉字的识别，然后Concat回去。这有就能同时学习三个汉字。
 
 接下去就是让机器开始训练。训练过程中也有一些比较尴尬的情况发生。我用的是GTX 1080，CUDA 8.0，cuDNN 5的配置，训练的过程中发生了一件非常离奇的准确率跳崖事件。在learning rate为0.001的时候，一开始看着还正常，但是中间发生了从82%掉到40%的情况，好在后面又爬起来了。
-<img src=http://image18.poco.cn/mypoco/myphoto/20170413/11/18449013420170413113558078.png?1117x484_130>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log1.png>
 但是后面突然掉到了0，接着就再也爬不起来了。我原以为是偶然，掐掉重跑，又发生了这个事情。而且发生的更早。
-<img src=http://image18.poco.cn/mypoco/myphoto/20170413/11/18449013420170413113616029.png?1115x259_130>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log2.png>
 我又怀疑是learning rate设大了，于是改为0.0005，好吧，这已经小的有点逆天了。
-<img src=http://image18.poco.cn/mypoco/myphoto/20170413/11/18449013420170413114317094.png?1120x455_130>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log4.png>
 一切看起来都很好。而且准确率比0.001还高了一点。中间也会发生跳崖，但是都爬起来了。意外很快发生，下一个epoch快结束的时候又自杀了。
-<img src=http://image18.poco.cn/mypoco/myphoto/20170413/11/18449013420170413113700064.png?1118x256_130>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log3.png>
 
 由于之前的epoch都在10以内，最后下了狠心干脆一样的参数跑100个epoch看是不是真的自杀完活不过来了。开了后台跑，结果自杀现象又消失了。中间有一次跳崖，但爬起来了。
-<img src=http://image18.poco.cn/mypoco/myphoto/20170413/11/18449013420170413115736032.png?1136x976_130>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log5.png>
 大概十来个Epoch后基本上就刷到了90%以上，后面不但没有再自杀，甚至出现了100%的情况。
-<img src=http://image18.poco.cn/mypoco/myphoto/20170413/11/18449013420170413113504017.png?1239x378_130>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log8.png>
 哪怕到了最后也一切安好。
-<img src=http://image18.poco.cn/mypoco/myphoto/20170413/11/18449013420170413114945060.png?1242x503_130>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log6.png>
 完整的log可以看[这个](https://github.com/SamaelChen/hexo-practice-code/blob/master/mxnet/ex03/nohup.out)。
 
 那么问题来了，自杀到底是Epoch不够还是learning rate太大？
@@ -225,7 +225,7 @@ self.provide_label = [('softmax_label', (self.batch_size, num_label))]
 2017-04-25更新：
 我做了一个282字的识别，learning rate设定为0.0005的情况下，在32个epoch时候跳崖自杀，39个epoch爬回来，40个epoch又自杀，从此一蹶不振。于是被我提前掐死了。但是当我将lr改到0.0001，到了168个epoch，已经到了97%了。所以目测跳崖自杀是lr太大了。
 
-<img src=http://image18.poco.cn/mypoco/myphoto/20170425/10/18449013420170425102152016.png?1251x189_130>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log7.png>
 
 不过这种防止自杀的手段是有明显短板的，那就是lr太小收敛很慢。如果跟我一样仅有一块1080卡，然后像我多放几个filter和hidden，速度就是上图，呵呵哒了。
 
