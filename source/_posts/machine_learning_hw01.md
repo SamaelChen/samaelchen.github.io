@@ -40,7 +40,7 @@ def sgd(X, y_true, w, eta=0.1, epoch=10):
 
 Pokemon的数据长这样：
 
-<img src=../../images/blog/ml087.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml087.png>
 
 这个数据里面Total等于后面所有属性的和。所以我们可以做这么一个简单的function来试试看我们的梯度下降能不能找出来。
 
@@ -78,21 +78,21 @@ sgd(X, y, w, 0.0001, 1000)
 
 训练1000轮之后的效果是：
 
-<img src=../../images/blog/ml088.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml088.png>
 
 可以看到最后的weight其实还是挺接近正确答案的，只是常数项没有被消掉。那我们试试看训练5000轮的效果。
 
-<img src=../../images/blog/ml089.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml089.png>
 
 这一次看上去比上一次的好很多。那么是不是真的越多就一定越好呢？回顾了一下自己的代码，发现这里有一个问题，我的$w$是随机initialize的，那很可能这个也有影响。所以重新做个实验。我们把随机初始化改成初始全部为0，分别跑1000次和5000次，看看是什么效果。（PS：这里提醒一下，因为numpy恶心的一点，所以我们要用float的类型而不能用int，也就是0要表示为0.。否则的话weight会一直保持在0。）
 
 1000个epoch的效果：
 
-<img src=../../images/blog/ml090.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml090.png>
 
 5000个epoch的效果：
 
-<img src=../../images/blog/ml091.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml091.png>
 
 我们可以看到的是，其实5000轮没比1000轮好出多少。但是相比之前在0-1之间随机初始化的要好出不少，1000轮的结果就比上一次5000轮的好。这也是为什么很多时候机器学习的权重初始化会设计在0附近，或者干脆全部设计为0。
 
@@ -117,11 +117,11 @@ def sgd(X, y_true, w, eta=0.1, epoch=10, penalty=0.1):
 
 那这里要注意一点，就是说如果我们的penalty设的太大，模型会趋向于保守，换句话说就是权重的更新会比较小，收敛起来会非常非常非常慢。上面的梯度下降里面我们把常数项也做了regularization，那weight初始化全是0，迭代1000轮的效果如下：
 
-<img src=../../images/blog/ml092.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml092.png>
 
 可以看到的是，这边的weight收敛非常慢。现在我们再试一下不对常数项做regularization会怎么样：
 
-<img src=../../images/blog/ml093.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml093.png>
 
 可以看到的是，其实常数项这边加不加regularization对其他的参数影响是不太大的。所以本质上我们没有必要去对bias做regularization。
 
@@ -137,9 +137,17 @@ def adagrad(X, y_true, w, eta=0.1, epoch=10):
             error = sum(X.iloc[i, :] * w) - y_true[i]
             sum_error += error ** 2
             for j in range(X.shape[1]):
-                grad[j] += ((1 / X.shape[0]) * eta * error * X.iloc[i, j]) ** 2
-                w[j] -= (1 / X.shape[0]) * (eta / np.sqrt(1 / (i + 1) * grad[j])) * error * X.iloc[i, j]
+                grad[j] += (error * X.iloc[i, j]) ** 2
+                w[j] -= (1 / X.shape[0]) * (eta / np.sqrt(grad[j])) * error * X.iloc[i, j]
         rounds += 1
         print('epoch: ' + str(rounds) + '  weight: ' + str(w) + '   error: ' + str(sum_error))
     return(w)
 ```
+
+利用adagrad，我们可以一开始就把eta设大一点，我这里设到10，然后迭代100轮就得到了：
+
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml094.png>
+
+使用adagrad这样的算法好处就是learning rate比较好调，一开始给一个大一点的，然后迭代次数多一点就好了。原始SGD其实learning rate不是那么好调的。
+
+框架有了，其实后面要试增加样本量，去掉常数项啥的就很方便了。
