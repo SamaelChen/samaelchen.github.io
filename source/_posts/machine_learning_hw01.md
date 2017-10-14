@@ -20,7 +20,7 @@ https://docs.google.com/presentation/d/1L1LwpKm5DxhHndiyyiZ3wJA2mKOJTQ2heKo45Me5
 
 首先我们先算一下梯度下降的公式。我们用最简单的MSE作为损失函数。那么公式上就是$MSE = \frac{1}{N} \sum_i(\hat{y}_i - y_i)^2 = \frac{1}{N} \sum_i (\sum_j w_j \cdot x_{i,j} - y_i)^2$。
 
-那么我们做梯度下降的时候就是求$\frac{\partial L}{\partial w}$。出于简单理解考虑，假设我们现在只有一个$w$，因为多个$w$的话我们假设每个feature是相互独立的，求偏导的时候跟单个求导数没啥差别。那我们现在假设只有一个$w$，那么我们现在可以发现一个样本进来的时候，误差是$\frac{1}{N}(w \cdot x - y)^2$，那么我们的梯度就是$\frac{2}{N}(w \cdot x -y) x$，那我们可以发现，其实$w \cdot x - y$就是残差，所以这样一来，我们要实现SGD就很简单了。
+那么我们做梯度下降的时候就是求$\frac{\partial L}{\partial w}$。出于简单理解考虑，假设我们现在只有一个$w$，因为多个$w$的话我们假设每个feature是相互独立的，求偏导的时候跟单个求导数没啥差别。那我们现在假设只有一个$w$，那么我们现在可以发现一个样本进来的时候，误差是$(w \cdot x - y)^2$，那么我们的梯度就是$2(w \cdot x -y) x$，那我们可以发现，其实$w \cdot x - y$就是残差，所以这样一来，我们要实现SGD就很简单了。
 
 ```python
 def sgd(X, y_true, w, eta=0.1, epoch=10):
@@ -37,6 +37,8 @@ def sgd(X, y_true, w, eta=0.1, epoch=10):
         rounds += 1
     return(w)
 ```
+
+这个地方我在梯度的位置加了一个$\frac{1}{N}$的系数，就是为了让learning rate设置的时候稍微大一点而已，调整参数的时候稍微简单一点点。不过原始SGD调learning rate就很麻烦。
 
 Pokemon的数据长这样：
 
