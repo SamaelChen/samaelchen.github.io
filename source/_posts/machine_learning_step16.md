@@ -41,4 +41,6 @@ LSTM的一个简单结构长这样：
 
 <img src=../../images/blog/ml109.png>
 
-可以看到，一个output受到三个gate的影响，首先是input gate决定一个input是否可以进入memory cell，forget gate决定是否要忘记之前的memory，而output gate决定最后是否可以输出。这样一个非常复杂的neuron
+可以看到，一个output受到三个gate的影响，首先是input gate决定一个input是否可以进入memory cell，forget gate决定是否要忘记之前的memory，而output gate决定最后是否可以输出。这样一个非常复杂的neuron。
+
+那么实作上这个neuron是如何工作的呢？
