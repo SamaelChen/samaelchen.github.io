@@ -43,4 +43,68 @@ LSTM的一个简单结构长这样：
 
 可以看到，一个output受到三个gate的影响，首先是input gate决定一个input是否可以进入memory cell，forget gate决定是否要忘记之前的memory，而output gate决定最后是否可以输出。这样一个非常复杂的neuron。
 
-那么实作上这个neuron是如何工作的呢？
+那么实作上这个neuron是如何工作的呢？假设我们现在有一个最简单的LSTM，每个gate的input都是一样的vector，那么我们这边在做的时候就是每一个input乘以每个gate的matrix，然后通过active function进行计算。这里做一个最简单的人肉LSTM。假设我们有一个序列是：
+
+<img src=../../images/blog/ml110.png>
+
+我们希望，当$x_2 = 1$的时候，我们将$x_1$加入memory中，当$x_2 = -1$的时候，memory重置为0，当$x_3 = 1$的时候，我们输出结果。
+
+那么我们再假设一个很简单的LSTM，长这样：
+
+<img src=../../images/blog/ml111.png>
+
+这个cell的input activate function是linear的，memory cell的activate function也是linear的。
+
+那么我们可以将上面的序列简化一下
+
+<img src=../../images/blog/ml112.png>
+
+现在，将第一个元素放进来，我们得到是3，input gate部分的结果是90，经过activate function得到的是1，所以允许通过进入memory cell。forget gate这里计算的结果是110，经过activate function是1，所以我们记住这个值（这里要注意，虽然这个gate叫forget gate，但是当取值是1的时候其实是记住，0的时候是遗忘）。然后到output gate这里，output gate计算是-10，activate function输出是0，所以我们不output结果。
+
+输入下一个元素。直接输入计算是4，经过input gate，得到的是4。因为原来memory cell里面已经存了3，所以这一轮的计算是原来的memory加上新进入的4，得到7。然后output gate依然关闭，所以memory cell还是存7。
+
+第三个元素类似的计算，发现input gate关闭，所以没法进入memory cell，因此memory cell没有更新。同时output gate关闭，没有输出。
+
+第四个元素进入，input gate关闭，memory cell不更新，但是这时候output gate的activate function得到1，所以开放输出结果。因为之前memory cell里面存放的是7，所以输出7。但是要注意一点，虽然memory cell的值输出了，里面的值并没有被清空，仍然保留着，所以这个时候的memory cell还是7。
+
+最后一个元素进入，input gate关闭，memory cell不更新，这时候，forget gate的activate function得到的是0，所以我们清空记忆，memory cell里面现在是0。output gate仍然关闭，所以没有output。
+
+上面五个过程用图表示如下：
+
+<img src=../../images/blog/ml113.png>
+
+<img src=../../images/blog/ml114.png>
+
+<img src=../../images/blog/ml115.png>
+
+<img src=../../images/blog/ml116.png>
+
+<img src=../../images/blog/ml117.png>
+
+那实作的时候，一个简化的LSTM是：
+
+<img src=../../images/blog/ml118.png>
+
+如图中，我们输入一个原始的$x^t$，会通过四个linear transform变成四个vector，然后每个vector输入到对应的gate。这里要注意的是，转换后的$z$有多少个维度，那么我们就需要建立多少个LSTM的cell，同时，每次进入cell训练的只是$z$的一个维度。
+
+这是实作上的运算过程：
+
+<img src=../../images/blog/ml119.png>
+
+这里的乘不是inner product，是elementwise product。
+
+上面是最simple的LSTM，实际的LSTM如下图：
+
+<img src=../../images/blog/ml120.png>
+
+嗯，天书。不过这是现在LSTM的标准做法。
+
+RNN很难训练，因为有个问题就是可能梯度爆炸，有可能梯度消失。我们用一个最简单的模型来体验一下这个问题。假设我们现在的模型是非常simple的RNN，activate function是linear的，如下图：
+
+<img src=../../images/blog/ml121.png>
+
+我们可以发现，如果我们有1000个cell，那么我们的weight从1 update到1.01的时候，到了第一千个输出就从原来的1变成了2w，梯度爆炸了。但是当我们weight从1 update到0.99，那么到了第一千个输出就变成了0。更极端一点，如果我们因为之前选择了一个很大的lr，那么我们一步就把weight调到了0.01，我们发现，第一千个输出还是0。所以一般的RNN难以训练是有两个问题的，一个是梯度爆炸，一个是梯度消失。
+
+那么LSTM在实现的时候，因为有了forget gate的存在，只要forget gate长期保持开启，那么很久以前的数据会持续影响后面的数据，所以可以抹消掉梯度消失的问题。另外memory cell里面的值是加起来而不是simple RNN里面直接抹消的，所以这也是能解决梯度消失的问题。
+
+LSTM有个简化加强版叫GRU这个在李老师另一门课有讲，先把坑留着。
