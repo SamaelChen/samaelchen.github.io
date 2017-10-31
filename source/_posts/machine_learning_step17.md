@@ -21,13 +21,13 @@ bagging是一种比较简单的集成策略，做法就是原来有$N$个sample�
 
 如果我们用一个单一模型，我们得到的是：
 
-<img src=../../images/blog/ml122.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml122.png>
 
 当树深度一点点增加到20层的时候，就可以完美画出miku。
 
 那如果用bagging，也就是random forest的方法，我们得到的是：
 
-<img src=../../images/blog/ml123.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml123.png>
 
 我们可以跟上面的结果做一个对比，可以发现，单一的树画出来的miku没有那么平滑。用random forest画出来的结果相对比较平滑。
 
@@ -39,7 +39,7 @@ adaboosting的策略是，首先建一个分类器$f_1(x)$，然后根据$f_1(x)
 
 下图是我们做boosting的一个示意：
 
-<img src=../../images/blog/ml124.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml124.png>
 
 我们一开始所有样本的weight都是一致的，训练了一个分类器，错误率$\varepsilon_1 = 0.25$，我们重新修改weight，把错误分类的weight改到$\sqrt{3}$，正确分类的修改到$\frac{1}{\sqrt{3}}$，我们就可以把错误率调到$\varepsilon_1' = 0.5$。然后我们用这个新的weight来训练第二个模型，如此循环往复。
 
@@ -101,3 +101,41 @@ $$
 
 因为$Z_{t+1} = Z_{t} \varepsilon_t \sqrt{\frac{1-\varepsilon_t}{\varepsilon_t}} + Z_{t} (1 - \varepsilon_t) \sqrt{\frac{\varepsilon_t}{1 - \varepsilon_t}} = 2 \times Z_{t} \times \sqrt{\varepsilon_t(1-\varepsilon_t)}$。所以我们可以
 得到$Z_{T} = N \prod_{t=1}^T 2 \sqrt{\varepsilon_t(1-\varepsilon_t)}$。因为$\varepsilon$只有刚好取到0.5的时候才会等于1，否则会一路收敛，越来越小。
+
+然后我们可以看到gradient boosting这种方法。事实上，gradient boosting优化的方向不再是对样本，而是直接作用于function。如果我们现在接受一个function其实就是一个weight的vector，那么其实我们就是可以对function求偏导的。我们从梯度下降的角度来看这个问题，那么我们在做的事情就是
+$$
+g_t(x) = g_{t-1}(x) - \eta \frac{\partial L}{\partial g(x)} |_{g(x) = g_{t-1}(x)}
+$$
+但是换个角度，从boosting的角度来看，我们其实boosting的过程是每一次找一个$f_t(x)$和$a_t$，使得最终的模型$g_t(x)$更好。这个过程就是：
+$$
+g_t(x) = g_{t-1}(x) + a_t f_t(x)
+$$
+考虑到跟上梯度的过程，我们可以知道，其实我们希望梯度的方向跟我们boosting优化的方向最好能够是一样的。如果这里我们的loss function选择的是exponential loss，那么loss function就是$\sum_n \exp(-y_n g(x_n))$， 梯度就是$\sum_n \exp(-y_n g(x_n)) -y_n$，刚好跟梯度前面的负号抵消掉。在这种情况下，如果要让二者的方向一样，我们可以用这样的公式来表示：
+$$
+\sum_n \exp(-y_n g_{t-1}(x_n)) y_n f_t(x)
+$$
+当这个公式越大，表示二者的方向越一致。在adaboost中，$\sum_n \exp(-y_n g_{t-1}(x_n))$这个刚好就是我们在$t$轮得到的样本权重。
+
+回到损失函数这里，我们的损失函数是：
+$$
+\begin{align}
+L(g) &= \sum_n \exp(-y_n g(x_n)) \\
+&= \sum_n \exp(-y_n (g_{t-1}(x_n) + a_t f_t(x_n))) \\
+&= \sum_n \exp(-y_n g_{t-1}(x_n)) \exp(-y_n a_t f_t(x_n)) \\
+&= \sum_{f_t(x) \ne y} \exp(-y_n g_{t-1}(x_n)) \exp(a_t) + \sum_{f_t(x) = y} \exp(-y_n g_{t-1}(x_n)) \exp(-a_t)
+\end{align}
+$$
+我们求$\frac{\partial L}{\partial a_t} = 0$，可以得到
+$$
+\begin{align}
+\frac{\partial L}{\partial a_t} &= n \varepsilon_t \exp(-y_n g_{t-1}(x_n)) \exp(a_t) - n (1-\varepsilon_t) \exp(-y_n g_{t-1}(x_n)) \exp(-a_t) \\
+&= n \exp(-y_n g_{t-1}(x_n))(\varepsilon_t \exp(a_t) - (1-\varepsilon_t) \exp(-a_t))
+\end{align}
+$$
+前面的系数跟$a_t$没关系直接消掉，然后我们得到的就是：
+$$
+\varepsilon_t \exp(a_t) - (1-\varepsilon_t) \exp(-a_t) = 0
+$$
+这样我们就可以求出来$a_t = \ln \sqrt{\frac{1-\varepsilon_t}{\varepsilon_t}}$刚好就是adaboost。
+
+实际上gradient boosting是可以改变loss function的，adaboost就是一个特殊的gradient boosting。台大另一个老师，林轩田的课程里面是有更general的介绍。
