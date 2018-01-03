@@ -16,7 +16,7 @@ date: 2017-12-26
 大概的原理可以看这篇[博客](https://samaelchen.github.io/2017/08/31/machine_learning_step4/)，不是一个很复杂的模型。这里用到的数据就是[作业2](https://ntumlta.github.io/2017fall-ml-hw2/)的示例数据，是一个二分类的数据。因为模型的公式已经很明显了，这里就直接将公式转化为代码：
 
 ```python
-def gen_model(X_test, X_train, threasold=0.5):
+def gen_model(X_test, X_train, threshold=0.5):
     """Generative model"""
     D = X_train.shape[1] / 2
     a = X_train.loc[X_train['y'] == 0, :].drop('y', axis=1)
@@ -40,7 +40,7 @@ def gen_model(X_test, X_train, threasold=0.5):
     prob = prob1 / (prob1 + prob2)
     prob[np.isnan(prob)] = 0
     # 这里用了一个阈值，其实也可以按照每个类别的先验概率来分类。个人以为比较合理，但是实际上未必效果最好。五五开也是一种常见的方法。
-    prob[prob >= threasold] = 0
+    prob[prob >= threshold] = 0
     prob[prob != 0] = 1
     return prob
 ```
