@@ -61,7 +61,7 @@ data = nd.array(np.asarray(Image.open('000000.jpg')))
 plt.imshow(np.asarray(Image.open('000000.jpg')))
 ```
 
-<img src=../../images/blog/output_8_1.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_8_1.png>
 
 这里要注意，预训练好的模型输入的图片大小是$224 \times 224$的，因此这里对图片重新进行缩放，另外因为MXNet的输入格式有需求，所以我们这里也做了reshape的动作。
 
@@ -101,7 +101,7 @@ plt.imshow(np.abs(data.grad.asnumpy()[0]).max(axis=0), cmap=plt.cm.jet)
 ```
 
 
-<img src=../../images/blog/output_13_1.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_13_1.png>
 
 
 
@@ -125,7 +125,7 @@ plt.imshow(np.abs(data.grad.asnumpy()[0]).max(axis=0), cmap=plt.cm.jet)
 ```
 
 
-<img src=../../images/blog/output_15_1.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_15_1.png>
 
 
 这里有个很有意思的现象，VGG-19偏向找人的头部区域，而ResNet则是找到了腿。另外可以多试验几张图，看看效果。一般试下来VGG偏向把轮廓弄出来，ResNet就会找到各种奇奇怪怪的地方去。但是ResNet效果很好，暂时不能理解为什么。
@@ -181,7 +181,7 @@ print(vgg19)
         (39): Dense(4096 -> 4096, Activation(relu))
         (40): Dropout(p = 0.5)
       )
-      (../../images/blog/output): Dense(4096 -> 1000, linear)
+      (https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output): Dense(4096 -> 1000, linear)
     )
 
 
@@ -203,7 +203,7 @@ plt.imshow(np.abs(j[0][0].asnumpy()))
 ```
 
 
-<img src=../../images/blog/output_23_1.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_23_1.png>
 
 
 取第一层卷积层出来
@@ -247,259 +247,259 @@ for num in range(64):
 
 
 
-<img src=../../images/blog/output_28_1.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_1.png>
 
 
 
-<img src=../../images/blog/output_28_2.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_2.png>
 
 
 
-<img src=../../images/blog/output_28_3.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_3.png>
 
 
 
-<img src=../../images/blog/output_28_4.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_4.png>
 
 
 
-<img src=../../images/blog/output_28_5.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_5.png>
 
 
 
-<img src=../../images/blog/output_28_6.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_6.png>
 
 
 
-<img src=../../images/blog/output_28_7.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_7.png>
 
 
 
-<img src=../../images/blog/output_28_8.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_8.png>
 
 
 
-<img src=../../images/blog/output_28_9.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_9.png>
 
 
 
-<img src=../../images/blog/output_28_10.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_10.png>
 
 
 
-<img src=../../images/blog/output_28_11.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_11.png>
 
 
 
-<img src=../../images/blog/output_28_12.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_12.png>
 
 
 
-<img src=../../images/blog/output_28_13.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_13.png>
 
 
 
-<img src=../../images/blog/output_28_14.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_14.png>
 
 
 
-<img src=../../images/blog/output_28_15.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_15.png>
 
 
 
-<img src=../../images/blog/output_28_16.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_16.png>
 
 
 
-<img src=../../images/blog/output_28_17.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_17.png>
 
 
 
-<img src=../../images/blog/output_28_18.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_18.png>
 
 
 
-<img src=../../images/blog/output_28_19.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_19.png>
 
 
 
-<img src=../../images/blog/output_28_20.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_20.png>
 
 
 
-<img src=../../images/blog/output_28_21.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_21.png>
 
 
 
-<img src=../../images/blog/output_28_22.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_22.png>
 
 
 
-<img src=../../images/blog/output_28_23.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_23.png>
 
 
 
-<img src=../../images/blog/output_28_24.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_24.png>
 
 
 
-<img src=../../images/blog/output_28_25.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_25.png>
 
 
 
-<img src=../../images/blog/output_28_26.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_26.png>
 
 
 
-<img src=../../images/blog/output_28_27.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_27.png>
 
 
 
-<img src=../../images/blog/output_28_28.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_28.png>
 
 
 
-<img src=../../images/blog/output_28_29.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_29.png>
 
 
 
-<img src=../../images/blog/output_28_30.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_30.png>
 
 
 
-<img src=../../images/blog/output_28_31.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_31.png>
 
 
 
-<img src=../../images/blog/output_28_32.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_32.png>
 
 
 
-<img src=../../images/blog/output_28_33.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_33.png>
 
 
 
-<img src=../../images/blog/output_28_34.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_34.png>
 
 
 
-<img src=../../images/blog/output_28_35.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_35.png>
 
 
 
-<img src=../../images/blog/output_28_36.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_36.png>
 
 
 
-<img src=../../images/blog/output_28_37.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_37.png>
 
 
 
-<img src=../../images/blog/output_28_38.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_38.png>
 
 
 
-<img src=../../images/blog/output_28_39.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_39.png>
 
 
 
-<img src=../../images/blog/output_28_40.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_40.png>
 
 
 
-<img src=../../images/blog/output_28_41.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_41.png>
 
 
 
-<img src=../../images/blog/output_28_42.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_42.png>
 
 
 
-<img src=../../images/blog/output_28_43.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_43.png>
 
 
 
-<img src=../../images/blog/output_28_44.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_44.png>
 
 
 
-<img src=../../images/blog/output_28_45.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_45.png>
 
 
 
-<img src=../../images/blog/output_28_46.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_46.png>
 
 
 
-<img src=../../images/blog/output_28_47.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_47.png>
 
 
 
-<img src=../../images/blog/output_28_48.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_48.png>
 
 
 
-<img src=../../images/blog/output_28_49.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_49.png>
 
 
 
-<img src=../../images/blog/output_28_50.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_50.png>
 
 
 
-<img src=../../images/blog/output_28_51.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_51.png>
 
 
 
-<img src=../../images/blog/output_28_52.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_52.png>
 
 
 
-<img src=../../images/blog/output_28_53.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_53.png>
 
 
 
-<img src=../../images/blog/output_28_54.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_54.png>
 
 
 
-<img src=../../images/blog/output_28_55.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_55.png>
 
 
 
-<img src=../../images/blog/output_28_56.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_56.png>
 
 
 
-<img src=../../images/blog/output_28_57.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_57.png>
 
 
 
-<img src=../../images/blog/output_28_58.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_58.png>
 
 
 
-<img src=../../images/blog/output_28_59.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_59.png>
 
 
 
-<img src=../../images/blog/output_28_60.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_60.png>
 
 
 
-<img src=../../images/blog/output_28_61.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_61.png>
 
 
 
-<img src=../../images/blog/output_28_62.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_62.png>
 
 
 
-<img src=../../images/blog/output_28_63.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_63.png>
 
 
 
-<img src=../../images/blog/output_28_64.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_28_64.png>
 
 
 然后，嗯，很神奇，第一个卷积的64个通道的效果都在上面。中间有一些看上去还有点像浮雕的效果。某一张嘴唇位置及其显眼。
@@ -522,7 +522,7 @@ plt.imshow(sample)
 
 
 
-<img src=../../images/blog/output_31_1.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_31_1.png>
 
 
 这里生成一张充满噪声的点，再来看看每个filter在做什么。
@@ -554,259 +554,259 @@ for num in range(64):
 
 
 
-<img src=../../images/blog/output_34_1.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_1.png>
 
 
 
-<img src=../../images/blog/output_34_2.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_2.png>
 
 
 
-<img src=../../images/blog/output_34_3.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_3.png>
 
 
 
-<img src=../../images/blog/output_34_4.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_4.png>
 
 
 
-<img src=../../images/blog/output_34_5.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_5.png>
 
 
 
-<img src=../../images/blog/output_34_6.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_6.png>
 
 
 
-<img src=../../images/blog/output_34_7.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_7.png>
 
 
 
-<img src=../../images/blog/output_34_8.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_8.png>
 
 
 
-<img src=../../images/blog/output_34_9.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_9.png>
 
 
 
-<img src=../../images/blog/output_34_10.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_10.png>
 
 
 
-<img src=../../images/blog/output_34_11.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_11.png>
 
 
 
-<img src=../../images/blog/output_34_12.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_12.png>
 
 
 
-<img src=../../images/blog/output_34_13.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_13.png>
 
 
 
-<img src=../../images/blog/output_34_14.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_14.png>
 
 
 
-<img src=../../images/blog/output_34_15.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_15.png>
 
 
 
-<img src=../../images/blog/output_34_16.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_16.png>
 
 
 
-<img src=../../images/blog/output_34_17.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_17.png>
 
 
 
-<img src=../../images/blog/output_34_18.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_18.png>
 
 
 
-<img src=../../images/blog/output_34_19.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_19.png>
 
 
 
-<img src=../../images/blog/output_34_20.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_20.png>
 
 
 
-<img src=../../images/blog/output_34_21.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_21.png>
 
 
 
-<img src=../../images/blog/output_34_22.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_22.png>
 
 
 
-<img src=../../images/blog/output_34_23.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_23.png>
 
 
 
-<img src=../../images/blog/output_34_24.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_24.png>
 
 
 
-<img src=../../images/blog/output_34_25.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_25.png>
 
 
 
-<img src=../../images/blog/output_34_26.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_26.png>
 
 
 
-<img src=../../images/blog/output_34_27.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_27.png>
 
 
 
-<img src=../../images/blog/output_34_28.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_28.png>
 
 
 
-<img src=../../images/blog/output_34_29.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_29.png>
 
 
 
-<img src=../../images/blog/output_34_30.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_30.png>
 
 
 
-<img src=../../images/blog/output_34_31.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_31.png>
 
 
 
-<img src=../../images/blog/output_34_32.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_32.png>
 
 
 
-<img src=../../images/blog/output_34_33.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_33.png>
 
 
 
-<img src=../../images/blog/output_34_34.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_34.png>
 
 
 
-<img src=../../images/blog/output_34_35.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_35.png>
 
 
 
-<img src=../../images/blog/output_34_36.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_36.png>
 
 
 
-<img src=../../images/blog/output_34_37.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_37.png>
 
 
 
-<img src=../../images/blog/output_34_38.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_38.png>
 
 
 
-<img src=../../images/blog/output_34_39.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_39.png>
 
 
 
-<img src=../../images/blog/output_34_40.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_40.png>
 
 
 
-<img src=../../images/blog/output_34_41.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_41.png>
 
 
 
-<img src=../../images/blog/output_34_42.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_42.png>
 
 
 
-<img src=../../images/blog/output_34_43.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_43.png>
 
 
 
-<img src=../../images/blog/output_34_44.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_44.png>
 
 
 
-<img src=../../images/blog/output_34_45.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_45.png>
 
 
 
-<img src=../../images/blog/output_34_46.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_46.png>
 
 
 
-<img src=../../images/blog/output_34_47.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_47.png>
 
 
 
-<img src=../../images/blog/output_34_48.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_48.png>
 
 
 
-<img src=../../images/blog/output_34_49.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_49.png>
 
 
 
-<img src=../../images/blog/output_34_50.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_50.png>
 
 
 
-<img src=../../images/blog/output_34_51.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_51.png>
 
 
 
-<img src=../../images/blog/output_34_52.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_52.png>
 
 
 
-<img src=../../images/blog/output_34_53.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_53.png>
 
 
 
-<img src=../../images/blog/output_34_54.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_54.png>
 
 
 
-<img src=../../images/blog/output_34_55.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_55.png>
 
 
 
-<img src=../../images/blog/output_34_56.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_56.png>
 
 
 
-<img src=../../images/blog/output_34_57.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_57.png>
 
 
 
-<img src=../../images/blog/output_34_58.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_58.png>
 
 
 
-<img src=../../images/blog/output_34_59.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_59.png>
 
 
 
-<img src=../../images/blog/output_34_60.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_60.png>
 
 
 
-<img src=../../images/blog/output_34_61.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_61.png>
 
 
 
-<img src=../../images/blog/output_34_62.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_62.png>
 
 
 
-<img src=../../images/blog/output_34_63.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_63.png>
 
 
 
-<img src=../../images/blog/output_34_64.png>
+<img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/output_34_64.png>
 
 
 入门级别的CNN visualization基本上就这些了。网上没找到MXNet做这个的教程，只能自己摸索了。还好gluon跟pytorch接口很像，可以照着MXNet的源码，再借鉴pytorch的教程慢慢摸索。
