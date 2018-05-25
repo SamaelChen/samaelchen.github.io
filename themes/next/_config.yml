@@ -157,7 +157,7 @@ sidebar:
   offset_float: 12
 
   # Back to top in sidebar
-  b2t: false
+  b2t: true
 
   # Scroll percent label in b2t button
   scrollpercent: false
@@ -208,8 +208,8 @@ post_wordcount:
   #description: ex. subscribe to my blog by scanning my public wechat account
 
 # Reward
-#reward_comment: Donate comment here
-#wechatpay: /images/wechatpay.jpg
+reward_comment: 乞讨码
+wechatpay: /images/wechatpay.png
 #alipay: /images/alipay.jpg
 #bitcoin: /images/bitcoin.png
 
@@ -470,7 +470,7 @@ busuanzi_count:
 
 
 # Enable baidu push so that the blog will push the url to baidu automatically which is very helpful for SEO
-baidu_push: false
+baidu_push: true
 
 # Google Calendar
 # Share your recent schedule to others via calendar page

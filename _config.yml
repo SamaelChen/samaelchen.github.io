@@ -7,7 +7,7 @@ title: 碎碎念
 subtitle:
 description: 活该没有性生活
 author: Samael Chen
-language: en
+language: zh en
 timezone:
 
 # URL
@@ -51,6 +51,7 @@ category_map:
     统计学习: StatisticalLearning
     LeetCode: LeetCode
     MXNet: MXNet
+    PyTorch: PyTorch
     TensorFlow&Keras: TensorFlow&Keras
     搞着玩: fun
 tag_map:
