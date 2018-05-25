@@ -76,5 +76,5 @@ theme: next
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: https://github.com/SamaelChen/samaelchen.github.io.git
+  repository: https://519a85f80aac37f11428564f86e29863af8ddbdd@github.com/SamaelChen/samaelchen.github.io.git
   branch: master
