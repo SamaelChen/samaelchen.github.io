@@ -1,5 +1,5 @@
 ---
-title: word2vec的PyTorchshixian
+title: word2vec的PyTorch实现
 category: 深度学习
 mathjax: true
 date: 2018-06-04
