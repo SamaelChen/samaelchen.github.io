@@ -1,6 +1,6 @@
 ---
 title: word2vec的PyTorch实现
-category: 深度学习
+category: PyTorch
 mathjax: true
 date: 2018-06-04
 ---
