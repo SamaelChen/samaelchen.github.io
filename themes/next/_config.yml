@@ -310,7 +310,7 @@ han: false
 #swiftype_key:
 
 # Baidu Analytics ID
-#baidu_analytics:
+baidu_analytics: a75b41f44b70e58f40edd582552291cf
 
 # Duoshuo ShortName
 #duoshuo_shortname:
@@ -373,7 +373,7 @@ livere_uid: MTAyMC8zMDg5NS83NDQ0
 #google_site_verification:
 
 # Google Analytics
-#google_analytics:
+google_analytics: UA-120854058-1
 
 # Bing Webmaster tools verification setting
 # See: https://www.bing.com/webmaster/
