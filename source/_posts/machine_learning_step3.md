@@ -17,15 +17,15 @@ $$
 为了求解这个目标函数，我们需要按照下面方法更新$\theta$:
 $\boldsymbol{\theta}^1 = \boldsymbol{\theta}^0 - \eta \begin{bmatrix} \frac{\partial L}{\partial \theta_1} \\ \frac{\partial L}{\partial \theta_2} \\ \vdots \\ \frac{\partial L}{\partial \theta_n} \end{bmatrix}.$
 
-这里我们发现有个$\eta$参数。这个参数我们称为 Learning Rate。Learning Rate 本身是机器学习中需要调节的一个重要参数。
+这里我们发现有个$\eta$参数。这个参数我们称为 Learning Rate。Learning Rate 本身是机器学习中需要调节的一个重要参数。如果我们将梯度下降当做是爬山，那么Learning Rate我们可以认为是每一次爬山迈的步子大小，而梯度是我们面向的方向。所以很多时候，我们会将learning rate叫做步长。
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml005.png>
 
-上图显示了，如果我们有个很大的learning rate，那么我们可能无法迭代到最优解，相反，很小的 learning rate 可以让你到达最优解，但是将消耗大量的时间。
+上图显示了，如果我们有个很大的learning rate，那么我们可能会一步跨到更高的地方，或者来回震荡，无法迭代到最优解，相反，很小的 learning rate 可以让你到达最优解，但是将消耗大量的时间。
 
 那么是否有办法来自适应调节 learning rate？
 
-+ 比如，一开始我们通常离最优解很远，那么可以让 learning rate 大一点，随着迭代次数增加，可以减少 learning rate。因此我们可以这样设计 $\eta^t = \eta^0 / \sqrt{t+1}$。
+比如，一开始我们通常离最优解很远，那么可以让 learning rate 大一点，随着迭代次数增加，可以减少 learning rate。因此我们可以这样设计 $\eta^t = \eta^0 / \sqrt{t+1}$。
 
 事实上有很多种自适应的方法，例如Adagrad，Adam等。李老师介绍了Adagrad。定义为每个 parameter 都去除之前所有的微分的 root mean square。
 
@@ -45,9 +45,11 @@ $$
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml007.png>
 
-这里要注意一点，adagram中，梯度算出来越大，说明在这个参数方向上离最优解越远。直观上步长应该越大越快收敛，但是分母部分，梯度越大，步长越小。如果现在考虑多个参数，那么梯度越大，不一定离最优解越远，如下图：
+这里要注意一点，adagrad中，梯度算出来越大，说明在这个参数方向上离最优解越远。直观上步长应该越大越快收敛，但是分母部分，梯度越大，步长越小。对于单个参数而言，这没有问题，但是如果现在考虑多个参数，那么梯度越大，不一定离最优解越远。如下图：
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml008.png>
+
+我们看到，绿色的曲线，我们离最优解其实是比较近的，但是梯度很大，这时候如果我们只用一阶导数的话，要走好几步才能走到底。这就跟我们之前想的不太一致了，我们希望步长是慢慢减小的，但是我们希望的是步长在该大的地方大，改小的地方小。所以只考虑一阶段远远不够。
 
 因此最好的 step 应该是还要考虑二次微分，最好的步长是一阶微分的绝对值除以二阶微分，这样才能在不同参数之间比较。
 
@@ -63,7 +65,7 @@ $$
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml010.png>
 
-实践上，为了让模型收敛不是太散乱，同时兼顾效率，会考虑使用 mini-batch SGD。
+实践上，为了让模型收敛不是太散乱，同时兼顾效率，会考虑使用 mini-batch SGD。也就是说，一次性用一小批数据来更新梯度。
 
 另外一个可以加速收敛的方法是做 feature scaling。考虑下图的情况
 
