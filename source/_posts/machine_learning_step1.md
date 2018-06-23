@@ -1,5 +1,5 @@
 ---
-title: 台大李宏毅机器学习 01
+title: 台大李宏毅机器学习——回归
 category: 统计学习
 mathjax: true
 date: 2017-08-26

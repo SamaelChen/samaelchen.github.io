@@ -1,5 +1,5 @@
 ---
-title: 台大李宏毅机器学习 02
+title: 台大李宏毅机器学习——bias&variance
 category: 统计学习
 mathjax: true
 date: 2017-08-28

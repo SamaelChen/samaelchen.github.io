@@ -1,21 +1,21 @@
 ---
-title: 台大李宏毅机器学习 05
+title: 台大李宏毅机器学习——逻辑回归
 category: 统计学习
 mathjax: true
 date: 2017-09-05
 ---
 
-逻辑回归
+分类算法常年扛把子，逻辑回归
 <!-- more -->
 
-逻辑回归是按照线性的方程进行分类的算法。原始的逻辑回归是针对二分类的。二分类的数据我们记取值范围为$[0, 1]$，由于回归方程不能直接对分类数据进行计算，因此我们引入$\sigma$函数。
+逻辑回归是按照线性的方程进行分类的算法。最基本的逻辑回归是针对二分类的。二分类的数据我们记取值范围为$[0, 1]$，由于回归方程不能直接对分类数据进行计算，因此我们引入$\sigma$函数。
 $$
 \sigma(z) = \frac{1}{1+\exp(-z)}.
 $$
 $\sigma$函数的作用就是将二分类的值平滑成一条曲线。
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml019.png>
 
-在开始逻辑回归之前，先回顾一下上一节课的内容。上一节课大致介绍了贝叶斯方法。贝叶斯方法是按照 posterior probability 来进行分类的。
+在开始逻辑回归之前，先回顾一下上一篇博客的内容。上一篇大致介绍了贝叶斯方法。贝叶斯方法是按照 posterior probability 来进行分类的。
 
 posterior probability 在二分类时候表示为：
 $$
@@ -26,6 +26,9 @@ $$
 &= \sigma(z)
 \end{align}
 $$
+
+我们很神奇地发现，其实上下都除以分子以后，就变成了sigmoid函数的样子。
+
 因此，$z = -\ln(\frac{\text{P}(x|C_2) \text{P}(C_2)}{\text{P}(x|C_1) \text{P}(C_1)}) = \ln(\frac{\text{P}(x|C_1) \text{P}(C_1)}{\text{P}(x|C_2) \text{P}(C_2)})$。之前假设数据分布是符合正态分布的，因此$\text{P}(x|C_i) \text{P}(C_i)$符合正态分布$\frac{1}{(2\pi)^{D/2}} \frac{1}{|\Sigma|^{1/2}} \exp(-\frac{1}{2}(x-\mu)^{\top} \Sigma^{-1} (x-\mu))$。
 因为$P(C_i) = \frac{N_i}{\sum N_n}$，因此$z = \ln(\frac{\text{P}(C_1)}{\text{P}(C_2)}) + \ln(\frac{\frac{1}{(2\pi)^{D/2}} \frac{1}{|\Sigma_1|^{1/2}} \exp(-\frac{1}{2}(x-\mu_1)^{\top} \Sigma_1^{-1} (x-\mu_1))}{\frac{1}{(2\pi)^{D/2}} \frac{1}{|\Sigma_2|^{1/2}} \exp(-\frac{1}{2}(x-\mu_2)^{\top} \Sigma_2^{-1} (x-\mu_2))})$。加号左边就是一个常数，很好计算，先不去管，化简一下右边的部分。
 $$
