@@ -1,5 +1,5 @@
 ---
-title: 台大李宏毅机器学习 08
+title: 台大李宏毅机器学习——CNN
 category: 统计学习
 mathjax: true
 date: 2017-09-14
@@ -60,7 +60,7 @@ CNN有三个特性：
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml049.png>
 
-这样的好处同样是减少了需要训练的参数。如果是全连接层，现在接了2个neuron，我们需要训练的参数是72个，而在卷积里面，我们只需要训练9个。如果后面filter连接的越多，减少训练参数的效果越明显。
+这样的好处同样是减少了需要训练的参数。如果是全连接层，现在接了2个neuron，我们需要训练的参数是72个，而在卷积里面，我们还是只需要训练9个。如果后面filter连接的越多，减少训练参数的效果越明显。
 
 那卷积提取完特征之后，我们会过一个subsampling的过程，也就是pooling的过程。这个过程当中当前有两种常用的方法，一种是average pooling，一种是max pooling。
 
@@ -70,9 +70,9 @@ max pooling的过程就是下图：
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml051.png>
 
-这里我们需要设定的是每一次pooling的窗口有多大，也就是在多大的一个区域内做subsampling，上图设定的大小是$2 \times 2$。当然，这里可以用average，也可以用max，也可以两个都用。但是实践上，max的效果好像比average要好一点。那事实上，现在的框架中，pooling层也有stride。（至少我用MXNet是有的）
+这里我们需要设定的是每一次pooling的窗口有多大，也就是在多大的一个区域内做subsampling，上图设定的大小是$2 \times 2$。当然，这里可以用average，也可以用max，也可以两个都用。但是实践上，max的效果好像比average要好一点。那事实上，现在的框架中，pooling层也有stride。
 
-那这里也需要注意，根据要做的事情不一样，不管是filter还是pooling，不一定非要将窗口设定为长宽相等的，也可以是不同的，比如filter也可以设计为$2 \times 1$的矩阵这样。另外卷积的过程也可以反复进行好几次。比如VGG-16就有16层卷积。
+根据要做的事情不一样，不管是filter还是pooling，不一定非要将窗口设定为长宽相等的，也可以是不同的，比如filter也可以设计为$2 \times 1$的矩阵这样。另外卷积的过程也可以反复进行好几次。比如VGG-16就有16层卷积。
 
 另外需要提一点的就是，用现在的方法做卷积，原始图片的边边角角会丢失掉，如果filter设计的越大，丢失的就越多。那么为了避免丢失，有一种做法是filter设计的小一点，另一种就是把图片的边边角角拼一段像素上去。拼像素的方法在这里就叫做padding，有几种常见的方法，一种是填0，另一种是将边边角角的像素直接复制一个填进去。那padding要拼多少像素可以根据filter大小来定。filter越大，需要拼的就越多。padding是不是一定比不做效果好，这个视情况而定，多炼丹才知道。
 
@@ -98,7 +98,7 @@ $$
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml054.png>
 
-但是在CNN中，如果输出最后一层output的image，实际上我是得不到我们想象中的图片。比如说如果我们做mnist的分类，最后一层输出的图片并不会是数字，很可能得到的就是一片上世纪老电视的雪花屏。所以这样的结果是很容易被欺骗的，也就有了对抗样本这样的存在。另外就是网上有不少介绍的，将同一张图片变换一些像素，就会被识别为别的。
+但是在CNN中，如果输出最后一层output的image，实际上我是得不到我们想象中的图片。比如说如果我们做mnist的分类，最后一层输出的图片并不会是数字，很可能得到的就是一片上世纪老电视的雪花屏。所以这样的结果是很容易被欺骗的，也就有了对抗样本这样的存在。另外就是网上有不少介绍的，将同一张图片变换一些像素，就会被识别为别的，比如把熊猫识别成汽车之类的。
 
 那如果我们做一些regularization，比如$x^* = \arg \max_x (a^k + \sum|x_{ij}|)$，这样最后一个layer的输出相对会规则一点。
 

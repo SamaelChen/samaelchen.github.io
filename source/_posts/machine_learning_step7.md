@@ -1,5 +1,5 @@
 ---
-title: 台大李宏毅机器学习 07
+title: 台大李宏毅机器学习——深度学习调参
 category: 统计学习
 mathjax: true
 date: 2017-09-12
@@ -8,7 +8,7 @@ date: 2017-09-12
 深度学习调参技巧入门
 <!--more-->
 
-深度学习有很多框架，个人最喜欢的是dmlc的MXNet。keras是另外一个非常友好的框架，后台可以调用tensorflow，但是tensorflow本身不是一个非常友好的框架，所以有兴趣的可以自己看看，上手很快。
+深度学习有很多框架，个人最喜欢的是dmlc的MXNet还有PyTorch。keras是另外一个非常友好的框架，后台可以调用tensorflow，但是tensorflow本身不是一个非常友好的框架，所以有兴趣的可以自己看看，上手很快。
 
 这里大概介绍深度学习炼丹的一些入门技巧。
 
@@ -44,7 +44,7 @@ z, &\mbox{if }z>0
 $$
 这样的一个激活函数不是一个连续可导的函数，那么梯度下降是依赖于导数的，能不能求解呢？
 
-事实上，因为ReLu是分段可导的，而且有一半是0，因此，如果现在一个神经网络的激活函数用的是ReLU，那么我们可以将整个神经网络表示为：
+事实上，因为ReLu是分段可导的，而且在实际模型中，经过ReLu计算的神经元，每一层会有有一半的神经元是0，因此，如果现在一个神经网络的激活函数用的是ReLU，那么我们可以将整个神经网络表示为：
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml033.png>
 
@@ -67,12 +67,13 @@ z, &\mbox{if }z>0
 \end{cases}
 $$
 
-那事实上我们可以让网络自己决定每个neuron要用什么样的激活函数。这样的结构是Goodfellow提出的maxout network。
+那事实上我们可以让网络自己决定每个neuron要用什么样的激活函数。这样的结构是Goodfellow提出的maxout network。maxout network跟之前的网络不一样的地方是，原先下图中我们得到的$5$，$7$这些数字都是要经过activation function变成其他值的。但是在maxout network里面，我们会把这些值变成一个group，然后去group里面的比较大的一个值作为output。这个事情，其实跟CNN里面的max pooling一样。
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml034.png>
 
 这个网络中，哪几个神经元要结合，每个group中放多少个element需要事先设定好。由此我们可以发现，ReLu其实是maxout的一种特殊情况，而ReLu的其他变种也是，都是maxout的真子集。那事实上maxout并不能学习非线性的activation function，它只能学习分段线性的激活函数。
-那我们如果element放的越多，maxout network学到的激活函数分段就越多。
+
+那我们如果element放的越多，maxout network学到的激活函数分段就越多。从某种程度上而言，maxout network比较强的地方就是，不同的样本喂进去以后，通过更新$w$，可能得到ReLu，也可能得到Leaky ReLu这样的activation function，也可能是其他的activation function。也就是说maxout network是一个会学习的网络。
 
 现在的问题是，这样一个分段的函数是否开进行梯度下降呢？实践上而言，这是可行的。因为在maxout network中，每一次传递的都是最大的那个值，那其余的神经元不对loss做贡献，因此每一次传递的都是一个linear的结果，那梯度下降是可以对linear的函数求解的。这里不用担心有一些$w$不会被训练到，因为不同的batch喂进去的时候，不同的$w$会被影响到。示意图如下：
 
@@ -91,7 +92,7 @@ w^{t+1} = w^t - \frac{\eta}{\sigma^t} g^t, \sigma^t = \sqrt{\alpha (\sigma^{t-1}
 $$
 这是对Adagrad的一种变形。
 
-那我们也可以用物理的方法来考虑一下梯度下降。在物理世界中，一个小球从山丘向下滚动的时候，会因为惯性的关系继续滚动下去，越过saddle point，甚至可能越过一些小坑和小坡。因此我们也可以在梯度下降中加入一个类似的概念。示意如下：
+此外，我们也可以用物理的方法来考虑一下梯度下降。在物理世界中，一个小球从山丘向下滚动的时候，会因为惯性的关系继续滚动下去，越过saddle point，甚至可能越过一些小坑和小坡。因此我们也可以在梯度下降中加入一个类似的概念。示意如下：
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml037.png>
 
@@ -100,7 +101,7 @@ $$
 w^{t+1} = w^t + v^{t+1} \\
 v^{t+1} = \lambda v^t - \eta g^{t+1}
 $$
-我们可以看到，实际上用momentum的更新方法，我们实际上是考虑了之前每一次的移动。那现在流行的Adam这个方法，实际上结合了RMSProp和momentum两种。
+我们可以看到，实际上用momentum的更新方法，我们实际上是考虑了之前每一次的移动。现在流行的Adam这个方法，实际上结合了RMSProp和momentum两种。
 
 那上面两种方法都是针对training进行优化的。现在看另外三种对testing进行优化的方法。
 
@@ -128,9 +129,9 @@ w^{t+1} = w^{t} - \eta \frac{\partial L'}{\partial w} = w^t - \eta(\frac{\partia
 $$
 所以用L1，我们的参数每一次都会向0移动一个$\lambda \eta$。
 
-那实际上因为deep learning在初始化参数的时候，都会选择接近0的位置开始，因此实际上regularization在深度学习当中的作用可能还不如early stopping来得有用。
+实际上因为deep learning在初始化参数的时候，都会选择接近0的位置开始，因此实际上regularization在深度学习当中的作用可能还不如early stopping来得有用。
 
-最后一种就是dropout。dropout就是随机丢掉一部分的neuron，每一次mini-batch进入网络，都要重新dropout一些网络，也就是每一个batch的网络实际上是不一样的。从某种程度而言，这也是一种集成算法。因为每一个batch的网络都不一样。
+最后一种就是dropout。dropout就是随机丢掉一部分的neuron，每一次mini-batch进入网络，都要重新dropout一些网络，也就是每一个batch的网络实际上是不一样的。从某种程度而言，这也是一种集成算法。
 
 这里需要注意的是，我们在training的时候需要进行dropout，但是在testing的时候是不进行dropout的。那这个时候，我们在training学到的$w$，在testing上就要将$w$乘以$1-p$，其中$p$是dropout的概率。
 
@@ -148,6 +149,6 @@ $$
 
 我们假设右上角就是我们用dropout训练好的模型，那么这个模型所有可能出现的network是左边的四种。假设每个neuron被dropout的概率一样，都是0.5，那么这四种结构出现的概率就是一样的，因此这四个结构的average就是右下角的结果，刚好就是training的weight乘以$1-p$。
 
-那实际上，这个事情理论上只有在activation function是linear的时候才能work，nonlinear的模型实际上是不work的。但是神奇的就是，在真实使用的时候，nonlinear的模型，一样也可以使用。
+那实际上，这个事情理论上只有在activation function是linear的时候才能work，nonlinear的模型实际上是不work的。但是神奇的就是，在真实使用的时候，nonlinear的模型，一样也可以使用。不过一般来说，如果activation function是linear的时候，dropout的效果会比较好。
 
 以上就是深度学习入门级的调参技巧。还是散沙的一句话，深度学习已经变成实验科学了，多动手是王道。
