@@ -1,5 +1,5 @@
 ---
-title: 台大李宏毅机器学习 12
+title: 台大李宏毅机器学习——neighbor embedding & auto-encoder
 category: 统计学习
 mathjax: true
 date: 2017-09-20
@@ -63,7 +63,7 @@ $$
 
 <img src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml075.png>
 
-那这里需要注意一点，那就是deep auto-encoder已经不需要initialize by RBM了。另外这几层layer之间的weight也没必要保证是之前的transpose，因为这样的限制在早期是为了加速训练，减少需要学习的参数。
+那这里需要注意一点，那就是deep auto-encoder已经不需要RBM来做initialize了。另外这几层layer之间的weight也没必要保证是之前的transpose，因为这样的限制在早期是为了加速训练，减少需要学习的参数。
 
 deep auto-encoder的效果相对会比PCA更好一点，因为PCA是linear的转换，而deep auto-encoder是非线性的变化，所以效果上会更好一点。
 

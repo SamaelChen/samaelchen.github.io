@@ -1,5 +1,5 @@
 ---
-title: 台大李宏毅机器学习 14
+title: 台大李宏毅机器学习-GAN简介
 category: 统计学习
 mathjax: true
 date: 2017-09-29

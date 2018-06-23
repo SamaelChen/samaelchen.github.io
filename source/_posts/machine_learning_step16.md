@@ -1,15 +1,13 @@
 ---
-title: 台大李宏毅机器学习 16
+title: 台大李宏毅机器学习——RNN
 category: 统计学习
 mathjax: true
 date: 2017-10-23
 ---
 
-RNN入门
+RNN是一种比较复杂的网络结构，每一个layer还会利用上一个layer的一些信息。
 
 <!-- more -->
-
-RNN是一种比较复杂的网络结构，每一个layer还会利用上一个layer的一些信息。
 
 比如说，我们要做slot filling的task。我们有两个句子，一个是“arrive Taipei on November 2nd”，另一个是“leave Taipei on November 2nd”。我们可以发现在第一个句子中，Taipei是destination，而第二个句子中Taipei是departure。如果我们不去考虑Taipei前一个词的话，Taipei的vector只有一个，那么同样的vector进来吐出的predict就是一致的。所以我们在做的时候就需要把前一个的结果存起来，在下一个词进来的时候用了参考。
 

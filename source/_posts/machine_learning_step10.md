@@ -1,14 +1,13 @@
 ---
-title: 台大李宏毅机器学习 10
+title: 台大李宏毅机器学习——半监督学习的四种方法
 category: 统计学习
 mathjax: true
 date: 2017-09-16
 ---
 
-半监督学习的四种方法
-<!--more-->
-
 传统机器学习，或者说现在主流的机器学习都是有监督学习，也就是supervised learning。但是实际上，数据好拿，labeled data不好拿。这就是我们为什么要用semi-supervised learning。
+
+<!--more-->
 
 semi-supervised learning并不一定总会work，这要看你的假设是否真的会成立。
 
