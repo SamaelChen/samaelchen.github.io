@@ -131,12 +131,16 @@ ZSH_THEME="agnosterzak"
 
 退出终端重新进入，骚气的zsh就配置好了。
 
+然后是电池电量不显示的问题，安装acpi就可以显示。
+
 如果想卸载的话，执行：
 ```bash
 sudo sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/uninstall.sh)"
 ```
 
 然后将/etc/passwd里面找到自己用户名那一行，把/usr/bin/zsh改成/bin/bash/就可以了。
+
+还有就是配置一个自我发泄的自动对命令行纠错的插件，thefuck，前面配好anaconda以后，只要pip install thefuck就行。然后在.zshrc最后加上eval $(thefuck --alias)。后面如果敲错代码，只要输入fuck，就会自动纠错。
 
 另外，作为Unity的死忠粉，如果装的是Ubuntu 18.04，那么更新完软件以后，要做的事情就是：
 ```bash
