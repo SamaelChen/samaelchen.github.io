@@ -119,9 +119,9 @@ source $ZSH_CUSTOM/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 ```bash
 sudo apt install fonts-powerline
 ```
-然后将主题放到～/.oh-my-zsh/themes下面：
+然后将主题放到~/.oh-my-zsh/themes下面：
 ```bash
-wget http://raw.github.com/zakaziko99/agnosterzak-ohmyzsh-theme/master/agnosterzak.zsh-theme -P ～/.oh-my-zsh/themes
+wget http://raw.github.com/zakaziko99/agnosterzak-ohmyzsh-theme/master/agnosterzak.zsh-theme -P ~/.oh-my-zsh/themes
 ```
 然后修改
 ```
