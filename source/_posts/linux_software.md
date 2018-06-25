@@ -49,7 +49,7 @@ sudo vim /etc/tsocks.conf
 
 然后是搜cuda，按照官方的步骤一步步安装。另外就是安装anaconda。这个也不赘述。
 
-接着是一些骚兮兮的美化工作。用Ubuntu-tweak把系统主题改成flatabulous，图标改成ultra-flat-icons。不过可惜啊，flatabulous的作者不再继续支持这个主题了，感觉以后要用macbuntu之类的了。
+接着是一些骚兮兮的美化工作。用Ubuntu-tweak把系统主题改成flatabulous，图标改成ultra-flat-icons。不过可惜啊，flatabulous的作者不再继续支持这个主题了，感觉以后要用macbuntu之类的了（这两天逛gnome-look.org发现另一个挺好看的主题，ant themes，都是黑色的主题，简直本命）。
 
 接着是设置一下psensor，在toolbar显示CPU和GPU的温度。
 
