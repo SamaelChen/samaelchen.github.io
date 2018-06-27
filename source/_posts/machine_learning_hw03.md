@@ -1,5 +1,5 @@
 ---
-title: 台大李宏毅机器学习作业 03
+title: 台大李宏毅机器学习作业——CNN visualization
 categories: 统计学习
 date: 2018-02-01
 ---

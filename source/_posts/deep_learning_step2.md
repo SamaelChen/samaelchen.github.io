@@ -1,15 +1,13 @@
 ---
-title: 台大李宏毅深度学习 02
+title: 台大李宏毅深度学习——计算图模型
 category: 深度学习
 mathjax: true
 date: 2018-05-28
 ---
 
-计算图模型
+Computational Graph实际上是一种描述计算过程的“语言”。这种语言中用node表示variable，用edge表示operation。
 
 <!-- more -->
-
-Computational Graph实际上是一种描述计算过程的“语言”。这种语言中用node表示variable，用edge表示operation。
 
 举个简单的例子，比如有一个函数$y = f(g(h(x)))$，我们可以定义$u = h(x), v = g(u), y = f(v)$，这样我们就可以用计算图表示如下：
 
