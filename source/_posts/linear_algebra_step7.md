@@ -52,6 +52,6 @@ subspace不严格的讲法可以当做是一个向量空间的子集。严格一
 
 1. 矩阵$A$的列空间$\text{Col } A$的维度就是$A$的pivot column，也就是$\text{rank }A$。
 2. $\text{Dim}(\text{Null } A) = n - \text{rank }A$
-3. $\text{Dim}(\text{Row } A) = \text{rank }A$
+3. $\text{Dim}(\text{Row } A) = \text{rank }A$，也就是$A$的RREF下，非零的行
 
 那上面的这些特性，又会让我们知道$\text{rank }A = \text{rank } A^{\top}$。
