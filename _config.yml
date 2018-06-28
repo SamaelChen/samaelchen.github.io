@@ -52,7 +52,7 @@ category_map:
     LeetCode: LeetCode
     MXNet: MXNet
     PyTorch: PyTorch
-    TensorFlow&Keras: TensorFlow&Keras
+    读书笔记: ReadingNotes
     搞着玩: fun
 tag_map:
 
