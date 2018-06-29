@@ -13,7 +13,7 @@ keywords: 机器学习,深度学习,PyTorch,MXNet,gluon,统计学习
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://samaelchen.github.io
+url: samaelchen.github.io
 root: /
 permalink: :title/
 permalink_defaults:
