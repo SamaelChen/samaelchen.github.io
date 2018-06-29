@@ -9,6 +9,7 @@ description: 活该没有性生活
 author: Samael Chen
 language: en
 timezone:
+keywords: 机器学习,深度学习,PyTorch,MXNet,gluon,统计学习
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
@@ -76,13 +77,14 @@ theme: next-6
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type: git
+- type: git
   repository: https://github.com/SamaelChen/samaelchen.github.io.git
   branch: master
+- type: baidu_url_submitter
 
 
 baidu_url_submit:
   count: 5 ## 比如3，代表提交最新的三个链接
   host: https://samaelchen.github.io ## 在百度站长平台中注册的域名
-  token: your_token ## 请注意这是您的秘钥， 请不要发布在公众仓库里!
+  token: URTB5CCPgx12H2Ny ## 请注意这是您的秘钥， 请不要发布在公众仓库里!
   path: baidu_urls.txt ## 文本文档的地址， 新链接会保存在此文本文档里
