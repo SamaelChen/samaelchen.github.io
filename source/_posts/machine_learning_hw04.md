@@ -7,7 +7,7 @@ date: 2018-02-12
 严格来说不是课程的第四次作业，自己实现了一下全连接反向传播。
 <!--more-->
 
-反向传播的原理在这一篇[博客](https://samaelchen.github.io/2017/09/10/machine_learning_step6/)里面其实就已经大概讲过了，如果我们用的是sigmoid function作为激活函数，我们其实可以将每一层的一个神经元看做是一次逻辑回归。这里也不做太多解释，直接上代码。原本是想用MXNet实现的，但是MXNet和PyTorch都有自动求导函数，这样直接调用不利于深刻理解反向传播的具体过程，因此这里用numpy自己实现了一下。
+反向传播的原理在这一篇[博客](https://samaelchen.github.io/machine_learning_step6/)里面其实就已经大概讲过了，如果我们用的是sigmoid function作为激活函数，我们其实可以将每一层的一个神经元看做是一次逻辑回归。这里也不做太多解释，直接上代码。原本是想用MXNet实现的，但是MXNet和PyTorch都有自动求导函数，这样直接调用不利于深刻理解反向传播的具体过程，因此这里用numpy自己实现了一下。
 
 首先定义自己的数据
 ```python

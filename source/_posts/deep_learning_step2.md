@@ -27,7 +27,7 @@ Computational Graph实际上是一种描述计算过程的“语言”。这种�
 
 认识了计算图之后，我们看如何计算神经网络的反馈。神经网络计算梯度下降分成两个步骤，一个是前馈，一个是反馈。公式上我们表示为：$\frac{\partial C}{\partial w_{ij}^l} = \frac{\partial z^l_i}{\partial w^l_{ij}} \frac{\partial C}{\partial z^l_i}$。
 
-前半部分是前馈，将计算传递到最后；后半部分是反馈，将误差传递到前面。纯数学上的推导在之前的一篇[笔记](https://samaelchen.github.io/2017/09/10/machine_learning_step6)中有介绍。这里讲一下如何利用计算图模型推导。
+前半部分是前馈，将计算传递到最后；后半部分是反馈，将误差传递到前面。纯数学上的推导在之前的一篇[笔记](https://samaelchen.github.io/machine_learning_step6)中有介绍。这里讲一下如何利用计算图模型推导。
 
 一个典型的前馈神经网络是这样的：
 

@@ -83,7 +83,7 @@ $$
 
 <img src='https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml109.png'>
 
-具体的一个计算过程可以看之前的一篇[博客](https://samaelchen.github.io/2017/10/23/machine_learning_step16/)。这篇博客里有一个toy LSTM的分步计算过程。
+具体的一个计算过程可以看之前的一篇[博客](https://samaelchen.github.io/machine_learning_step16/)。这篇博客里有一个toy LSTM的分步计算过程。
 
 另外还有一种做法是将$c$跟$x和h$一起拼成一个更大的vector，[x, h, c]这样的顺序。然后我们可以看到其实我们前面计算的大weight matrix可以看做是三个部分的权重，分别对应这三块。一般而言，我们会要求对应$c$这部分的权重是diagonal的，原因是参数过多可能会过拟合，因此我们会希望这部分额外加入的部分尽量参数简单一些。这个过程我们叫做peephole。
 
@@ -119,4 +119,4 @@ $$
 
 和RNN不一样的，RNN主要用在NLP领域，而CNN则在图像领域大放异彩。
 
-实际上卷积网络是一个对全连接层的特殊简化版本，关于卷积网络可以参考之前的另一篇[博客](https://samaelchen.github.io/2017/09/14/machine_learning_step8/)。这篇博客将基本原理讲的比较清楚，这里就不做更多阐述。
+实际上卷积网络是一个对全连接层的特殊简化版本，关于卷积网络可以参考之前的另一篇[博客](https://samaelchen.github.io/machine_learning_step8/)。这篇博客将基本原理讲的比较清楚，这里就不做更多阐述。

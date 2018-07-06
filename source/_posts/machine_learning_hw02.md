@@ -13,7 +13,7 @@ date: 2017-12-26
 
 首先是probabilistic generative model。概率生成模型其实就是根据数据分布的情况，拟合一种分布，计算条件概率，判断样本的类别。基本公式就是$P(C_i | x) = \frac{P(x | C_i) P(C_i)}{\sum(P(x | C_i) P(C_i))}$。那需要用到概率分布的地方就是$P(x | C_i)$这里，我们需要假设一个分布来拟合这个概率。一般而言，我们用正态分布比较多。之所以用正态分布多，可以回顾一下大数定律和中心极限定理。当数据量到了一定程度，就会呈现出正态分布。
 
-大概的原理可以看这篇[博客](https://samaelchen.github.io/2017/08/31/machine_learning_step4/)，不是一个很复杂的模型。这里用到的数据就是[作业2](https://ntumlta.github.io/2017fall-ml-hw2/)的示例数据，是一个二分类的数据。因为模型的公式已经很明显了，这里就直接将公式转化为代码：
+大概的原理可以看这篇[博客](https://samaelchen.github.io/machine_learning_step4/)，不是一个很复杂的模型。这里用到的数据就是[作业2](https://ntumlta.github.io/2017fall-ml-hw2/)的示例数据，是一个二分类的数据。因为模型的公式已经很明显了，这里就直接将公式转化为代码：
 
 ```python
 def gen_model(X_test, X_train, threshold=0.5):
@@ -60,7 +60,7 @@ import time
 
 其实sklearn的几个metric可以自己写，但是这里偷懒了。原则上还是自己实现核心算法。
 
-相对而言，逻辑回归就比较简单了，大概过程跟线性回归是一样的，用梯度下降去找$w$。原理看这篇[博客](https://samaelchen.github.io/2017/09/05/machine_learning_step5/)。所以实现也很简单：
+相对而言，逻辑回归就比较简单了，大概过程跟线性回归是一样的，用梯度下降去找$w$。原理看这篇[博客](https://samaelchen.github.io/machine_learning_step5/)。所以实现也很简单：
 
 ```python
 def sigma(x):
