@@ -2,10 +2,12 @@
 title: word2vec的PyTorch实现
 category: PyTorch
 mathjax: true
-date: 2018-06-04
+date: 2018-07-06
 ---
 
 Word Embedding现在是现在NLP的入门必备，这里简单实现一个CBOW的W2V。
+
+2018-07-06更新一发用一篇小说来训练模型的脚本。
 
 <!-- more -->
 
@@ -114,3 +116,158 @@ model.embeddings(make_context_vector(data[0][0], word_to_ix))
 ```
 
 可以对比一下训练前和训练后向量的差异。
+
+---
+
+2018-07-06更新内容：
+
+之前写的那个是一个非常toy的网络，本质上就是了解一下word2vec是怎么一回事。不过完全不具备实操的能力。下面找了一些开源的语料，稍微修改了一下之前的脚本，还是基于CBOW的模型，这样就可以正常跑日常的数据。语料地址[https://github.com/lxrogers/CS221SAT/tree/master/data/Holmes_Training_Data](https://github.com/lxrogers/CS221SAT/tree/master/data/Holmes_Training_Data)。
+
+先import一些必要的包，这里的tqdm是显示进度的。
+```python
+import torch
+import torch.utils.data.dataloader as dataloader
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.autograd as autograd
+import torch.optim as optim
+import os
+import re
+import sys
+import gc
+from tqdm import tqdm
+```
+
+然后读入语料数据
+
+```python
+text = []
+for file in os.listdir('Holmes_Training_Data/'):
+    with open(os.path.join('Holmes_Training_Data', file), 'r', errors='ignore') as f:
+        text.extend(f.read().splitlines())
+
+text = [x.replace('*', '') for x in text]
+text = [re.sub('[^ \fA-Za-z0-9_]', '', x) for x in text]
+text = [x for x in text if x != '']
+print(text[:10])
+```
+
+这里我ignore了一些文本读入的错误，然后过滤掉了符号。
+
+因为语料是英文的，所以这里按照空格分割单词，比中文方便太多。
+
+```python
+raw_text = []
+for x in text:
+    raw_text.extend(x.split(' '))
+raw_text = [x for x in raw_text if x != '']
+```
+
+分好词以后就可以开始构建词库
+
+```python
+vocab = set(raw_text)
+vocab_size = len(vocab)
+```
+
+接着跟之前一样，构建一个提供训练数据的函数，并准备好训练数据
+
+```python
+def make_context_vector(context, word_to_ix):
+    idxs = [word_to_ix[w] for w in context]
+    return torch.tensor(idxs, dtype=torch.long)
+
+
+word_to_ix = {word: i for i, word in enumerate(vocab)}
+data = []
+for i in range(2, len(raw_text) - 2):
+    context = [raw_text[i - 2], raw_text[i - 1],
+               raw_text[i + 1], raw_text[i + 2]]
+    target = raw_text[i]
+    data.append((context, target))
+print(data[:5])
+```
+
+定义网络，这里要注意的是，因为数据比较大，我们是分batch喂进来的，因此之前forward的时候，我们把embedding的数据摊开的时候是摊成一行的，这里需要摊成每个batch_size的大小。
+
+```python
+class CBOW(nn.Module):
+
+    def __init__(self, vocab_size, embedding_dim, context_size):
+        super(CBOW, self).__init__()
+        self.embeddings = nn.Embedding(vocab_size, embedding_dim)
+        self.linear1 = nn.Linear(context_size * embedding_dim, 128)
+        self.linear2 = nn.Linear(128, vocab_size)
+
+    def forward(self, inputs):
+        embeds = self.embeddings(inputs).view(len(inputs), -1)
+        out = F.relu(self.linear1(embeds))
+        out = self.linear2(out)
+        log_probs = F.log_softmax(out, dim=1)
+        return(log_probs)
+```
+
+定义各种参数
+
+```python
+CONTEXT_SIZE = 2
+batch_size = 1024
+device = torch.device('cuda:0')
+losses = []
+loss_function = nn.NLLLoss()
+model = CBOW(vocab_size, embedding_dim=100,
+             context_size=CONTEXT_SIZE*2)
+model.to(device)
+# model = torch.nn.DataParallel(model, device_ids=[0, 1]).cuda()
+optimizer = optim.SGD(model.parameters(), lr=0.1)
+```
+
+我这里本来写了多卡的跑法，但是不知道是不是我写法有问题还是为什么，每次我跑第二块卡的时候，PyTorch都会去第一块卡开一块空间出来，就算我只是在第二块卡跑也会在第一块卡开一些空间。比较神奇，后面再研究一下。
+
+然后定义一下data iterator。
+
+```python
+data_iter = torch.utils.data.DataLoader(data, batch_size=batch_size,
+                                        shuffle=False, num_workers=4)
+```
+
+然后这里要注意的是，shuffle参数会影响每次iter的速度，shuffle会慢很多。另外num_workers越多速度越快，但是很可能会内存爆炸，需要自己调一个合适的。
+
+然后就可以开始训练了：
+
+```python
+for epoch in range(100):
+    total_loss = torch.Tensor([0])
+    for context, target in tqdm(data_iter):
+        context_ids = []
+        for i in range(len(context[0])):
+            context_ids.append(make_context_vector([context[j][i] for j in range(len(context))], word_to_ix))
+        context_ids = torch.stack(context_ids)
+        context_ids = context_ids.to(device)
+#         context_ids = torch.autograd.Variable(context_ids.cuda())
+        model.zero_grad()
+        log_probs = model(context_ids)
+        label = make_context_vector(target, word_to_ix)
+        label = label.to(device)
+#         label = torch.autograd.Variable(label.cuda())
+        loss = loss_function(log_probs, label)
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+    losses.append(total_loss)
+    print('epoch %d loss %.4f' %(epoch, total_loss))
+print(losses)
+```
+
+如果要多卡可以把to(device)的代码改成注释的代码就可以了。
+
+然后就是需要**注意**的点了。
+
+**这个网络的确是work的，训练完可以试一下发现queen-woman+man和king的cosine similarity的确比monkey或者其他的单词要高。但是这个网络的效率很低！很低！很低！（你觉得我会告诉你一个epoch需要跑一个半小时么）。**
+
+原因在哪呢？其实很简单因为我这里使用的是softmax，也就是说，这个网络每一次训练都需要预测所有的词，比如我这个训练集里面有接近37万个词，那么每次就需要预测37万个类，效率之低可想而知。那么有什么解决方案呢？最早的时候，也就是谷歌C版本的解决方案是基于霍夫曼树的hierarchical softmax。后来DeepMind有一篇介绍把NCE（Noise-contrastive estimation）用来加速的论文[^1]。再后来又出现了negative sampling的论文[^2]。不过直观感受上，NCE和negative sampling是很像的，算是殊途同归吧。
+
+后面过段时间更新对这两种方法的理解和代码。
+
+[^1]: http://papers.nips.cc/paper/5165-learning-word-embeddings-efficiently-with-noise-contrastive-estimation.pdf
+[^2]: http://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf
