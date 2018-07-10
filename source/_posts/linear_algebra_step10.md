@@ -7,6 +7,8 @@ date: 2018-07-10
 
 在讲矩阵可对角化前，先引入一个概念，矩阵相似。如果存在方阵$A，B$，一个可逆矩阵$P$，使得$P^{-1} A P = B$，那么我们称$A$和$B$是相似的。那么如果现在$B$是一个对角矩阵的话，那么我们就称$A$是可对角化的（diagonalizable）。一般而言，这里会用$D$来表示对角矩阵。
 
+<!-- more -->
+
 那么对角化有什么意义呢？我们从公式出发看一下，将$P$表示为$[p_1 \; \cdots \; p_n]$，将$D$表示为$\begin{bmatrix} d_1 & \cdots & 0 \\ \vdots & \ddots & \vdots \\ 0 & \cdots & d_n \end{bmatrix}$。我们之前的公式是$P^{-1} A P = D$，所以$AP = PD$。
 
 先看左边，$AP = [Ap_1 \; \cdots \; Ap_n]$，再看右边$PD = P[d_1 e_1 \; \cdots \; d_n e_n] = [P d_1 e_1 \; \cdots \; P d_n e_n] = [d_1 P e_1 \; \cdots \; d_n P e_n] = [d_1 p_1 \; \cdots \; d_n p_n]$。这不就是特征根么。
