@@ -1,6 +1,6 @@
 ---
 title: 经济思想史读书笔记——古典经济学
-category: 读书笔记
+categories: 读书笔记
 mathjax: true
 date: 2018-07-08
 ---
