@@ -9,7 +9,7 @@ date: 2018-07-16
 
 <!-- more -->
 
-orthogonal matrix其实就是矩阵里面每个向量相互独立的矩阵，同时这些矩阵里的向量都是单位向量。比如说$\begin{bmatrix}\frac{1}{\sqrt{2}} & 0 & \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & 0 & \frac{-1}{\sqrt{2}} \\
+orthogonal matrix其实就是矩阵里面每个向量相互独立的矩阵，如果是orthonormal的话，这些矩阵里的向量都是单位向量。比如说$\begin{bmatrix}\frac{1}{\sqrt{2}} & 0 & \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & 0 & \frac{-1}{\sqrt{2}} \\
 0 & 1 & 0 \end{bmatrix}$。
 
 这样的矩阵有一些特性，首先，orthogonal matrix $Q$的transpose和inverse相等。也就是$Q^{\top} = Q^{-1}，且这两个矩阵都是orthogonal的$，另外，$\det(Q) = \pm 1$。最后，orthogonal matrix和orthogonal matrix叉乘之后还是orthogonal matrix。
