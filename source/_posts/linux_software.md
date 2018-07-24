@@ -1,6 +1,6 @@
 ---
 title: Ubuntu 装机后必搞的一些软件
-category: 搞着玩
+categories: 搞着玩
 mathjax: true
 date: 2018-06-22
 ---

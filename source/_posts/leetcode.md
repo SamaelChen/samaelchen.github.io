@@ -1,6 +1,6 @@
 ---
 title: LeetCode 刷着玩
-category: LeetCode
+categories: LeetCode
 mathjax: true
 date: 2017-03-27
 ---

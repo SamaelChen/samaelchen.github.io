@@ -1,6 +1,6 @@
 ---
 title: 台大李宏毅机器学习——无监督学习
-category: 统计学习
+categories: 统计学习
 mathjax: true
 date: 2017-09-18
 ---

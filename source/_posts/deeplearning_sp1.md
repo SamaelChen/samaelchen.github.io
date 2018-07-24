@@ -1,6 +1,6 @@
 ---
 title: 优化算法
-category: 统计学习
+categories: 统计学习
 mathjax: true
 date: 2017-03-17
 ---

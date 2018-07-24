@@ -1,6 +1,6 @@
 ---
 title: 台大李宏毅深度学习——神经网络一些骚操作
-category: 深度学习
+categories: 深度学习
 mathjax: true
 date: 2018-07-23
 ---

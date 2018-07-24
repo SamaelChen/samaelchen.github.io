@@ -1,6 +1,6 @@
 ---
 title: Linux 日常使用软件的日经吐槽贴
-category: 搞着玩
+categories: 搞着玩
 mathjax: true
 date: 2018-06-22
 ---

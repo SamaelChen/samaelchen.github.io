@@ -1,6 +1,6 @@
 ---
 title: 经济思想史读书笔记——亚当·斯密
-category: 读书笔记
+categories: 读书笔记
 mathjax: true
 date: 2018-07-18
 ---

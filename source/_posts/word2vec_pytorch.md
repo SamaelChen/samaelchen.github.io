@@ -1,6 +1,6 @@
 ---
 title: word2vec的PyTorch实现
-category: PyTorch
+categories: PyTorch
 mathjax: true
 date: 2018-07-06
 ---

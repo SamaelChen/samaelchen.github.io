@@ -1,6 +1,6 @@
 ---
 title: 台大李宏毅机器学习作业——分类算法
-category: 统计学习
+categories: 统计学习
 mathjax: true
 date: 2017-12-26
 ---

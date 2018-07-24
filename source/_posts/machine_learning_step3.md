@@ -1,6 +1,6 @@
 ---
 title: 台大李宏毅机器学习——梯度下降
-category: 统计学习
+categories: 统计学习
 mathjax: true
 date: 2017-08-29
 ---

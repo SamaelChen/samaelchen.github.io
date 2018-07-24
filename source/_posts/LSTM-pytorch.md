@@ -1,6 +1,6 @@
 ---
 title: LSTM的PyTorch实现
-category: PyTorch
+categories: PyTorch
 mathjax: true
 date: 2018-06-19
 ---

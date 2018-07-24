@@ -1,6 +1,6 @@
 ---
 title: 台大李宏毅深度学习——计算图模型
-category: 深度学习
+categories: 深度学习
 mathjax: true
 date: 2018-05-28
 ---

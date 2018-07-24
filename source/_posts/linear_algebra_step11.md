@@ -1,6 +1,6 @@
 ---
 title: 线性代数 11
-category: 统计学习
+categories: 统计学习
 mathjax: true
 date: 2018-07-11
 ---
