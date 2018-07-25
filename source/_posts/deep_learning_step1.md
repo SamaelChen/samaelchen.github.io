@@ -115,6 +115,8 @@ h^t = z^u \odot h^{t-1} + (1-z^u) \odot h' \\
 y = \sigma(W h^t)
 $$
 
+所以在GRU中，reset gate其实是给过去longterm的memory给一个权重。
+
 # 卷积网络（Convolution Neural Network）
 
 和RNN不一样的，RNN主要用在NLP领域，而CNN则在图像领域大放异彩。
