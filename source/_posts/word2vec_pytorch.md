@@ -314,5 +314,17 @@ class NEGLoss(nn.Module):
 
 但是有个小问题就是，这里采用的其实是很取巧的一个方法，就是说，我每次会生成一个矩阵告诉pytorch究竟有哪6个sample被我拿到了，然后算negative log likelihood的时候就只算这6个。结果上来说，是实现了负采样，但是从算法效率上来说，其实并没有起到减少计算量的效果。
 
+所以这里我们实现一个非常简单，类似nagative sampling，但是不是非常严格的采样函数：
+
+```python
+def neg_sample(num_samples, positives=[]):
+    freqs_pow = torch.Tensor([freqs[ix_to_word[i]] for i in range(vocab_size)]).pow(0.75)
+    dist = freqs_pow / freqs_pow.sum()
+    w = np.random.choice(len(dist), (len(positives), num_samples), p=dist.numpy())
+    return w
+```
+
+然后相应的，我们需要将我们的CBOW也变一下，按照$-\text{log} \frac{1}{1+\text{exp}\left(-\mathbf{u}_c^\top (\mathbf{v}_{o_1} + \ldots + \mathbf{v}_{o_{2m}}) /(2m)\right)}  - \sum_{k=1, w_k \sim \mathbb{P}(w)}^K \text{log} \frac{1}{1+\text{exp}\left((\mathbf{u}_{i_k}^\top (\mathbf{v}_{o_1} + \ldots + \mathbf{v}_{o_{2m}}) /(2m)\right)}$这个公式计算最后的loss。
+
 [^1]: http://papers.nips.cc/paper/5165-learning-word-embeddings-efficiently-with-noise-contrastive-estimation.pdf
 [^2]: http://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf
