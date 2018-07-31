@@ -326,5 +326,46 @@ def neg_sample(num_samples, positives=[]):
 
 然后相应的，我们需要将我们的CBOW也变一下，按照$-\text{log} \frac{1}{1+\text{exp}\left(-\mathbf{u}_c^\top (\mathbf{v}_{o_1} + \ldots + \mathbf{v}_{o_{2m}}) /(2m)\right)}  - \sum_{k=1, w_k \sim \mathbb{P}(w)}^K \text{log} \frac{1}{1+\text{exp}\left((\mathbf{u}_{i_k}^\top (\mathbf{v}_{o_1} + \ldots + \mathbf{v}_{o_{2m}}) /(2m)\right)}$这个公式计算最后的loss。
 
+```python
+class CBOW(nn.Module):
+    def __init__(self, vocab_size, embedding_dim, context_size):
+        super(CBOW, self).__init__()
+        self.embeddings = nn.Embedding(vocab_size, embedding_dim)
+#         self.linear1 = nn.Linear(context_size * embedding_dim, 128)
+#         self.linear2 = nn.Linear(128, vocab_size)
+    def forward(self, inputs, label):
+        negs = sample(5, label)
+        u_embeds = self.embeddings(label).view(len(label), -1)
+        v_embeds_pos = self.embeddings(inputs).mean(dim=1)
+        v_embeds_neg = self.embeddings(negs).mean(dim=1)
+        loss1 = torch.bmm(u_embeds, v_embeds_pos.transpose(0, 1))
+        loss2 = torch.bmm(u_embeds, v_embeds_neg.transpose(0, 1))
+        loss = (loss1 + loss2).mean()
+#         out = F.relu(self.linear1(embeds))
+#         out = self.linear2(out)
+#         log_probs = F.log_softmax(out, dim=1)
+        return(loss)
+
+for epoch in range(10):
+    total_loss = torch.Tensor([0])
+    for context, target in tqdm(data_iter):
+        context_ids = []
+        for i in range(len(context[0])):
+            context_ids.append(make_context_vector([context[j][i] for j in range(len(context))], word_to_ix))
+        context_ids = torch.stack(context_ids)
+#         context_ids = context_ids.to(device)
+        model.zero_grad()
+        label = make_context_vector(target, word_to_ix)
+#         label = label.to(device)
+        loss = model(context_ids, label)
+#         loss = loss_function(log_probs, label)
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+    losses.append(total_loss)
+    print('epoch %d loss %.4f' %(epoch, total_loss))
+print(losses)
+```
+
 [^1]: http://papers.nips.cc/paper/5165-learning-word-embeddings-efficiently-with-noise-contrastive-estimation.pdf
 [^2]: http://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf
