@@ -331,34 +331,35 @@ class CBOW(nn.Module):
     def __init__(self, vocab_size, embedding_dim, context_size):
         super(CBOW, self).__init__()
         self.embeddings = nn.Embedding(vocab_size, embedding_dim)
-#         self.linear1 = nn.Linear(context_size * embedding_dim, 128)
-#         self.linear2 = nn.Linear(128, vocab_size)
+        self.embeddings.weight.data.uniform_(-0.5 / vocab_size, 0.5 / vocab_size)
     def forward(self, inputs, label):
         negs = sample(5, label)
         u_embeds = self.embeddings(label).view(len(label), -1)
         v_embeds_pos = self.embeddings(inputs).mean(dim=1)
         v_embeds_neg = self.embeddings(negs).mean(dim=1)
-        loss1 = torch.bmm(u_embeds, v_embeds_pos.transpose(0, 1))
-        loss2 = torch.bmm(u_embeds, v_embeds_neg.transpose(0, 1))
-        loss = (loss1 + loss2).mean()
-#         out = F.relu(self.linear1(embeds))
-#         out = self.linear2(out)
-#         log_probs = F.log_softmax(out, dim=1)
+        loss1 = torch.diag(torch.matmul(u_embeds, v_embeds_pos.transpose(0, 1)))
+        loss2 = torch.diag(torch.matmul(u_embeds, v_embeds_neg.transpose(0, 1)))
+        loss1 = -torch.log(1 / (1 + torch.exp(-loss1)))
+        loss2 = -torch.log(1 / (1 + torch.exp(loss2)))
+        loss = (loss1.mean() + loss2.mean())
         return(loss)
+```
 
-for epoch in range(10):
+这里我将embedding层的权重进行了标准化，通过这样的标准化可以避免后面计算loss的时候出现无穷大的情况。然后其他参数不用做什么变化，开始训练看看效果。
+
+```python
+for epoch in range(100):
     total_loss = torch.Tensor([0])
     for context, target in tqdm(data_iter):
         context_ids = []
         for i in range(len(context[0])):
             context_ids.append(make_context_vector([context[j][i] for j in range(len(context))], word_to_ix))
         context_ids = torch.stack(context_ids)
-#         context_ids = context_ids.to(device)
+        context_ids = context_ids.to(device)
         model.zero_grad()
         label = make_context_vector(target, word_to_ix)
-#         label = label.to(device)
+        label = label.to(device)
         loss = model(context_ids, label)
-#         loss = loss_function(log_probs, label)
         loss.backward()
         optimizer.step()
         total_loss += loss.item()
