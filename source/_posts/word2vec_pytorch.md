@@ -321,7 +321,10 @@ def neg_sample(num_samples, positives=[]):
     freqs_pow = torch.Tensor([freqs[ix_to_word[i]] for i in range(vocab_size)]).pow(0.75)
     dist = freqs_pow / freqs_pow.sum()
     w = np.random.choice(len(dist), (len(positives), num_samples), p=dist.numpy())
-    return w
+    if positives.is_cuda:
+        return torch.tensor(w).to(device)
+    else:
+        return torch.tensor(w)
 ```
 
 然后相应的，我们需要将我们的CBOW也变一下，按照$-\text{log} \frac{1}{1+\text{exp}\left(-\mathbf{u}_c^\top (\mathbf{v}_{o_1} + \ldots + \mathbf{v}_{o_{2m}}) /(2m)\right)}  - \sum_{k=1, w_k \sim \mathbb{P}(w)}^K \text{log} \frac{1}{1+\text{exp}\left((\mathbf{u}_{i_k}^\top (\mathbf{v}_{o_1} + \ldots + \mathbf{v}_{o_{2m}}) /(2m)\right)}$这个公式计算最后的loss。
@@ -333,7 +336,7 @@ class CBOW(nn.Module):
         self.embeddings = nn.Embedding(vocab_size, embedding_dim)
         self.embeddings.weight.data.uniform_(-0.5 / vocab_size, 0.5 / vocab_size)
     def forward(self, inputs, label):
-        negs = sample(5, label)
+        negs = neg_sample(5, label)
         u_embeds = self.embeddings(label).view(len(label), -1)
         v_embeds_pos = self.embeddings(inputs).mean(dim=1)
         v_embeds_neg = self.embeddings(negs).mean(dim=1)
