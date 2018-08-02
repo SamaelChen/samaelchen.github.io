@@ -21,8 +21,7 @@
     "hexo-inject": "^1.0.0",
     "hexo-reference": "^1.0.3",
     "hexo-renderer-ejs": "^0.2.0",
-    "hexo-renderer-marked": "^0.2.11",
-    "hexo-renderer-pandoc": "file:node_modules/hexo-renderer-pandoc",
+    "hexo-renderer-pandoc": "^0.2.2",
     "hexo-renderer-sass": "^0.2.0",
     "hexo-renderer-stylus": "^0.3.3",
     "hexo-server": "^0.2.2"
