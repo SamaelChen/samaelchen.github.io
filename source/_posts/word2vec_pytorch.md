@@ -117,7 +117,7 @@ for epoch in range(100):
 print(losses)
 ```
 
-完整的notebook可以看[这个]()，效率上有质的提升。batchsize还是1024的时候大概压缩到15分钟左右，放到8192的时候大概一个epoch是10分钟。一本满足。
+完整的notebook可以看[这个](https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/langage%20model/w2v_ngs.ipynb)，效率上有质的提升。batchsize还是1024的时候大概压缩到15分钟左右，放到8192的时候大概一个epoch是10分钟。一本满足。
 
 ---
 
