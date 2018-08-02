@@ -73,7 +73,11 @@ def neg_sample(num_samples, positives=[]):
         return torch.tensor(w)
 ```
 
-然后相应的，我们需要将我们的CBOW也变一下，按照$-\text{log} \frac{1}{1+\text{exp}\left(-\mathbf{u}_c^\top (\mathbf{v}_{o_1} + \ldots + \mathbf{v}_{o_{2m}}) /(2m)\right)}  - \sum_{k=1, w_k \sim \mathbb{P}(w)}^K \text{log} \frac{1}{1+\text{exp}\left((\mathbf{u}_{i_k}^\top (\mathbf{v}_{o_1} + \ldots + \mathbf{v}_{o_{2m}}) /(2m)\right)}$这个公式计算最后的loss。
+然后相应的，我们需要将我们的CBOW也变一下，按照
+$$
+-\text{log} \frac{1}{1+\text{exp}\left(-u_c^\top (v_{o_1} + \ldots + v_{o_{2m}}) /(2m)\right)}  - \sum_{k=1, w_k \sim \mathbb{P}(w)}^K \text{log} \frac{1}{1+\text{exp}\left((u_{i_k}^\top (v_{o_1} + \ldots + v_{o_{2m}}) /(2m)\right)}.
+$$
+这个公式计算最后的loss。
 
 ```python
 class CBOW(nn.Module):
