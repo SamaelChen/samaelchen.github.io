@@ -15,7 +15,7 @@ Word Embedding现在是现在NLP的入门必备，这里简单实现一个CBOW�
 
 # negtive sampling版本
 
-**2018-07-27更新基于negative sampling方法的W2V**
+**2018-08-02更新基于negative sampling方法的W2V**
 
 翻了之前项亮实现的MXNet版本的NCE，看的不甚理解，感觉他写的那个是NEG的样子，然后还是自己写一个简单的negative sampling来做这个事情。关于NCE和NEG的区别，其实NEG就像是NCE的一个特殊情况，这个可以看[Notes on Noise Contrastive Estimation and Negative Sampling](https://arxiv.org/pdf/1410.8251.pdf)，或者是谷歌的一篇[总结](https://www.tensorflow.org/extras/candidate_sampling.pdf)。
 
