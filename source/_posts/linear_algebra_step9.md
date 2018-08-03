@@ -3,6 +3,7 @@ title: 线性代数 09
 categories: 统计学习
 mathjax: true
 date: 2018-07-03
+keywords: 线性代数,特征向量,特征根
 ---
 
 矩阵的特征根与特征向量。这两个是线性代数里面非常重要的概念。

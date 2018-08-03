@@ -3,6 +3,7 @@ title: 台大李宏毅机器学习-迁移学习
 categories: 统计学习
 mathjax: true
 date: 2017-10-09
+keywords: 机器学习, 迁移学习, 深度学习
 ---
 
 迁移学习的一些介绍

@@ -3,6 +3,7 @@ title: 线性代数 07
 categories: 统计学习
 mathjax: true
 date: 2018-06-27
+keywords: 线性代数,subspace,基
 ---
 
 subspace & basis

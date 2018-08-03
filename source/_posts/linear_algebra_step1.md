@@ -3,6 +3,7 @@ title: 线性代数 01
 categories: 统计学习
 mathjax: true
 date: 2018-05-25
+keywords: 线性代数,基本概念
 ---
 
 线性代数基本概念。

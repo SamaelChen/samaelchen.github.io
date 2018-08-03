@@ -3,6 +3,7 @@ title: 线性代数 03
 categories: 统计学习
 mathjax: true
 date: 2018-06-08
+keywords: 线性代数,RREF
 ---
 
 Reduced row echelon form

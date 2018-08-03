@@ -3,6 +3,7 @@ title: 台大李宏毅机器学习——逻辑回归
 categories: 统计学习
 mathjax: true
 date: 2017-09-05
+keywords: 机器学习, 逻辑回归
 ---
 
 分类算法常年扛把子，逻辑回归

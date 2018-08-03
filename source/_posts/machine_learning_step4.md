@@ -3,6 +3,7 @@ title: 台大李宏毅机器学习——分类算法
 categories: 统计学习
 mathjax: true
 date: 2017-08-31
+keywords: 机器学习, 分类算法, 生成模型
 ---
 
 分类算法的一些提纲挈领的概念。

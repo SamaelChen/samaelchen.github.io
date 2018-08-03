@@ -3,6 +3,7 @@ title: 台大李宏毅深度学习——常见神经网络结构
 categories: 深度学习
 mathjax: true
 date: 2018-05-23
+keywords: 李宏毅,深度学习,全连接,LSTM,RNN
 ---
 
 深度学习入门——常见网络结构

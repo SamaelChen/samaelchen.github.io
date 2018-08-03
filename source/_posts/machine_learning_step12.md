@@ -3,6 +3,7 @@ title: 台大李宏毅机器学习——neighbor embedding & auto-encoder
 categories: 统计学习
 mathjax: true
 date: 2017-09-20
+keywords: 机器学习, neighbor embedding, auto-encoder
 ---
 
 无监督学习的neighbor embedding和deep auto-encoder部分。

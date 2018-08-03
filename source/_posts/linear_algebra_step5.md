@@ -3,6 +3,7 @@ title: 线性代数 05
 categories: 统计学习
 mathjax: true
 date: 2018-06-20
+keywords: 线性代数,逆矩阵
 ---
 
 逆矩阵

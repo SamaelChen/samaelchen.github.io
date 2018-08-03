@@ -3,6 +3,7 @@ title: 台大李宏毅机器学习-GAN简介
 categories: 统计学习
 mathjax: true
 date: 2017-09-29
+keywords: 机器学习, 深度学习, GAN
 ---
 
 生成模型，可以用来做炼金术师的禁忌之术，人体炼成。

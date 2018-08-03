@@ -3,6 +3,7 @@ title: 线性代数 11
 categories: 统计学习
 mathjax: true
 date: 2018-07-11
+keywords: 线性代数,向量正交
 ---
 
 向量正交，如果从几何的角度来看，向量的正交可以看作是两个向量垂直。

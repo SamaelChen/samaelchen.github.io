@@ -3,6 +3,7 @@ title: 台大李宏毅机器学习作业——分类算法
 categories: 统计学习
 mathjax: true
 date: 2017-12-26
+keywords: 机器学习,分类算法,逻辑回归,生成模型
 ---
 
 好久没更，李宏毅第二次课程实操

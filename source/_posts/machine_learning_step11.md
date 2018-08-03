@@ -3,6 +3,7 @@ title: 台大李宏毅机器学习——无监督学习
 categories: 统计学习
 mathjax: true
 date: 2017-09-18
+keywords: 机器学习, 无监督
 ---
 
 无监督学习——clustering & PCA，主要介绍了PCA，顺带讲了一些clustering。

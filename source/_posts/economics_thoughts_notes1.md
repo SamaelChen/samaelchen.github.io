@@ -3,6 +3,7 @@ title: 经济思想史读书笔记——导言
 categories: 读书笔记
 mathjax: true
 date: 2018-07-03
+keywords: 经济思想史, 前古典经济
 ---
 
 人类一切事业的开始和终结都是凌乱的——John Galsworthy

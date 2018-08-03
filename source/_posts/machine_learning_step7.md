@@ -3,6 +3,7 @@ title: 台大李宏毅机器学习——深度学习调参
 categories: 统计学习
 mathjax: true
 date: 2017-09-12
+keywords: 机器学习, 深度学习, 调参
 ---
 
 深度学习调参技巧入门

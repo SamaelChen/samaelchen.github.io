@@ -3,6 +3,7 @@ title: 台大李宏毅深度学习——计算图模型
 categories: 深度学习
 mathjax: true
 date: 2018-05-28
+keywords: 深度学习,计算图,computational graph
 ---
 
 Computational Graph实际上是一种描述计算过程的“语言”。这种语言中用node表示variable，用edge表示operation。

@@ -3,6 +3,7 @@ title: 台大李宏毅深度学习——神经网络一些骚操作
 categories: 深度学习
 mathjax: true
 date: 2018-07-23
+keywords: 深度学习, spatial transformer, highway network, recursive network
 ---
 
 神经网络自2012年躲过世界末日后开始寒武纪大爆发的既视感，从最原始的FC开始出现了各种很风骚的操作。这里介绍三种特殊的结构：spatial transformer layer，highway network & grid LSTM，还有recursive network。

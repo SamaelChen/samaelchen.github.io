@@ -3,6 +3,7 @@ title: 线性代数 04
 categories: 统计学习
 mathjax: true
 date: 2018-06-19
+keywords: 线性代数,矩阵乘法
 ---
 
 矩阵乘法

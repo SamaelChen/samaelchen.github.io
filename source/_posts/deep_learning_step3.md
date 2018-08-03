@@ -3,6 +3,7 @@ title: 台大李宏毅深度学习——RNN语言模型
 categories: 深度学习
 mathjax: true
 date: 2018-06-01
+keywords: 深度学习, RNN, 语言模型
 ---
 
 RNN用于语言模型

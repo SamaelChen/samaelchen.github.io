@@ -3,6 +3,7 @@ title: 线性代数 13
 categories: 统计学习
 mathjax: true
 date: 2018-07-17
+keywords: 线性代数, SVD, pagerank
 ---
 
 两个线性代数里面在机器学习领域大放异彩的算法，SVD和PageRank。
