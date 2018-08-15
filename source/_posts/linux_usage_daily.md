@@ -36,3 +36,7 @@ sudo apt install sdcv
 # 2018.07.09 日经
 
 这个感觉也不是Linux的问题，主要是markdown底下碰到了要打中文间隔号的时候，发现诶，好像不是很好用啊。如果跟我一样用的是搜狗输入法，那么可以输入yd，然后就有这个符号的候选了。感谢搜狗。
+
+# 2018.08.15 日经
+
+写hexo用next主题的时候有个问题，就是有时候网页上的icon会不显示，比如home上面那个小房子。其实就是push以后，next文件夹底下的source/lib里少了font-awesome和ua-parser-js两个文件夹。到github的next源码那里复制一份拷下来就好了。这俩文件夹被github屏蔽了难道？导致每次都push不上去？！
