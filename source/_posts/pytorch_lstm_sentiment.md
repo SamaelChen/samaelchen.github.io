@@ -6,6 +6,8 @@ date: 2018-08-15
 keywords: pytorch, word2vec, 词向量, LSTM, 循环神经网络, 情感分析
 ---
 
+2018.08.16更新一个textCNN。
+
 尝试使用LSTM做情感分析，这个gluon有非常详细的例子，可以直接参考gluon的[官方教程](http://zh.gluon.ai/chapter_natural-language-processing/sentiment-analysis.html)。这里尝试使用PyTorch复现一个。数据用的是IMDB的数据[http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz)
 
 <!-- more -->
@@ -263,3 +265,54 @@ for epoch in range(num_epochs):
 也可以直接看我的[notebook](https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/langage%20model/lstm-sentiment.ipynb)
 
 后面试试textCNN，感觉也挺骚气的。
+
+---
+
+2018.08.16 更新一个textCNN的玩法。
+
+CNN太熟了，很容易搞，其实只要把网络改一下，其他的动都不用动：
+
+```python
+class textCNN(nn.Module):
+    def __init__(self, vocab_size, embed_size, seq_len, labels, weight, **kwargs):
+        super(textCNN, self).__init__(**kwargs)
+        self.labels = labels
+        self.embedding = nn.Embedding.from_pretrained(weight)
+        self.embedding.weight.requires_grad = False
+        self.conv1 = nn.Conv2d(1, 1, (3, embed_size))
+        self.conv2 = nn.Conv2d(1, 1, (4, embed_size))
+        self.conv3 = nn.Conv2d(1, 1, (5, embed_size))
+        self.pool1 = nn.MaxPool2d((seq_len - 3 + 1, 1))
+        self.pool2 = nn.MaxPool2d((seq_len - 4 + 1, 1))
+        self.pool3 = nn.MaxPool2d((seq_len - 5 + 1, 1))
+        self.linear = nn.Linear(3, labels)
+
+    def forward(self, inputs):
+        inputs = self.embedding(inputs).view(inputs.shape[0], 1, inputs.shape[1], -1)
+        x1 = F.relu(self.conv1(inputs))
+        x2 = F.relu(self.conv2(inputs))
+        x3 = F.relu(self.conv3(inputs))
+
+        x1 = self.pool1(x1)
+        x2 = self.pool2(x2)
+        x3 = self.pool3(x3)
+
+        x = torch.cat((x1, x2, x3), -1)
+        x = x.view(inputs.shape[0], 1, -1)
+
+        x = self.linear(x)
+        x = x.view(-1, self.labels)
+
+        return(x)
+```
+
+这里的网络设计很简单，就是用三个filter去扫一遍文章，filter的尺寸其实就是我们一次看多少个词。这样扫完以后是三个向量，然后pooling一下得到三个实数。把这三个实数拼成一个向量，然后用fc分类一下就结束了。
+
+然后初始化网络：
+
+```python
+net = textCNN(vocab_size=(vocab_size+1), embed_size=embed_size,
+              seq_len=500, labels=labels, weight=weight)
+```
+
+其他的都没改，就可以直接跑了。速度上CNN比LSTM的参数少，速度快很多，不过只跑几轮的话效果差一点。
