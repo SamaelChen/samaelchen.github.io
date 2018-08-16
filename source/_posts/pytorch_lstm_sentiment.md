@@ -167,7 +167,7 @@ class SentimentNet(nn.Module):
 
 那这里需要注意几个点，第一，LSTM可以不initialize hidden，如果不initialize的话，那么PyTorch会默认初始为0。
 
-另外就是LSTM这里传进去的数据格式是[seq_len, batch_size, embedded_size]。而我们传进去的数据是[batch_size, seq_len]的样子，那经过embedding之后的结果是[batch_size, seq_len, embedded_size]。所以我们这里要将第二个维度和第一个维度做个调换。这样返回的数据就是[batch_size, embedded_size]。不过LSTM有个参数叫batch_first，如果设为True，那么返回的就会是[seq_len, embedded_size]。这里非常的绕，我在这里卡了好久(=@__@=)
+另外就是LSTM这里传进去的数据格式是[seq_len, batch_size, embedded_size]。而我们传进去的数据是[batch_size, seq_len]的样子，那经过embedding之后的结果是[batch_size, seq_len, embedded_size]。所以我们这里要将第二个维度和第一个维度做个调换。而LSTM这边output的dimension和inputs是一致的，如果这里我们不做维度的调换，可以将LSTM的batch_first参数设置为True。然后我们要拿到每个batch的初始状态和最后状态还是一样要去做一个第一第二维度的调换。这里非常的绕，我在这里卡了好久(=@__@=)
 
 第三就是我这里用了最初始的状态和最后的状态拼起来作为分类的输入。
 
