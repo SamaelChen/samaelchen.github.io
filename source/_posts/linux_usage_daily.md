@@ -52,3 +52,15 @@ atom使用的时候避免回车变成候选词，修改一下keymap：
 ```
 
 另外就是github的二次验证问题。
+
+首先让git记住你的秘钥
+
+```bash
+git config --global credential.helper store
+git config --global user.email 'XXX@xxx.com'
+git config --global user.name 'XXX'
+```
+
+接着去github上面拿一个personal token
+
+然后push的时候密码用这个token就可以了。
