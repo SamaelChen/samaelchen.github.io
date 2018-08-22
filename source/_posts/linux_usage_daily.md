@@ -40,3 +40,15 @@ sudo apt install sdcv
 # 2018.08.15 日经
 
 写hexo用next主题的时候有个问题，就是有时候网页上的icon会不显示，比如home上面那个小房子。其实就是push以后，next文件夹底下的source/lib里少了font-awesome和ua-parser-js两个文件夹。到github的next源码那里复制一份拷下来就好了。这俩文件夹被github屏蔽了难道？导致每次都push不上去？！
+
+# 2018.08.22 日经
+
+atom使用的时候避免回车变成候选词，修改一下keymap：
+
+```
+# Disable Enter key for confirming an autocomplete suggestion
+'atom-text-editor:not(mini).autocomplete-active':
+  'enter': 'editor:newline'
+```
+
+另外就是github的二次验证问题。
