@@ -3,7 +3,7 @@ title: 线性代数 06
 categories: 统计学习
 mathjax: true
 date: 2018-06-21
-keywords: 线性代数,行列式
+keywords: [线性代数,行列式]
 ---
 
 矩阵的行列式

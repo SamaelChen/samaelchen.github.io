@@ -3,7 +3,7 @@ title: LSTM的PyTorch实现
 categories: PyTorch
 mathjax: true
 date: 2018-06-19
-keywords: pytorch,lstm
+keywords: [pytorch,lstm]
 ---
 
 基于PyTorch的LSTM实现。

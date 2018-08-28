@@ -3,7 +3,7 @@ title: 台大李宏毅机器学习——回归
 categories: 统计学习
 mathjax: true
 date: 2017-08-26
-keywords: 机器学习, 回归
+keywords: [机器学习, 回归]
 ---
 
 机器学习就是寻找一个函数来解决某一类问题，回归就是预测一个实数的方法。

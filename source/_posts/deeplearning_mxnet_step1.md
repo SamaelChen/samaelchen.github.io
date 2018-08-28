@@ -2,7 +2,7 @@
 title: CNN中文验证码识别
 categories: MXNet
 date: 2017-04-13
-keywords: MXNet, 验证码, CNN
+keywords: [MXNet, 验证码, CNN]
 ---
 
 基于CNN的中文验证码识别

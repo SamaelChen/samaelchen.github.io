@@ -3,7 +3,7 @@ title: 台大李宏毅机器学习——bias&variance
 categories: 统计学习
 mathjax: true
 date: 2017-08-28
-keywords: 机器学习, 误差
+keywords: [机器学习, 误差]
 ---
 
 现在我们来看看误差从何而来

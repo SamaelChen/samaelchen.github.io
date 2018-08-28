@@ -3,7 +3,7 @@ title: 台大李宏毅机器学习——集成算法
 categories: 统计学习
 mathjax: true
 date: 2017-10-27
-keywords: 机器学习, 集成算法, adaboost, gbdt, bagging, boosting
+keywords: [机器学习, 集成算法, adaboost, gbdt, bagging, boosting]
 ---
 
 集成算法基本上现在已经成为机器学习的标准套路，单一模型的几乎已经销声匿迹。集成算法有两大分类，一类是bagging，一类是boosting。

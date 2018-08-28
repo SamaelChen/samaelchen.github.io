@@ -3,7 +3,7 @@ title: 台大李宏毅机器学习——半监督学习的四种方法
 categories: 统计学习
 mathjax: true
 date: 2017-09-16
-keywords: 机器学习, 半监督, 半监督学习
+keywords: [机器学习, 半监督, 半监督学习]
 ---
 
 传统机器学习，或者说现在主流的机器学习都是有监督学习，也就是supervised learning。但是实际上，数据好拿，labeled data不好拿。这就是我们为什么要用semi-supervised learning。

@@ -3,7 +3,7 @@ title: 台大李宏毅机器学习——深度学习入门
 categories: 统计学习
 mathjax: true
 date: 2017-09-10
-keywords: 机器学习, 深度学习, 全连接层, 多层感知机
+keywords: [机器学习, 深度学习, 全连接层, 多层感知机]
 ---
 
 深度学习入门介绍，主要是MLP

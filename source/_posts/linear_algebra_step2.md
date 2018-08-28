@@ -3,7 +3,7 @@ title: 线性代数 02
 categories: 统计学习
 mathjax: true
 date: 2018-05-30
-keywords: 线性代数,行列式
+keywords: [线性代数,行列式]
 ---
 
 关于行列式是否有解，以及如何求解

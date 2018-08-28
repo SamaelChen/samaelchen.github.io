@@ -3,7 +3,7 @@ title: 台大李宏毅机器学习——梯度下降
 categories: 统计学习
 mathjax: true
 date: 2017-08-29
-keywords: 机器学习, 梯度下降
+keywords: [机器学习, 梯度下降]
 ---
 
 关于梯度下降的理论基础

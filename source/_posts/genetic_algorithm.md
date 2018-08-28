@@ -3,7 +3,7 @@ title: 遗传算法
 categories: 统计学习
 mathjax: true
 date: 2017-03-29
-keywords: 优化算法,遗传算法
+keywords: [优化算法,遗传算法]
 ---
 
 遗传算法的简要实现

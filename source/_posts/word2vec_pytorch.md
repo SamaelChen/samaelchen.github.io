@@ -3,7 +3,7 @@ title: word2vec的PyTorch实现
 categories: PyTorch
 mathjax: true
 date: 2018-08-02
-keywords: pytorch, word2vec, negative sampling, 词向量
+keywords: [pytorch, word2vec, negative sampling, 词向量]
 ---
 
 Word Embedding现在是现在NLP的入门必备，这里简单实现一个CBOW的W2V。

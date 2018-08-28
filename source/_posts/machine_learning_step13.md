@@ -3,7 +3,7 @@ title: 台大李宏毅机器学习——词向量
 categories: 统计学习
 mathjax: true
 date: 2017-09-21
-keywords: 机器学习, 词向量, word2vec
+keywords: [机器学习, 词向量, word2vec]
 ---
 
 Word embedding

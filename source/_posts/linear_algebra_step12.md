@@ -3,7 +3,7 @@ title: 线性代数 12
 categories: 统计学习
 mathjax: true
 date: 2018-07-16
-keywords: 线性代数,orthogonal matrix,symmetric matrix
+keywords: [线性代数,orthogonal matrix,symmetric matrix]
 ---
 
 稍微介绍一下两种特殊的矩阵，orthogonal matrix和symmetric matrix。

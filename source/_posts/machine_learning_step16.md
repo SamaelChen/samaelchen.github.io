@@ -3,7 +3,7 @@ title: 台大李宏毅机器学习——RNN
 categories: 统计学习
 mathjax: true
 date: 2017-10-23
-keywords: 机器学习, RNN
+keywords: [机器学习, RNN]
 ---
 
 RNN是一种比较复杂的网络结构，每一个layer还会利用上一个layer的一些信息。

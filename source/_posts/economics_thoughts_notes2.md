@@ -3,7 +3,7 @@ title: 经济思想史读书笔记——早期古典经济学
 categories: 读书笔记
 mathjax: true
 date: 2018-07-08
-keywords: 经济思想史, 早期古典经济学
+keywords: [经济思想史, 早期古典经济学]
 ---
 
 “我们从哪儿出发？”红皇后问。

@@ -3,7 +3,7 @@ title: 台大李宏毅机器学习——CNN
 categories: 统计学习
 mathjax: true
 date: 2017-09-14
-keywords: 机器学习, CNN, 卷积神经网络
+keywords: [机器学习, CNN, 卷积神经网络]
 ---
 
 卷积网络入门

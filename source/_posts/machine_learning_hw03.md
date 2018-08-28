@@ -2,7 +2,7 @@
 title: 台大李宏毅机器学习作业——CNN visualization
 categories: 统计学习
 date: 2018-02-01
-keywords: 深度学习,CNN,layer visualization,filter visualization
+keywords: [深度学习,CNN,layer visualization,filter visualization]
 ---
 
 基于MXNet的入门级CNN visualization。嗯TF无脑黑，MXNet & PyTorch一生推。

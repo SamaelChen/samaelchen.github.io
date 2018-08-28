@@ -3,7 +3,7 @@ title: 台大李宏毅机器学习——深度学习的必要性
 categories: 统计学习
 mathjax: true
 date: 2017-09-15
-keywords: 机器学习, 深度学习
+keywords: [机器学习, 深度学习]
 ---
 
 现在我们来考虑一下，模型是不是越深越好。

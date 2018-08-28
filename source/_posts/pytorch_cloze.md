@@ -5,7 +5,7 @@ categories:
   - [深度学习]
 mathjax: true
 date: 2018-08-28
-keywords: pytorch, word2vec, 词向量, LSTM, 循环神经网络, 完形填空
+keywords: [pytorch, word2vec, 词向量, LSTM, 循环神经网络, 完形填空]
 ---
 
 之前用LSTM做过情感分析，李宏毅老师17年的课程第一个大作业是做一个完形填空的language model，试着做了一个简单的demo。

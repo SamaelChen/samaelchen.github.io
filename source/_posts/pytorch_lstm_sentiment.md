@@ -3,7 +3,7 @@ title: PyTorch实现LSTM情感分析
 categories: PyTorch
 mathjax: true
 date: 2018-08-15
-keywords: pytorch, word2vec, 词向量, LSTM, 循环神经网络, 情感分析
+keywords: [pytorch, word2vec, 词向量, LSTM, 循环神经网络, 情感分析]
 ---
 
 2018.08.16更新一个textCNN。
