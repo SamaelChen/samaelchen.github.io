@@ -32,7 +32,7 @@ solved list：
 
 + No.27 [Remove Element](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Remove_Element.py)
 
-+ No.29 [Divide Two Integers](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Divide_Two_Integers.py) 这一个没解决好，效率太低，待优化
++ No.29 [Divide Two Integers](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Divide_Two_Integers.py) 
 
 + No.35 [Search Insert Position](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Search_Insert_Position.py)
 
