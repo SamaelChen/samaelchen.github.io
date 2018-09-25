@@ -22,6 +22,10 @@ solved list：
 
 + No.9 [Palindrom Number](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Palindrome_Number.py)
 
++ No.12 [Roman to Int](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Roman_to_Int.py)
+
++ No.13 [Int to Roman](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Int_to_Roman.py)
+
 + No.14 [Longest Common Prefix](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Longest_Common_Prefix.py)
 
 + No.15 [3Sum](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/3Sum.py)
@@ -32,7 +36,7 @@ solved list：
 
 + No.27 [Remove Element](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Remove_Element.py)
 
-+ No.29 [Divide Two Integers](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Divide_Two_Integers.py) 
++ No.29 [Divide Two Integers](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Divide_Two_Integers.py)
 
 + No.35 [Search Insert Position](https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Search_Insert_Position.py)
 
