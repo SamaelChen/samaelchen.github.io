@@ -5,6 +5,7 @@
 <meta name="baidu-site-verification" content="0YbFtSUs3K" />
 <meta name="360-site-verification" content="e4a574f568678b9b725df6de1db257c5" />
 <meta name="msvalidate.01" content="B5A47A4FD6AB117AF1CE9EF8705A022C" />
+<meta name="google-site-verification" content="IATmw7vz__5a2CbY4PeD1KzOeufd2tD8n-BUxRKsF-Y" />
 
 
 {% if theme.needmoreshare2.enable %}
