@@ -129,4 +129,8 @@ for epoch in range(num_epoch):
 
 接下来可能想试一下的是如果不用这种方法的话，是不是可以用padding的方法把句子长度统一再训练。
 
+另外强势推荐[最全中华古诗词数据库](https://github.com/chinese-poetry/chinese-poetry)。数据非常非常全了。
+
+后面如果要做到很好的效果可以做的方向一个是做韵脚的信息，还有就是平仄的信息也带进去。
+
 anyway，想了一下，这样训练完的hidden是不是就包含了一个作者的文风信息？！
