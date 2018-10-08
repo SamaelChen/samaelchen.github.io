@@ -64,3 +64,7 @@ git config --global user.name 'XXX'
 接着去github上面拿一个personal token
 
 然后push的时候密码用这个token就可以了。
+
+# 2018.10.08 日经
+
+突然发现不蒜子不能统计数据了，翻了一下发现是作者的七牛云过期了，只要修改一下next/layout/_third_party_analytics/busuanzi-counter.swig里面的js路径就好了。新路径看作者的网站：[https://busuanzi.ibruce.info/]('https://busuanzi.ibruce.info/')
