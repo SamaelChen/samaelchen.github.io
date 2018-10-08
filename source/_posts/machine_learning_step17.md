@@ -54,12 +54,12 @@ $$
 $$
 那么其中的$\sum_n u_n^2 = \sum_{f(x) = y} u_n^1 / d^1 + \sum_{f(x) \ne y} u_n^1 \times d^1$。而分子部分就等于$\sum_{f(x) \ne y} u_n^1 \times d^1$。现在我们要$\varepsilon_2 = 0.5$，可以知道，就是让$\sum_{f(x) \ne y} u_n^1 \times d^1 = \sum_{f(x) = y} u_n^1 / d^1$。因为$d^1$是常数，可以提取出来，然后$\sum_{f(x) = y} u_n^1 = \sum_n u^1_n (1-\varepsilon_1)，\sum_{f(x) \ne y} u_n^1 = \sum_n u^1_n \varepsilon_1$。刚好$\sum_n u^1_n$又是常数，再消掉，我们可以轻松得到$d^1 = \sqrt{\frac{1-\varepsilon_1}{\varepsilon_1}}$。这里我们需要做乘法和除法，虽然对程序而言问题不大，但是公式上不是那么好看。我们可以将这个系数改成$a^t = \ln(d^t)$这样一来，我们就可以把公式改成
 $$
-u^{t+1}_n = u^t * \exp(a^t) \text{ if } f(x) = y \\
-u^{t+1}_n = u^t * \exp(-a^t) \text{ if } f(x) \ne y
+u^{t+1}_n = u^t \times \exp(a^t) \text{ if } f(x) = y \\
+u^{t+1}_n = u^t \times \exp(-a^t) \text{ if } f(x) \ne y
 $$
 然后我们又发现，如果我们做二分类的问题，我们可以将$y$的取值改为$\pm 1$，这样一来，我们上面的公式就可以化简到一个非常舒服的样子：
 $$
-u^{t+1}_n = u^t * \exp(- y f_t(x) a^t)
+u^{t+1}_n = u^t \times \exp(- y f_t(x) a^t)
 $$
 
 那么adaboost基本上的工作原理就是这样。那么最后我们得到的分类函数就是之前所有弱分类器的集成版：
@@ -71,19 +71,19 @@ $$
 $$
 \frac{1}{N} \sum_n \delta(H(x_n) \ne y_n)
 $$
-那实际上就是
+我们定义一个函数$g(x) = \sum_{t=1}^T a^t f_t(x)$，那上面的式子实际上就是
 $$
 \frac{1}{N} \sum_n \delta(y_n \times g(x_n) < 0)
 $$
-然后这里我们定一个exponential loss function，就是$exp(-y_n \times g(x_n))$。这里很直觉的，错误率函数是小于等于这个exponential函数的，所以我们可以得到：
+然后这里我们定一个exponential loss function，就是$\exp(-y_n \times g(x_n))$。这里很直觉的，错误率函数是小于等于这个\exponential函数的，所以我们可以得到：
 $$
 \frac{1}{N} \sum_n \delta(y_n \times g(x_n) < 0) \le \frac{1}{N} \sum_n(\exp(-y_n \times g(x_n)))
 $$
 实际上这个upper-bound是非常宽松的一个限制，只要让这个upper-bound收敛，那么我们的错误率就一定会收敛。
 
-怎么做到呢？我们回过头看之前的数据，在更新$u^t$的时候，我们用到了$\exp(-y_n f_t(x_n))$，而$g(x)$是$f(x)$的最终加权平均的集成版，所以我们尝试将所有的$u$加起来会怎么样？所有的$u$加起来我们用$Z$表示，那
+怎么做到呢？我们回过头看之前的数据，在更新$u^t$的时候，我们用到了$\exp(-y_n f_t(x_n))$，而$g(x)$是$f(x)$的最终加权平均的集成版，所以我们尝试将所有的$u$加起来会怎么样？所有的$u$加起来我们用$Z$表示，因为$u_1 = 1$，$u_{t+1} = u_t \exp(-y f_t(x) a_t)$，这是一个等比数列，所以
 $$
-u_{T+1} = \prod_{t=1}^T exp(-y f_t(x) a_t)
+u_{T+1} = \prod_{t=1}^T \exp(-y f_t(x) a_t)
 $$
 所以
 $$
@@ -98,7 +98,13 @@ $$
 $$
 然后要证明的就是$Z_{T+1}$会越来越小。
 
-因为$Z_{t+1} = Z_{t} \varepsilon_t \sqrt{\frac{1-\varepsilon_t}{\varepsilon_t}} + Z_{t} (1 - \varepsilon_t) \sqrt{\frac{\varepsilon_t}{1 - \varepsilon_t}} = 2 \times Z_{t} \times \sqrt{\varepsilon_t(1-\varepsilon_t)}$。所以我们可以
+因为
+$$
+\begin{align}
+Z_{t+1} &= Z_{t} \varepsilon_t \exp(a_t) + Z_{t} (1 - \varepsilon_t) \exp(-a_t) \\ &= Z_{t} \varepsilon_t \sqrt{\frac{1-\varepsilon_t}{\varepsilon_t}} + Z_{t} (1 - \varepsilon_t) \sqrt{\frac{\varepsilon_t}{1 - \varepsilon_t}} \\ &= 2 \times Z_{t} \times \sqrt{\varepsilon_t(1-\varepsilon_t)}。
+\end{align}
+$$
+所以我们可以
 得到$Z_{T} = N \prod_{t=1}^T 2 \sqrt{\varepsilon_t(1-\varepsilon_t)}$。因为$\varepsilon$只有刚好取到0.5的时候才会等于1，否则会一路收敛，越来越小。
 
 然后我们可以看到gradient boosting这种方法。事实上，gradient boosting优化的方向不再是对样本，而是直接作用于function。如果我们现在接受一个function其实就是一个weight的vector，那么其实我们就是可以对function求偏导的。我们从梯度下降的角度来看这个问题，那么我们在做的事情就是
@@ -109,7 +115,7 @@ $$
 $$
 g_t(x) = g_{t-1}(x) + a_t f_t(x)
 $$
-考虑到跟上梯度的过程，我们可以知道，其实我们希望梯度的方向跟我们boosting优化的方向最好能够是一样的。如果这里我们的loss function选择的是exponential loss，那么loss function就是$\sum_n \exp(-y_n g(x_n))$， 梯度就是$\sum_n \exp(-y_n g(x_n)) -y_n$，刚好跟梯度前面的负号抵消掉。在这种情况下，如果要让二者的方向一样，我们可以用这样的公式来表示：
+考虑到跟上梯度的过程，我们可以知道，其实我们希望梯度的方向跟我们boosting优化的方向最好能够是一样的。如果这里我们的loss function选择的是exponential loss，那么loss function就是$\sum_n \exp(-y_n g(x_n))$， 梯度就是$\sum_n \exp(-y_n g(x_n))(-y_n)$，刚好跟梯度前面的负号抵消掉。在这种情况下，如果要让二者的方向一样，我们可以用这样的公式来表示：
 $$
 \sum_n \exp(-y_n g_{t-1}(x_n)) y_n f_t(x)
 $$
@@ -118,7 +124,7 @@ $$
 回到损失函数这里，我们的损失函数是：
 $$
 \begin{align}
-L(g) &= \sum_n \exp(-y_n g(x_n)) \\
+L(g) &= \sum_n \exp(-y_n g_t(x_n)) \\
 &= \sum_n \exp(-y_n (g_{t-1}(x_n) + a_t f_t(x_n))) \\
 &= \sum_n \exp(-y_n g_{t-1}(x_n)) \exp(-y_n a_t f_t(x_n)) \\
 &= \sum_{f_t(x) \ne y} \exp(-y_n g_{t-1}(x_n)) \exp(a_t) + \sum_{f_t(x) = y} \exp(-y_n g_{t-1}(x_n)) \exp(-a_t)
