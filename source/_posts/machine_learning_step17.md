@@ -130,16 +130,17 @@ L(g) &= \sum_n \exp(-y_n g_t(x_n)) \\
 &= \sum_{f_t(x) \ne y} \exp(-y_n g_{t-1}(x_n)) \exp(a_t) + \sum_{f_t(x) = y} \exp(-y_n g_{t-1}(x_n)) \exp(-a_t)
 \end{align}
 $$
-我们求$\frac{\partial L}{\partial a_t} = 0$，可以得到
+我们希望得到的是$\frac{\partial L}{\partial a_t} = 0$，因为
 $$
 \begin{align}
-\frac{\partial L}{\partial a_t} &= n \varepsilon_t \exp(-y_n g_{t-1}(x_n)) \exp(a_t) - n (1-\varepsilon_t) \exp(-y_n g_{t-1}(x_n)) \exp(-a_t) \\
-&= n \exp(-y_n g_{t-1}(x_n))(\varepsilon_t \exp(a_t) - (1-\varepsilon_t) \exp(-a_t))
+L &= \sum_n \exp(-y_n g_t(x_n)) \\
+&= Z_{t+1} \\
+&= Z_t \varepsilon_t \exp(a_t) + Z_t (1-\varepsilon_t) \exp(-a_t)
 \end{align}
 $$
-前面的系数跟$a_t$没关系直接消掉，然后我们得到的就是：
+前面的系数$Z_t$跟$a_t$没关系直接消掉，然后求导数我们得到的就是：
 $$
-\varepsilon_t \exp(a_t) - (1-\varepsilon_t) \exp(-a_t) = 0
+\frac{\partial L}{\partial a_t} = \varepsilon_t \exp(a_t) - (1-\varepsilon_t) \exp(-a_t) = 0
 $$
 这样我们就可以求出来$a_t = \ln \sqrt{\frac{1-\varepsilon_t}{\varepsilon_t}}$刚好就是adaboost。
 
