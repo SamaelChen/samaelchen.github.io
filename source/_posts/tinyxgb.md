@@ -11,3 +11,7 @@ XGBoost是GBDT的一个超级加强版，用了很久，一直没细看原理。
 别点了，就是留个坑o(>﹏<)o
 
 <!--more-->
+
+# 回顾一下ensemble算法
+
+## bagging
