@@ -8,7 +8,7 @@ keywords: [机器学习, xgboost, gbdt]
 
 XGBoost是GBDT的一个超级加强版，用了很久，一直没细看原理。围观了一波人家的实现，自己也来弄一遍。以后面试上来一句，要不要我现场写个XGBoost，听上去是不是很霸气。
 
-完全自己写太可怕了，在[tinygbt](https://github.com/lancifollia/tinygbt/blob/master/tinygbt.py)的基础上直接修改了一下，勉勉强强自己的也算是跑通了吧，原作的代码逻辑非常清晰。anyway，虽然我觉得有些地方貌似是有问题的，比如求二阶导那里，一阶导是$2(y-\hat{y})$，那二阶导应该是$-2$。其他是一些小细节，不赘述。懒得看原理可以直接看[我的修改版](https://github.com/SamaelChen/hexo-practice-code/blob/master/fun/tinyxgb.ipynb)。正文会具体说这个实现的一些坑。
+在开源代码的基础上进行了一点修改，大概跑通了，但是有些地方感觉有点诡异。后面会讲。
 
 <!--more-->
 
@@ -91,18 +91,20 @@ $$
 <img src='https://i.loli.net/2018/10/11/5bbec3573482d.png'>
 直观感受上来说吧，就有点像拟牛顿法是梯度下降的一个功能性提升的样子。
 
-另外就是正则项，这里$\Omega(f) = \gamma T + \frac{1}{2} \lambda \sum_{j=1}^T w_j^2$。这里的$T$是我们有多少叶节点，$w$是叶节点的权重。这两个都在XGB的参数里面可以调整的，我们都知道正则项会改变模型的保守程度，或者说就是variance。
+另外就是正则项，这里$\Omega(f) = \gamma T + \frac{1}{2} \lambda \sum_{j=1}^T w_j^2$。这里的$T$是我们有多少叶节点，$w$是叶节点的权重。这两个都在XGB的参数里面可以调整的，我们都知道正则项会改变模型的保守程度，或者说就是variance。而$w$在这里就是$f_t(x)$。这里要是不理解，可以看[陈天奇的这篇中文解释](http://www.52cs.org/?p=429)。
 
 其他XGB的优化很多是工程上的优化，这个不是CS科班出身就看不懂了。如何并行化什么的，一脸懵逼。具体可以看陈天奇的论文，数学的部分写的非常美妙。
 
 # tiny XGB的一些坑
 
-首先我是直接拿人家的代码修改的，毕竟MIT协议，也不算侵权哈。原作的代码逻辑还是非常清晰的，撸一遍提神醒脑。
+完全自己写太可怕了，在[tinygbt](https://github.com/lancifollia/tinygbt/blob/master/tinygbt.py)的基础上直接修改了一下，原作的代码逻辑非常清晰。anyway，虽然我觉得有些地方貌似是有问题的，做了一点小改动，这个是[我的修改版](https://github.com/SamaelChen/hexo-practice-code/blob/master/fun/tinyxgb.ipynb)。
 
-但是有一个比较坑的地方就是求梯度的地方，我觉得老哥应该是推错了，所以我把二阶导改成了$-2$。
-
-另外一个事情就是原作的模型里面learning rate是会越跑越小的，我改成了固定的。
+一个事情就是原作的模型里面learning rate是会越跑越小的，我改成了固定的。另外算split gain的时候我按照论文的公式写的。
 
 还有就是我改了原作的梯度和loss，这样我可以传一些其他损失函数进去，虽然我没试过行不行得通吧。理论上应该OK的吧。XD
 
-最后一个坑吧，数据集用的是LightGBM的[测试数据](https://github.com/Microsoft/LightGBM/tree/master/examples/regression)。但是！！！LightGBM的分类和回归用的是同一个数据集，所以，实际上这个回归吧，参考意义也就那样吧。
+然后我觉得原作一个地方我没看懂，就是计算weight的地方，按照论文的公式是$w_j = -\frac{G_j}{H_j + \lambda}$，但是在这里实现的时候是$\frac{G_j}{H_j + \lambda}$，就是正负之差。但是很神奇的是我用负号的时候，就不能收敛了。没懂为什么，明明我按照公式求偏导就是负的，实现的时候就不对了。
+
+最后算是一个坑吧，原作数据集用的是LightGBM的[测试数据](https://github.com/Microsoft/LightGBM/tree/master/examples/regression)。但是！！！LightGBM的分类和回归用的是同一个数据集，所以，实际上这个回归吧，参考意义也就那样吧。我用的是kaggle上面的pokemon数据集来做回归。
+
+anyway，有人可以发现为什么weight那里会那样的话，给条明路。：)
