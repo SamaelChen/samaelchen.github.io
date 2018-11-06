@@ -216,4 +216,8 @@ for epoch in range(num_epoch):
 
 具体还是看我的[notebook](https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/text%20generater/Topic2Essay_train.ipynb)。不过梯度还是爆炸了，哎。
 
+# TAT
+
+就是在TAV的基础上修改，直接看[notebook](https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/text%20generater/Topic2Essay_TAT.ipynb)吧。这个模型深刻地表达了我的内心正处在TAT的状态。
+
 # 待续……心情真的是糟到极点
