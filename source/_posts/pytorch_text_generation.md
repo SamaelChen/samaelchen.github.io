@@ -8,6 +8,10 @@ keywords: [深度学习, NLP, text generation, 文本生成, LSTM]
 
 最近诸事不顺，情绪不佳。继续做文本生成的事情。之前用的Char-RNN存在一定的缺陷，那就是你需要给定一个prefix，然后模型就会顺着prefix开始一个个往下预测。但是这样生成的文本随机性是很大的，所以我们希望能够让句子根据我们的关键词或者topic来生成。看了几篇论文，大框架上都是基于Attention的，其他的都是一些小的细节变化。这里打算实现两篇论文里的框架，一篇是哈工大的[Topic-to-Essay Generation with Neural Networks](http://ir.hit.edu.cn/~xcfeng/xiaocheng%20Feng's%20Homepage_files/final-topic-essay-generation.pdf)，另一篇是百度的[Chinese Poetry Generation with Planning based Neural Networks](https://arxiv.org/pdf/1610.09889.pdf)。
 
+---
+
+2018年11月8号更新：认真看了一下百度的那篇paper，模型跟TAV的差不了太多，就是先用一个RNN把关键词做个双向的encoding，然后当做第一个词放进去训练。没什么兴趣弄了。
+
 <!--more-->
 
 第一篇论文里面放了三种策略，由简到繁分别是Topic-Averaged LSTM，Attention-based LSTM，以及Multi-Topic-Aware LSTM。
