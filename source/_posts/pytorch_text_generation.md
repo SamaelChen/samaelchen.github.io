@@ -224,4 +224,20 @@ for epoch in range(num_epoch):
 
 就是在TAV的基础上修改，直接看[notebook](https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/text%20generater/Topic2Essay_TAT.ipynb)吧。这个模型深刻地表达了我的内心正处在TAT的状态。
 
-# 待续……心情真的是糟到极点
+# MAT
+
+论文里面的$U_f$没看懂是什么意思，所以就自己演绎了一下，简单来说，为了让每个topic都有机会出现，那么很自然会想到要去调整Attention的权重，高的压低一点，低的抬高一点。所以我在每个epoch结束后调整一下：
+```python
+params = model.state_dict()
+params['attn.weight'].clamp_(0)
+params['attn.weight'] *= 1 / -torch.log(params['attn.weight'] / torch.sum(params['attn.weight']) + 0.000001)
+```
+也就是说，每个Attention前面加了一个weight，这个weight是$-\log(p+\lambda)$。加个lambda是避免变成0，而p就是这个topic的Attention在所有topic的Attention的比重。这个其实也可以试试每一个iteration就变化会怎么样。
+
+具体看[notebook](https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/text%20generater/Topic2Essay_MAT_bleu-adaptive.ipynb)。
+
+另外要说的就是，用全量softmax速度太慢了，改用了PyTorch的adaptive softmax。0.41版本以上自带的一个功能，是一个softmax的优化方案，论文说比hierarchical softmax在GPU上的表现更好，虽然论文没太看懂。这里有篇老外的[博客](https://towardsdatascience.com/speed-up-your-deep-learning-language-model-up-to-1000-with-the-adaptive-softmax-part-1-e7cc1f89fcc9)大概讲了一下原理，不过也没证明为什么会更好。大概意思就是将所有的词按照词频排序，然后分成高频和低频两组，然后低频组再拆成两到四个组，然后判断这个词是在哪个组里面。
+
+还有就是TAT的模型改了一下要求Attention必须都是大于等于0的，MAT也是在这个基础上搞的。
+
+差不多就这么一回事吧。诸事不顺，近期要看个病，但愿不是重病。
