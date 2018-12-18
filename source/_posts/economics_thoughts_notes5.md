@@ -1,5 +1,5 @@
 ---
-title: 经济思想史读书笔记——亚当·斯密
+title: 经济思想史读书笔记——李嘉图&马尔萨斯
 categories: 读书笔记
 mathjax: true
 date: 2018-12-18
