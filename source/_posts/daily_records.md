@@ -48,21 +48,21 @@ td {
 </td>
 <td>
 <a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190409.jpg'>
-<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190409.jpg' alt='' width=5%>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190409.jpg' alt='' width=10%>
 </td>
 </tr>
 <tr>
 <td>
-2019-04-09
+2019-04-10
 </td>
 <td>
-00:07
+00:04
 </td>
 <td>
-06:06
+08:08
 </td>
 <td>
 <a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190410.jpg'>
-<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190410.jpg' alt='' width=5%>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190410.jpg' alt='' width=10%>
 </td>
 </tr>
