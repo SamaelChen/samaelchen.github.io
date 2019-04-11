@@ -38,21 +38,6 @@ td {
 </tr>
 <tr>
 <td>
-2019-04-09
-</td>
-<td>
-00:07
-</td>
-<td>
-06:06
-</td>
-<td>
-<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190409.jpg'>
-<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190409.jpg' alt='' width=10%>
-</td>
-</tr>
-<tr>
-<td>
 2019-04-10
 </td>
 <td>
@@ -64,5 +49,20 @@ td {
 <td>
 <a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190410.jpg'>
 <img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190410.jpg' alt='' width=10%>
+</td>
+</tr>
+<tr>
+<td>
+2019-04-09
+</td>
+<td>
+00:07
+</td>
+<td>
+06:06
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190409.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190409.jpg' alt='' width=10%>
 </td>
 </tr>
