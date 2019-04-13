@@ -39,13 +39,29 @@ td {
 
 <tr>
 <td>
-2019-04-11
+2019-04-13
 </td>
 <td>
-00:27
+00:25
 </td>
 <td>
-07:44
+10:26
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190413.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190413.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
+2019-04-12
+</td>
+<td>
+01:29
+</td>
+<td>
+08:04
 </td>
 <td>
 <a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190412.jpg'>
