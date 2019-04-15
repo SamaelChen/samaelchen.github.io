@@ -39,6 +39,22 @@ td {
 
 <tr>
 <td>
+2019-04-15
+</td>
+<td>
+00:18
+</td>
+<td>
+07:18
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190415.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190415.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
 2019-04-14
 </td>
 <td>
