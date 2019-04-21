@@ -39,7 +39,87 @@ td {
 
 <tr>
 <td>
-2019-04-15
+2019-04-21
+</td>
+<td>
+01:42
+</td>
+<td>
+11:35
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190421.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190421.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
+2019-04-20
+</td>
+<td>
+02:09
+</td>
+<td>
+09:21
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190420.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190420.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
+2019-04-19
+</td>
+<td>
+01:40
+</td>
+<td>
+08:06
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190419.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190419.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
+2019-04-18
+</td>
+<td>
+01:21
+</td>
+<td>
+07:53
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190418.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190418.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
+2019-04-17
+</td>
+<td>
+01:04
+</td>
+<td>
+07:57
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190417.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190417.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
+2019-04-16
 </td>
 <td>
 00:24
