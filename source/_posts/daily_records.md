@@ -39,7 +39,39 @@ td {
 
 <tr>
 <td>
-2019-04-23
+2019-04-27
+</td>
+<td>
+01:30
+</td>
+<td>
+09:17
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190427.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190427.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
+2019-04-25
+</td>
+<td>
+01:04
+</td>
+<td>
+07:34
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190425.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190425.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
+2019-04-24
 </td>
 <td>
 00:23
