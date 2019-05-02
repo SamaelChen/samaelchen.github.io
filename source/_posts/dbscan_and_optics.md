@@ -38,7 +38,7 @@ DBSCAN的思路非常简单，有两个参数，一个是$\varepsilon$，另一�
 
 如果对SNA有点了解的朋友就知道，就是一度人脉和N度人脉，但是是一个有向图。
 
-那么算法思路理清了，代码就好些了，这里我就用最常用的欧氏距离了。有人可能回想，如果还是欧氏距离，那跟KMeans还有什么分别，都是画圈圈嘛！请回想一个微积分，只要圈画的够小，就能做出各种形状来。下面是核心部分的代码，详细的可以去看我的[notebook](https://github.com/SamaelChen/hexo-practice-code/blob/master/fun/DBSCAN.ipynb)。
+那么算法思路理清了，代码就好写了，这里我就用最常用的欧氏距离了。有人可能会想，如果还是欧氏距离，那跟KMeans还有什么分别，都是画圈圈嘛！请回想一个微积分，只要圈画的够小，就能做出各种形状来。下面是核心部分的代码，详细的可以去看我的[notebook](https://github.com/SamaelChen/hexo-practice-code/blob/master/fun/DBSCAN.ipynb)。
 
 ```python
 def _euclidean_dist(p, q):
