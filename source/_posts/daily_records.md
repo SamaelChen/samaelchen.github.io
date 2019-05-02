@@ -39,6 +39,70 @@ td {
 
 <tr>
 <td>
+2019-05-02
+</td>
+<td>
+01:08
+</td>
+<td>
+09:00
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190502.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190502.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
+2019-05-01
+</td>
+<td>
+00:44
+</td>
+<td>
+07:02
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190501.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190501.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
+2019-04-29
+</td>
+<td>
+00:52
+</td>
+<td>
+08:10
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190429.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190429.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
+2019-04-28
+</td>
+<td>
+00:28
+</td>
+<td>
+07:54
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190428.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190428.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
 2019-04-27
 </td>
 <td>
@@ -50,6 +114,22 @@ td {
 <td>
 <a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190427.jpg'>
 <img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190427.jpg' alt='' width=10%>
+</td>
+</tr>
+
+<tr>
+<td>
+2019-04-26
+</td>
+<td>
+00:30
+</td>
+<td>
+08:14
+</td>
+<td>
+<a href='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190426.jpg'>
+<img src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/daily_record/20190426.jpg' alt='' width=10%>
 </td>
 </tr>
 
