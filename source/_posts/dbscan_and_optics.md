@@ -182,3 +182,32 @@ def cluster_optics_dbscan(data, eps_reachable, eps, minpts):
 ```
 
 OPTICS的优点就是，不管是什么形状的密度，基本上都可以把这个凹槽给跑出来，但是问题就是最后的这个抽取群组小算法。目前我还没找到一个比较好的方法来自动抽取，如果是按照论文里面的分层抽取，我试过会抽的太细，如果是按照论文里面的DBSCAN来抽，就是我实现的这个，不过是一刀切的方式，太复杂的样本效果就不好了。目前还在探索用其他平滑方法来替代，有突破再来更新。
+
+试了两种平滑方式，最后的做法是，先用一维高斯平滑，然后用max filter抹掉因为高斯平滑最大值向左漂的问题。
+
+# HDBSCAN
+
+然后又发现了一个新的聚类算法，类似OPTICS算法，叫[HDBSCAN](https://link.springer.com/chapter/10.1007/978-3-642-37456-2_14)，顾名思义，就是H就是hierarchical。事实上就是OPTICS算法的一个改进版本。
+
+与OPTICS类似，HDBSCAN一样要算core distance和reachability distance。这个算法跟OPTICS是一样的。但是reachability distance的公式是：$d_{\text{reach}-k}(a, b) = \max\{\text{core}_k(a), \text{core}_k(b), d(a, b)\}$，这里的$d(a, b)$是两个点用距离公式算的距离。如下图所示：
+
+<p align='center'>
+<img src='https://nbviewer.jupyter.org/github/scikit-learn-contrib/hdbscan/blob/master/notebooks/distance4.svg' width=50%>
+</p>
+
+蓝绿两点直接的reachability distance就是绿点的core distance，红绿两点的就是红绿两点的距离。
+
+那么这样一来，就可以得到每个点之间的reachability distance。然后就可以用这个距离作为权重来绘制一个带权重的连接图。[Beyond Hartigan Consistency](https://arxiv.org/pdf/1506.06422v2.pdf)这篇论文认为，无论是那种概率密度分布，这种相互距离可以更好的表示单链接聚类的层次结构。
+
+然后可以用[Prim算法](https://en.wikipedia.org/wiki/Prim%27s_algorithm)构建最小生成树，然后转化为层次结构，就类似层次聚类了。这个可以参考一下基于最小生成树的层次聚类。然后通过设定最小簇大小，对这个树进行剪枝。也就从下面的第一个图变成第二个图：
+
+<p align='center'>
+<img src='https://hdbscan.readthedocs.io/en/latest/_images/how_hdbscan_works_12_1.png' width=50%>
+</p>
+<p align='center'>
+<img src='https://hdbscan.readthedocs.io/en/latest/_images/how_hdbscan_works_15_1.png' width=50%>
+</p>
+
+之后就是抽取簇。上面剪枝后的树其实已经有了结果，但是我们希望抽的簇可以自动抽取，且是稳定的。因此我们需要一种度量方式来衡量簇的稳定性。我们定义一个值$f(x) = \lambda = \frac{1}{\text{distance}_{\text{core}}}$。这里的distance就是一个点。所以用$\lambda_{\text{birth}}$和$\lambda_{\text{death}}$分别表示簇生成和簇分裂时候的$\lambda$大小，也就是$\lambda_{\text{min}}C_i$和$\lambda_{\text{max}}C_i$，那么簇的稳定性就是$S = \sum_{p \in \text{cluster}} (\lambda_p - \lambda_{\text{birth}})$，$\lambda_p = \lambda_{\text{max}}(x, C) = \min(f(x), \lambda_{\text{max}}C)$每轮优化的方向就是让这个稳定性最大，同时满足最小簇大小。
+
+那么HDBSCAN跟DBSCAN比的话，DBSCAN实际上就是上面剪枝前的hierarchical tree切一刀，而HDBSCAN会自适应地去寻找合适的划分。
