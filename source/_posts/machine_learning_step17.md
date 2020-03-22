@@ -54,8 +54,8 @@ $$
 $$
 那么其中的$\sum_n u_n^2 = \sum_{f(x) = y} u_n^1 / d^1 + \sum_{f(x) \ne y} u_n^1 \times d^1$。而分子部分就等于$\sum_{f(x) \ne y} u_n^1 \times d^1$。现在我们要$\varepsilon_2 = 0.5$，可以知道，就是让$\sum_{f(x) \ne y} u_n^1 \times d^1 = \sum_{f(x) = y} u_n^1 / d^1$。因为$d^1$是常数，可以提取出来，然后$\sum_{f(x) = y} u_n^1 = \sum_n u^1_n (1-\varepsilon_1)，\sum_{f(x) \ne y} u_n^1 = \sum_n u^1_n \varepsilon_1$。刚好$\sum_n u^1_n$又是常数，再消掉，我们可以轻松得到$d^1 = \sqrt{\frac{1-\varepsilon_1}{\varepsilon_1}}$。这里我们需要做乘法和除法，虽然对程序而言问题不大，但是公式上不是那么好看。我们可以将这个系数改成$a^t = \ln(d^t)$这样一来，我们就可以把公式改成
 $$
-u^{t+1}_n = u^t \times \exp(a^t) \text{ if } f(x) = y \\
-u^{t+1}_n = u^t \times \exp(-a^t) \text{ if } f(x) \ne y
+u^{t+1}_n = u^t \times \exp(-a^t) \text{ if } f(x) = y \\
+u^{t+1}_n = u^t \times \exp(a^t) \text{ if } f(x) \ne y
 $$
 然后我们又发现，如果我们做二分类的问题，我们可以将$y$的取值改为$\pm 1$，这样一来，我们上面的公式就可以化简到一个非常舒服的样子：
 $$
