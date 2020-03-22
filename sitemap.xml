@@ -2,16 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://samaelchen.github.io/pytorch-pggan/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step17/</loc>
     
-    <lastmod>2019-01-24T12:16:11.467Z</lastmod>
+    <lastmod>2020-03-22T18:02:02.958Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samaelchen.github.io/schedule/</loc>
+    
+    <lastmod>2020-03-22T18:00:46.465Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://samaelchen.github.io/economics_thoughts_notes5/</loc>
     
-    <lastmod>2019-01-24T12:11:32.399Z</lastmod>
+    <lastmod>2020-03-22T18:00:46.465Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samaelchen.github.io/dbscan_and_optics/</loc>
+    
+    <lastmod>2020-03-22T18:00:46.465Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samaelchen.github.io/pytorch-pggan/</loc>
+    
+    <lastmod>2019-01-24T12:16:11.467Z</lastmod>
     
   </url>
   
@@ -30,21 +51,7 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/machine_learning_step13/</loc>
-    
-    <lastmod>2018-10-09T13:26:34.259Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://samaelchen.github.io/machine_learning_step10/</loc>
-    
-    <lastmod>2018-10-09T13:26:34.259Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://samaelchen.github.io/machine_learning_step1/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_hw02/</loc>
     
     <lastmod>2018-10-09T13:26:34.259Z</lastmod>
     
@@ -65,14 +72,14 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/machine_learning_step2/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step18/</loc>
     
     <lastmod>2018-10-09T13:26:34.259Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/machine_learning_step18/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step3/</loc>
     
     <lastmod>2018-10-09T13:26:34.259Z</lastmod>
     
@@ -86,7 +93,7 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/machine_learning_step3/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step2/</loc>
     
     <lastmod>2018-10-09T13:26:34.259Z</lastmod>
     
@@ -107,7 +114,7 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/pytorch_cloze/</loc>
+    <loc>https://samaelchen.github.io/pytorch-char-rnn/</loc>
     
     <lastmod>2018-10-09T13:26:34.259Z</lastmod>
     
@@ -121,14 +128,14 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/pytorch-char-rnn/</loc>
+    <loc>https://samaelchen.github.io/pytorch_cloze/</loc>
     
     <lastmod>2018-10-09T13:26:34.259Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/machine_learning_step12/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step1/</loc>
     
     <lastmod>2018-10-09T13:26:34.259Z</lastmod>
     
@@ -156,7 +163,7 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/machine_learning_step17/</loc>
+    <loc>https://samaelchen.github.io/linear_algebra_step9/</loc>
     
     <lastmod>2018-10-09T13:26:34.259Z</lastmod>
     
@@ -177,7 +184,7 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/linear_algebra_step9/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step7/</loc>
     
     <lastmod>2018-10-09T13:26:34.259Z</lastmod>
     
@@ -191,21 +198,21 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/machine_learning_hw02/</loc>
-    
-    <lastmod>2018-10-09T13:26:34.259Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://samaelchen.github.io/machine_learning_step7/</loc>
-    
-    <lastmod>2018-10-09T13:26:34.259Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://samaelchen.github.io/machine_learning_hw04/</loc>
+    
+    <lastmod>2018-10-09T13:26:34.259Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samaelchen.github.io/machine_learning_step13/</loc>
+    
+    <lastmod>2018-10-09T13:26:34.259Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samaelchen.github.io/machine_learning_step10/</loc>
     
     <lastmod>2018-10-09T13:26:34.259Z</lastmod>
     
@@ -226,16 +233,9 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/LSTM-pytorch/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step12/</loc>
     
-    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://samaelchen.github.io/deeplearning_sp1/</loc>
-    
-    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
+    <lastmod>2018-10-09T13:26:34.259Z</lastmod>
     
   </url>
   
@@ -268,14 +268,14 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/leetcode/</loc>
+    <loc>https://samaelchen.github.io/linear_algebra_step1/</loc>
     
     <lastmod>2018-10-09T13:26:34.255Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/linear_algebra_step1/</loc>
+    <loc>https://samaelchen.github.io/leetcode/</loc>
     
     <lastmod>2018-10-09T13:26:34.255Z</lastmod>
     
@@ -289,13 +289,6 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/linear_algebra_step11/</loc>
-    
-    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://samaelchen.github.io/linear_algebra_step12/</loc>
     
     <lastmod>2018-10-09T13:26:34.255Z</lastmod>
@@ -303,7 +296,28 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/linear_algebra_step13/</loc>
+    <loc>https://samaelchen.github.io/linear_algebra_step11/</loc>
+    
+    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samaelchen.github.io/linear_algebra_step2/</loc>
+    
+    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samaelchen.github.io/linear_algebra_step3/</loc>
+    
+    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samaelchen.github.io/linear_algebra_step4/</loc>
     
     <lastmod>2018-10-09T13:26:34.255Z</lastmod>
     
@@ -324,13 +338,6 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/linear_algebra_step3/</loc>
-    
-    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://samaelchen.github.io/economics_thoughts_notes3/</loc>
     
     <lastmod>2018-10-09T13:26:34.255Z</lastmod>
@@ -345,14 +352,7 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/linear_algebra_step2/</loc>
-    
-    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://samaelchen.github.io/linear_algebra_step4/</loc>
+    <loc>https://samaelchen.github.io/linear_algebra_step13/</loc>
     
     <lastmod>2018-10-09T13:26:34.255Z</lastmod>
     
@@ -373,35 +373,14 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/deep_learning_step3/</loc>
-    
-    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://samaelchen.github.io/economics_thoughts_notes4/</loc>
-    
-    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://samaelchen.github.io/deep_learning_step2/</loc>
-    
-    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://samaelchen.github.io/linear_algebra_step8/</loc>
-    
-    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://samaelchen.github.io/linear_algebra_step7/</loc>
+    
+    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samaelchen.github.io/deep_learning_step3/</loc>
     
     <lastmod>2018-10-09T13:26:34.255Z</lastmod>
     
@@ -415,6 +394,27 @@
   </url>
   
   <url>
+    <loc>https://samaelchen.github.io/linear_algebra_step8/</loc>
+    
+    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samaelchen.github.io/economics_thoughts_notes4/</loc>
+    
+    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samaelchen.github.io/LSTM-pytorch/</loc>
+    
+    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://samaelchen.github.io/deep_learning_step5/</loc>
     
     <lastmod>2018-10-09T13:26:34.255Z</lastmod>
@@ -422,7 +422,7 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/deep_learning_step6/</loc>
+    <loc>https://samaelchen.github.io/deeplearning_sp1/</loc>
     
     <lastmod>2018-10-09T13:26:34.255Z</lastmod>
     
@@ -436,6 +436,20 @@
   </url>
   
   <url>
+    <loc>https://samaelchen.github.io/deep_learning_step6/</loc>
+    
+    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samaelchen.github.io/deep_learning_step2/</loc>
+    
+    <lastmod>2018-10-09T13:26:34.255Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://samaelchen.github.io/linux_software/</loc>
     
     <lastmod>2018-08-02T14:50:55.845Z</lastmod>
@@ -443,14 +457,14 @@
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/categories/index.html</loc>
+    <loc>https://samaelchen.github.io/about/index.html</loc>
     
     <lastmod>2018-08-02T14:50:55.845Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://samaelchen.github.io/about/index.html</loc>
+    <loc>https://samaelchen.github.io/categories/index.html</loc>
     
     <lastmod>2018-08-02T14:50:55.845Z</lastmod>
     

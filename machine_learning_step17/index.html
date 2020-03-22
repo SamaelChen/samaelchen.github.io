@@ -153,7 +153,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml122.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml123.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml124.png">
-<meta property="og:updated_time" content="2018-10-09T13:26:34.259Z">
+<meta property="og:updated_time" content="2020-03-22T18:02:02.958Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="台大李宏毅机器学习——集成算法">
 <meta name="twitter:description" content="集成算法基本上现在已经成为机器学习的标准套路，单一模型的几乎已经销声匿迹。集成算法有两大分类，一类是bagging，一类是boosting。">
@@ -255,6 +255,10 @@
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+    
+      
+        <h1 class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</h1>
+      
     
   </div>
 
@@ -444,7 +448,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-10-09 21:26:34" itemprop="dateModified" datetime="2018-10-09T21:26:34+08:00">2018-10-09</time>
+                <time title="Modified: 2020-03-23 02:02:02" itemprop="dateModified" datetime="2020-03-23T02:02:02+08:00">2020-03-23</time>
               
             
           </span>
@@ -527,8 +531,8 @@
 \]</span> 现在的结果是： <span class="math display">\[
 \varepsilon_2 = \frac{\sum_n u_n^2 \delta(f_2(x_n) \ne y_n)}{\sum_n u_n^2}
 \]</span> 那么其中的<span class="math inline">\(\sum_n u_n^2 = \sum_{f(x) = y} u_n^1 / d^1 + \sum_{f(x) \ne y} u_n^1 \times d^1\)</span>。而分子部分就等于<span class="math inline">\(\sum_{f(x) \ne y} u_n^1 \times d^1\)</span>。现在我们要<span class="math inline">\(\varepsilon_2 = 0.5\)</span>，可以知道，就是让<span class="math inline">\(\sum_{f(x) \ne y} u_n^1 \times d^1 = \sum_{f(x) = y} u_n^1 / d^1\)</span>。因为<span class="math inline">\(d^1\)</span>是常数，可以提取出来，然后<span class="math inline">\(\sum_{f(x) = y} u_n^1 = \sum_n u^1_n (1-\varepsilon_1)，\sum_{f(x) \ne y} u_n^1 = \sum_n u^1_n \varepsilon_1\)</span>。刚好<span class="math inline">\(\sum_n u^1_n\)</span>又是常数，再消掉，我们可以轻松得到<span class="math inline">\(d^1 = \sqrt{\frac{1-\varepsilon_1}{\varepsilon_1}}\)</span>。这里我们需要做乘法和除法，虽然对程序而言问题不大，但是公式上不是那么好看。我们可以将这个系数改成<span class="math inline">\(a^t = \ln(d^t)\)</span>这样一来，我们就可以把公式改成 <span class="math display">\[
-u^{t+1}_n = u^t \times \exp(a^t) \text{ if } f(x) = y \\
-u^{t+1}_n = u^t \times \exp(-a^t) \text{ if } f(x) \ne y
+u^{t+1}_n = u^t \times \exp(-a^t) \text{ if } f(x) = y \\
+u^{t+1}_n = u^t \times \exp(a^t) \text{ if } f(x) \ne y
 \]</span> 然后我们又发现，如果我们做二分类的问题，我们可以将<span class="math inline">\(y\)</span>的取值改为<span class="math inline">\(\pm 1\)</span>，这样一来，我们上面的公式就可以化简到一个非常舒服的样子： <span class="math display">\[
 u^{t+1}_n = u^t \times \exp(- y f_t(x) a^t)
 \]</span></p>
@@ -743,7 +747,7 @@ L &amp;= \sum_n \exp(-y_n g_t(x_n)) \\
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-count">65</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -841,7 +845,7 @@ L &amp;= \sum_n \exp(-y_n g_t(x_n)) \\
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-heart"></i>
   </span>
