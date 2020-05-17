@@ -1,27 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>LSTM的PyTorch实现</title>
-    <url>/LSTM-pytorch/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>基于PyTorch的LSTM实现。</p>
+    <title>台大李宏毅深度学习——RNN语言模型</title>
+    <url>/deep_learning_step3/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>RNN用于语言模型</p>
 <a id="more"></a>
-<p>PyTorch封装了很多常用的神经网络，要实现LSTM非常的容易。这里用官网的实例修改实现练习里面的character level LSTM。</p>
-<p>首先还是老样子，import需要的module： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"></span><br><span class="line">torch.manual_seed(<span class="number">1</span>)</span><br></pre></td></tr></table></figure></p>
-<p>然后为了将数据放到网络里面，我们需要做一个编码单词的函数： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prepare_char_sequence</span><span class="params">(word, to_ix)</span>:</span></span><br><span class="line">    idxs = [to_ix[char] <span class="keyword">for</span> char <span class="keyword">in</span> word]</span><br><span class="line">    <span class="keyword">return</span>(torch.tensor(idxs, dtype=torch.long))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prepare_sequence</span><span class="params">(seq, to_ix)</span>:</span></span><br><span class="line">    idxs = [to_ix[w] <span class="keyword">for</span> w <span class="keyword">in</span> seq]</span><br><span class="line">    char_idxs = [prepare_char_sequence(w, char_to_ix) <span class="keyword">for</span> w <span class="keyword">in</span> seq]</span><br><span class="line">    <span class="keyword">return</span> torch.tensor(idxs, dtype=torch.long), char_idxs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">training_data = [</span><br><span class="line">    (<span class="string">"The dog ate the apple"</span>.split(), [<span class="string">"DET"</span>, <span class="string">"NN"</span>, <span class="string">"V"</span>, <span class="string">"DET"</span>, <span class="string">"NN"</span>]),</span><br><span class="line">    (<span class="string">"Everybody read that book"</span>.split(), [<span class="string">"NN"</span>, <span class="string">"V"</span>, <span class="string">"DET"</span>, <span class="string">"NN"</span>])</span><br><span class="line">]</span><br><span class="line">word_to_ix = &#123;&#125;</span><br><span class="line">char_to_ix = &#123;&#125;</span><br><span class="line"><span class="keyword">for</span> sent, tags <span class="keyword">in</span> training_data:</span><br><span class="line">    <span class="keyword">for</span> word <span class="keyword">in</span> sent:</span><br><span class="line">        <span class="keyword">if</span> word <span class="keyword">not</span> <span class="keyword">in</span> word_to_ix:</span><br><span class="line">            word_to_ix[word] = len(word_to_ix)</span><br><span class="line">        <span class="keyword">for</span> char <span class="keyword">in</span> word:</span><br><span class="line">            <span class="keyword">if</span> char <span class="keyword">not</span> <span class="keyword">in</span> char_to_ix:</span><br><span class="line">                char_to_ix[char] = len(char_to_ix)</span><br><span class="line">print(word_to_ix)</span><br><span class="line">print(char_to_ix)</span><br><span class="line"></span><br><span class="line">tag_to_ix = &#123;<span class="string">"DET"</span>: <span class="number">0</span>, <span class="string">"NN"</span>: <span class="number">1</span>, <span class="string">"V"</span>: <span class="number">2</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># These will usually be more like 32 or 64 dimensional.</span></span><br><span class="line"><span class="comment"># We will keep them small, so we can see how the weights change as we train.</span></span><br><span class="line">WORD_EMBEDDING_DIM = <span class="number">5</span></span><br><span class="line">CHAR_EMBEDDING_DIM = <span class="number">5</span></span><br><span class="line">CHAR_HIDDEN_DIM = <span class="number">3</span></span><br><span class="line">WORD_HIDDEN_DIM = <span class="number">6</span></span><br></pre></td></tr></table></figure></p>
-<p>其实这里想想，如果是全文本，我们的character level编码也就26个字母表那么多。</p>
-<p>然后我们定义一个character level的网络： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LSTMTagger</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, char_embedding_dim, word_embedding_dim, char_hidden_dim, word_hidden_dim, char_size, vocab_size, tagset_size)</span>:</span></span><br><span class="line">        super(LSTMTagger, self).__init__()</span><br><span class="line">        self.char_embedding_dim = char_embedding_dim</span><br><span class="line">        self.word_embedding_dim = word_embedding_dim</span><br><span class="line">        self.char_hidden_dim = char_hidden_dim</span><br><span class="line">        self.word_hidden_dim = word_hidden_dim</span><br><span class="line">        self.char_embeddings = nn.Embedding(char_size, char_embedding_dim)</span><br><span class="line">        self.word_embeddings = nn.Embedding(vocab_size, word_embedding_dim)</span><br><span class="line"></span><br><span class="line">        self.char_lstm = nn.LSTM(char_embedding_dim, char_hidden_dim)</span><br><span class="line">        self.word_lstm = nn.LSTM((word_embedding_dim + char_hidden_dim), word_hidden_dim)</span><br><span class="line"></span><br><span class="line">        self.hidden2tag = nn.Linear(word_hidden_dim, tagset_size)</span><br><span class="line">        self.char_hidden = self.init_hidden(self.char_hidden_dim)</span><br><span class="line">        self.word_hidden = self.init_hidden(self.word_hidden_dim)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_hidden</span><span class="params">(self, hidden_dim)</span>:</span></span><br><span class="line">        <span class="keyword">return</span>(torch.zeros(<span class="number">1</span>, <span class="number">1</span>, hidden_dim),</span><br><span class="line">               torch.zeros(<span class="number">1</span>, <span class="number">1</span>, hidden_dim))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, sentence)</span>:</span></span><br><span class="line">        char_lstm_result = []</span><br><span class="line">        <span class="keyword">for</span> word <span class="keyword">in</span> sentence[<span class="number">1</span>]:</span><br><span class="line">            self.char_hidden = self.init_hidden(self.char_hidden_dim)</span><br><span class="line">            char_embeds = self.char_embeddings(word)</span><br><span class="line">            lstm_char_out, self.char_hidden = self.char_lstm(char_embeds.view(len(word), <span class="number">1</span>, <span class="number">-1</span>), self.char_hidden)</span><br><span class="line">            char_lstm_result.append(lstm_char_out[<span class="number">-1</span>])</span><br><span class="line"></span><br><span class="line">        word_embeds = self.word_embeddings(sentence[<span class="number">0</span>])</span><br><span class="line">        char_lstm_result = torch.stack(char_lstm_result)</span><br><span class="line">        lstm_in = torch.cat((word_embeds.view(len(sentence[<span class="number">0</span>]), <span class="number">1</span>, <span class="number">-1</span>), char_lstm_result), <span class="number">2</span>)</span><br><span class="line">        lstm_out, self.hidden = self.word_lstm(lstm_in, self.word_hidden)</span><br><span class="line">        tag_space = self.hidden2tag(lstm_out.view(len(sentence[<span class="number">0</span>]), <span class="number">-1</span>))</span><br><span class="line">        tag_scores = F.log_softmax(tag_space, dim=<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> tag_scores</span><br></pre></td></tr></table></figure></p>
-<p>在forward部分可以看到，这里有两个LSTM。第一个LSTM做的事情是将character拼成word，相当于是返回了一个character level的word embedding。然后用这个embedding和直接embedding的word vector拼到一起，放到第二个LSTM里面训练词性标注。另外要注意的是，这里虽然有两个LSTM模型，但是我们并没有定义第一个LSTM的loss function。因为我们要让这个网络按照最后词性标注的效果来训练，因此我们不需要定义这个网络的loss function。</p>
-<p>定义一下相关的参数：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">model = LSTMTagger(CHAR_EMBEDDING_DIM, WORD_EMBEDDING_DIM, CHAR_HIDDEN_DIM, WORD_HIDDEN_DIM, len(char_to_ix), len(word_to_ix), len(tag_to_ix))</span><br><span class="line">loss_function = nn.NLLLoss()</span><br><span class="line">optimizer = optim.SGD(model.parameters(), lr=<span class="number">0.1</span>)</span><br></pre></td></tr></table></figure>
-<p>看一下训练前的输出结果是什么： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    inputs = prepare_sequence(training_data[<span class="number">0</span>][<span class="number">0</span>], word_to_ix)</span><br><span class="line">    tag_scores = model(inputs)</span><br><span class="line">    print(tag_scores)</span><br></pre></td></tr></table></figure></p>
-<p>再看一下训练300轮之后的结果： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">300</span>):</span><br><span class="line">    <span class="keyword">for</span> sentence, tags <span class="keyword">in</span> training_data:</span><br><span class="line">        model.zero_grad()</span><br><span class="line">        model.hidden = model.init_hidden(WORD_EMBEDDING_DIM)</span><br><span class="line">        sentence_in = prepare_sequence(sentence, word_to_ix)</span><br><span class="line">        targets = prepare_char_sequence(tags, tag_to_ix)</span><br><span class="line">        tag_scores = model(sentence_in)</span><br><span class="line"></span><br><span class="line">        loss = loss_function(tag_scores, targets)</span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    inputs = prepare_sequence(training_data[<span class="number">0</span>][<span class="number">0</span>], word_to_ix)</span><br><span class="line">    tag_scores = model(inputs)</span><br><span class="line">    print(tag_scores)</span><br></pre></td></tr></table></figure></p>
-<p>一般而言，character level的LSTM会比word level的更有效果。这里因为是一个toy级别的，看不出太显著的差别来。如果是海量数据，一般而言会有比较明显的效果。</p>
-<p>另外，原来的example是单向的LSTM，这里顺便做一个双向的。其实双向的LSTM就是正向一个，反向再一个，所以hidden的部分是两倍。所以要修改的地方就是网络的定义，将单向LSTM的hidden乘以2就好了：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LSTMTagger</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, embedding_dim, hidden_dim, vocab_size, tagset_size)</span>:</span></span><br><span class="line">        super(LSTMTagger, self).__init__()</span><br><span class="line">        self.hidden_dim = hidden_dim</span><br><span class="line">        self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)</span><br><span class="line"></span><br><span class="line">        self.lstm = nn.LSTM(embedding_dim, hidden_dim, bidirectional=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">        self.hidden2tag = nn.Linear(hidden_dim * <span class="number">2</span>, tagset_size)</span><br><span class="line">        self.hidden = self.init_hidden()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_hidden</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span>(torch.zeros(<span class="number">1</span> * <span class="number">2</span>, <span class="number">1</span>, self.hidden_dim),</span><br><span class="line">               torch.zeros(<span class="number">1</span> * <span class="number">2</span>, <span class="number">1</span>, self.hidden_dim))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, sentence)</span>:</span></span><br><span class="line">        embeds = self.word_embeddings(sentence)</span><br><span class="line">        lstm_out, self.hidden = self.lstm(</span><br><span class="line">            embeds.view(len(sentence), <span class="number">1</span>, <span class="number">-1</span>), self.hidden)</span><br><span class="line">        tag_space = self.hidden2tag(lstm_out.view(len(sentence), <span class="number">-1</span>))</span><br><span class="line">        tag_scores = F.log_softmax(tag_space, dim=<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> tag_scores</span><br></pre></td></tr></table></figure>
-<p>这样就简单实现了一个toy级别的双向LSTM和character level的单向LSTM。</p>
+<p>在RNN出现以前，一般我们用的是N-gram model。所谓的N-gram model就是一个条件概率模型。比如2-gram用公式表示就是： <span class="math display">\[
+P(w_1, w_2, w_3, \cdots, w_n) = P(w_1 | start)P(w_2 | w_1)\cdots P(w_n | w_{n-1})
+\]</span> 这边的概率就是计算<span class="math inline">\(P(w_n | w_{n-1}) = \frac{\text{count}(w_{n-1} w_n)}{\text{count}(w_{n-1})}\)</span>。那相应的3-gram，4-gram就一样的道理。一般而言，n越大肯定效果就越好，但是计算量可想而知。</p>
+<p>另外N-gram的问题就是，如果我们的语料库不够大的话，那么其实没有办法学到真正在语言空间中的概率。另外实操N-gram的时候，为了避免因为语料库太小导致一些条件概率变成0，我们一般会给一个非常非常小的概率，这个操作叫做smoothing。</p>
+<p>另外还有一些smoothing的方法，比如说我们可以做matrix factorization。这个就跟我们平时推荐系统里面使用的矩阵分解一样，比如说SVD或者是NMF都可以。</p>
+<p>那么RNN的好处就是，在参数量不增加的情况下，我们可以看得比N-gram更多。如下图：</p>
+<p><img src="https://i.imgur.com/gQgaden.png"></p>
+<p>呃，基于RNN的语言模型好像也就这些内容了。</p>
 ]]></content>
       <categories>
-        <category>PyTorch</category>
+        <category>深度学习</category>
       </categories>
   </entry>
   <entry>
@@ -105,6 +99,56 @@ y = \sigma(W h^t)
       </categories>
   </entry>
   <entry>
+    <title>LSTM的PyTorch实现</title>
+    <url>/LSTM-pytorch/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>基于PyTorch的LSTM实现。</p>
+<a id="more"></a>
+<p>PyTorch封装了很多常用的神经网络，要实现LSTM非常的容易。这里用官网的实例修改实现练习里面的character level LSTM。</p>
+<p>首先还是老样子，import需要的module： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"></span><br><span class="line">torch.manual_seed(<span class="number">1</span>)</span><br></pre></td></tr></table></figure></p>
+<p>然后为了将数据放到网络里面，我们需要做一个编码单词的函数： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prepare_char_sequence</span><span class="params">(word, to_ix)</span>:</span></span><br><span class="line">    idxs = [to_ix[char] <span class="keyword">for</span> char <span class="keyword">in</span> word]</span><br><span class="line">    <span class="keyword">return</span>(torch.tensor(idxs, dtype=torch.long))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prepare_sequence</span><span class="params">(seq, to_ix)</span>:</span></span><br><span class="line">    idxs = [to_ix[w] <span class="keyword">for</span> w <span class="keyword">in</span> seq]</span><br><span class="line">    char_idxs = [prepare_char_sequence(w, char_to_ix) <span class="keyword">for</span> w <span class="keyword">in</span> seq]</span><br><span class="line">    <span class="keyword">return</span> torch.tensor(idxs, dtype=torch.long), char_idxs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">training_data = [</span><br><span class="line">    (<span class="string">"The dog ate the apple"</span>.split(), [<span class="string">"DET"</span>, <span class="string">"NN"</span>, <span class="string">"V"</span>, <span class="string">"DET"</span>, <span class="string">"NN"</span>]),</span><br><span class="line">    (<span class="string">"Everybody read that book"</span>.split(), [<span class="string">"NN"</span>, <span class="string">"V"</span>, <span class="string">"DET"</span>, <span class="string">"NN"</span>])</span><br><span class="line">]</span><br><span class="line">word_to_ix = &#123;&#125;</span><br><span class="line">char_to_ix = &#123;&#125;</span><br><span class="line"><span class="keyword">for</span> sent, tags <span class="keyword">in</span> training_data:</span><br><span class="line">    <span class="keyword">for</span> word <span class="keyword">in</span> sent:</span><br><span class="line">        <span class="keyword">if</span> word <span class="keyword">not</span> <span class="keyword">in</span> word_to_ix:</span><br><span class="line">            word_to_ix[word] = len(word_to_ix)</span><br><span class="line">        <span class="keyword">for</span> char <span class="keyword">in</span> word:</span><br><span class="line">            <span class="keyword">if</span> char <span class="keyword">not</span> <span class="keyword">in</span> char_to_ix:</span><br><span class="line">                char_to_ix[char] = len(char_to_ix)</span><br><span class="line">print(word_to_ix)</span><br><span class="line">print(char_to_ix)</span><br><span class="line"></span><br><span class="line">tag_to_ix = &#123;<span class="string">"DET"</span>: <span class="number">0</span>, <span class="string">"NN"</span>: <span class="number">1</span>, <span class="string">"V"</span>: <span class="number">2</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># These will usually be more like 32 or 64 dimensional.</span></span><br><span class="line"><span class="comment"># We will keep them small, so we can see how the weights change as we train.</span></span><br><span class="line">WORD_EMBEDDING_DIM = <span class="number">5</span></span><br><span class="line">CHAR_EMBEDDING_DIM = <span class="number">5</span></span><br><span class="line">CHAR_HIDDEN_DIM = <span class="number">3</span></span><br><span class="line">WORD_HIDDEN_DIM = <span class="number">6</span></span><br></pre></td></tr></table></figure></p>
+<p>其实这里想想，如果是全文本，我们的character level编码也就26个字母表那么多。</p>
+<p>然后我们定义一个character level的网络： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LSTMTagger</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, char_embedding_dim, word_embedding_dim, char_hidden_dim, word_hidden_dim, char_size, vocab_size, tagset_size)</span>:</span></span><br><span class="line">        super(LSTMTagger, self).__init__()</span><br><span class="line">        self.char_embedding_dim = char_embedding_dim</span><br><span class="line">        self.word_embedding_dim = word_embedding_dim</span><br><span class="line">        self.char_hidden_dim = char_hidden_dim</span><br><span class="line">        self.word_hidden_dim = word_hidden_dim</span><br><span class="line">        self.char_embeddings = nn.Embedding(char_size, char_embedding_dim)</span><br><span class="line">        self.word_embeddings = nn.Embedding(vocab_size, word_embedding_dim)</span><br><span class="line"></span><br><span class="line">        self.char_lstm = nn.LSTM(char_embedding_dim, char_hidden_dim)</span><br><span class="line">        self.word_lstm = nn.LSTM((word_embedding_dim + char_hidden_dim), word_hidden_dim)</span><br><span class="line"></span><br><span class="line">        self.hidden2tag = nn.Linear(word_hidden_dim, tagset_size)</span><br><span class="line">        self.char_hidden = self.init_hidden(self.char_hidden_dim)</span><br><span class="line">        self.word_hidden = self.init_hidden(self.word_hidden_dim)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_hidden</span><span class="params">(self, hidden_dim)</span>:</span></span><br><span class="line">        <span class="keyword">return</span>(torch.zeros(<span class="number">1</span>, <span class="number">1</span>, hidden_dim),</span><br><span class="line">               torch.zeros(<span class="number">1</span>, <span class="number">1</span>, hidden_dim))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, sentence)</span>:</span></span><br><span class="line">        char_lstm_result = []</span><br><span class="line">        <span class="keyword">for</span> word <span class="keyword">in</span> sentence[<span class="number">1</span>]:</span><br><span class="line">            self.char_hidden = self.init_hidden(self.char_hidden_dim)</span><br><span class="line">            char_embeds = self.char_embeddings(word)</span><br><span class="line">            lstm_char_out, self.char_hidden = self.char_lstm(char_embeds.view(len(word), <span class="number">1</span>, <span class="number">-1</span>), self.char_hidden)</span><br><span class="line">            char_lstm_result.append(lstm_char_out[<span class="number">-1</span>])</span><br><span class="line"></span><br><span class="line">        word_embeds = self.word_embeddings(sentence[<span class="number">0</span>])</span><br><span class="line">        char_lstm_result = torch.stack(char_lstm_result)</span><br><span class="line">        lstm_in = torch.cat((word_embeds.view(len(sentence[<span class="number">0</span>]), <span class="number">1</span>, <span class="number">-1</span>), char_lstm_result), <span class="number">2</span>)</span><br><span class="line">        lstm_out, self.hidden = self.word_lstm(lstm_in, self.word_hidden)</span><br><span class="line">        tag_space = self.hidden2tag(lstm_out.view(len(sentence[<span class="number">0</span>]), <span class="number">-1</span>))</span><br><span class="line">        tag_scores = F.log_softmax(tag_space, dim=<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> tag_scores</span><br></pre></td></tr></table></figure></p>
+<p>在forward部分可以看到，这里有两个LSTM。第一个LSTM做的事情是将character拼成word，相当于是返回了一个character level的word embedding。然后用这个embedding和直接embedding的word vector拼到一起，放到第二个LSTM里面训练词性标注。另外要注意的是，这里虽然有两个LSTM模型，但是我们并没有定义第一个LSTM的loss function。因为我们要让这个网络按照最后词性标注的效果来训练，因此我们不需要定义这个网络的loss function。</p>
+<p>定义一下相关的参数：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">model = LSTMTagger(CHAR_EMBEDDING_DIM, WORD_EMBEDDING_DIM, CHAR_HIDDEN_DIM, WORD_HIDDEN_DIM, len(char_to_ix), len(word_to_ix), len(tag_to_ix))</span><br><span class="line">loss_function = nn.NLLLoss()</span><br><span class="line">optimizer = optim.SGD(model.parameters(), lr=<span class="number">0.1</span>)</span><br></pre></td></tr></table></figure>
+<p>看一下训练前的输出结果是什么： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    inputs = prepare_sequence(training_data[<span class="number">0</span>][<span class="number">0</span>], word_to_ix)</span><br><span class="line">    tag_scores = model(inputs)</span><br><span class="line">    print(tag_scores)</span><br></pre></td></tr></table></figure></p>
+<p>再看一下训练300轮之后的结果： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">300</span>):</span><br><span class="line">    <span class="keyword">for</span> sentence, tags <span class="keyword">in</span> training_data:</span><br><span class="line">        model.zero_grad()</span><br><span class="line">        model.hidden = model.init_hidden(WORD_EMBEDDING_DIM)</span><br><span class="line">        sentence_in = prepare_sequence(sentence, word_to_ix)</span><br><span class="line">        targets = prepare_char_sequence(tags, tag_to_ix)</span><br><span class="line">        tag_scores = model(sentence_in)</span><br><span class="line"></span><br><span class="line">        loss = loss_function(tag_scores, targets)</span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    inputs = prepare_sequence(training_data[<span class="number">0</span>][<span class="number">0</span>], word_to_ix)</span><br><span class="line">    tag_scores = model(inputs)</span><br><span class="line">    print(tag_scores)</span><br></pre></td></tr></table></figure></p>
+<p>一般而言，character level的LSTM会比word level的更有效果。这里因为是一个toy级别的，看不出太显著的差别来。如果是海量数据，一般而言会有比较明显的效果。</p>
+<p>另外，原来的example是单向的LSTM，这里顺便做一个双向的。其实双向的LSTM就是正向一个，反向再一个，所以hidden的部分是两倍。所以要修改的地方就是网络的定义，将单向LSTM的hidden乘以2就好了：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LSTMTagger</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, embedding_dim, hidden_dim, vocab_size, tagset_size)</span>:</span></span><br><span class="line">        super(LSTMTagger, self).__init__()</span><br><span class="line">        self.hidden_dim = hidden_dim</span><br><span class="line">        self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)</span><br><span class="line"></span><br><span class="line">        self.lstm = nn.LSTM(embedding_dim, hidden_dim, bidirectional=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">        self.hidden2tag = nn.Linear(hidden_dim * <span class="number">2</span>, tagset_size)</span><br><span class="line">        self.hidden = self.init_hidden()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_hidden</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span>(torch.zeros(<span class="number">1</span> * <span class="number">2</span>, <span class="number">1</span>, self.hidden_dim),</span><br><span class="line">               torch.zeros(<span class="number">1</span> * <span class="number">2</span>, <span class="number">1</span>, self.hidden_dim))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, sentence)</span>:</span></span><br><span class="line">        embeds = self.word_embeddings(sentence)</span><br><span class="line">        lstm_out, self.hidden = self.lstm(</span><br><span class="line">            embeds.view(len(sentence), <span class="number">1</span>, <span class="number">-1</span>), self.hidden)</span><br><span class="line">        tag_space = self.hidden2tag(lstm_out.view(len(sentence), <span class="number">-1</span>))</span><br><span class="line">        tag_scores = F.log_softmax(tag_space, dim=<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> tag_scores</span><br></pre></td></tr></table></figure>
+<p>这样就简单实现了一个toy级别的双向LSTM和character level的单向LSTM。</p>
+]]></content>
+      <categories>
+        <category>PyTorch</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>深度学习工作站配置</title>
+    <url>/deeplearning_set_up/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>深度学习工作站配置简介。</p>
+<a id="more"></a>
+<p>这是我在意识到已经落后别人太多的情况下，姗姗来迟的深度学习环境搭建。虽然我觉得深度学习已经被过度消费，但是现状是，如果现在还不追赶，就彻底没机会了。大部分的东西都是轻车熟路的，就不赘述了，说几个碰到的坑。</p>
+<ul>
+<li><p>显卡是GTX 1070往上的机器，安装Ubuntu的时候有可能出现显示器无法显示的状况。不同显示器报错不一，解决方案是拆掉独显，用核显装机并安装显卡驱动，最后插回显卡。</p></li>
+<li><p>装机过程，首先安装系统，固态硬盘挂载系统，机械硬盘挂/home。</p></li>
+<li><p>装好系统换软件源，一般我选阿里云。之后就是常见的sudo apt update &amp;&amp; sudo apt upgrade。</p></li>
+<li><p>第一件事情，安装小飞机。GFW，用Ubuntu你懂得。 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:hzwhuang/ss-qt5</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install shadowsocks-qt5 tsocks</span><br></pre></td></tr></table></figure></p></li>
+<li><p>第二件事情，搜狗官网下载输入法安装包，注销重新登录生效。 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install gdebi</span><br><span class="line">sudo gdebi sougou.deb</span><br></pre></td></tr></table></figure></p></li>
+<li><p>后面很多基本上靠谷歌搜，基本上能搞定全部的东西。</p></li>
+<li>多线程运算是个坑。
+<ul>
+<li>OpenBLAS是个坑，用Ubuntu的好处是用apt安装libopenblas-base和libopenblas-dev后，R、NumPy可以自动调用。但是NumPy要注意一个神坑，所有的BLAS加速仅对float类型有效。</li>
+<li>MKL是个大坑，安装完，R、NumPy均不能自动调用，需要从源码编译。 R还有一个简单解决方案是安装微软改造的R，原来的RRO，安装完用/path/to/RRO/R/lib下的所有文件替换掉/usr/lib/R/lib下的文件。NumPy的解决方法可以是使用英特尔的ICC编译源码，也可以使用anaconda。MKL效率比OpenBLAS高。但是有原生工具就坚决不用第三方的我表示，MKL我放弃了。</li>
+</ul></li>
+<li><p>安装CUDA，cuDNN。现在安装CUDA已经非常容易了，deb一装就行。</p></li>
+<li><p>安装MXNet/TensorFlow。TF已经可以用pip直接安装了，CPU版本就是tensorflow，GPU版本是tensorflow-gpu。MXNet稍微有点搞，需要修改配置文件，但也比较简单，默认直接编译是CPU版本的。好处是MXNet支持R，单纯倒腾数据，其实R的坑比Python少一点，对小白更友好。</p></li>
+</ul>
+]]></content>
+      <categories>
+        <category>深度学习</category>
+      </categories>
+  </entry>
+  <entry>
     <title>台大李宏毅深度学习——计算图模型</title>
     <url>/deep_learning_step2/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Computational Graph实际上是一种描述计算过程的“语言”。这种语言中用node表示variable，用edge表示operation。</p>
@@ -139,24 +183,6 @@ y = \sigma(W h^t)
 <p>那么这里需要注意的是，因为我们每个RNN的block用的都是一样的function，所以实际上这些block是共享权重的，所以实际上我们要计算<span class="math inline">\(\frac{\partial C}{\partial W^h}\)</span>在这个图里面需要计算三个，然后全部加起来：</p>
 <p><img src="https://i.imgur.com/5OuUGzn.png"></p>
 <p>现在基于计算图的框架比较多，MXNet的gluon，PyTorch都是。</p>
-]]></content>
-      <categories>
-        <category>深度学习</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>台大李宏毅深度学习——RNN语言模型</title>
-    <url>/deep_learning_step3/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>RNN用于语言模型</p>
-<a id="more"></a>
-<p>在RNN出现以前，一般我们用的是N-gram model。所谓的N-gram model就是一个条件概率模型。比如2-gram用公式表示就是： <span class="math display">\[
-P(w_1, w_2, w_3, \cdots, w_n) = P(w_1 | start)P(w_2 | w_1)\cdots P(w_n | w_{n-1})
-\]</span> 这边的概率就是计算<span class="math inline">\(P(w_n | w_{n-1}) = \frac{\text{count}(w_{n-1} w_n)}{\text{count}(w_{n-1})}\)</span>。那相应的3-gram，4-gram就一样的道理。一般而言，n越大肯定效果就越好，但是计算量可想而知。</p>
-<p>另外N-gram的问题就是，如果我们的语料库不够大的话，那么其实没有办法学到真正在语言空间中的概率。另外实操N-gram的时候，为了避免因为语料库太小导致一些条件概率变成0，我们一般会给一个非常非常小的概率，这个操作叫做smoothing。</p>
-<p>另外还有一些smoothing的方法，比如说我们可以做matrix factorization。这个就跟我们平时推荐系统里面使用的矩阵分解一样，比如说SVD或者是NMF都可以。</p>
-<p>那么RNN的好处就是，在参数量不增加的情况下，我们可以看得比N-gram更多。如下图：</p>
-<p><img src="https://i.imgur.com/gQgaden.png"></p>
-<p>呃，基于RNN的语言模型好像也就这些内容了。</p>
 ]]></content>
       <categories>
         <category>深度学习</category>
@@ -246,6 +272,22 @@ z, &amp; \mbox{if }z&gt;0
       </categories>
   </entry>
   <entry>
+    <title>日常的丧</title>
+    <url>/depressed/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>日常很丧的各种不开心，小确丧。</p>
+<a id="more"></a>
+<h1 id="section">2018-09-21</h1>
+<p>一直在试char-rnn生成，可能notebook硬盘io频繁了一点，终于把工作站的硬盘搞到写保护了。现在整个硬盘全是坏道。情绪稳定。</p>
+<p>顺便，Linux检查硬盘坏道的方法：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo badblocks -s -v /dev/sdXX &gt; badblocks.txt</span><br></pre></td></tr></table></figure>
+<p>-s可以显示检查进度，不过一般显示进度的话实际检查速度貌似会变慢。</p>
+<p>然后可以用recovery模式去修复一下，fsck -a /dev/sdXX。运气好是逻辑坏道的话能修复好，如果跟我一样修复好一会儿会儿就又写保护了，估计十有八九是物理坏道。</p>
+]]></content>
+      <categories>
+        <category>今天份的不开心</category>
+      </categories>
+  </entry>
+  <entry>
     <title>台大李宏毅深度学习——seq2seq</title>
     <url>/deep_learning_step6/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这节课的内容讲的有点浅，所以我看到是李沐的gluon教程，配合这节课的内容。</p>
@@ -308,22 +350,6 @@ z, &amp; \mbox{if }z&gt;0
 ]]></content>
       <categories>
         <category>深度学习</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>日常的丧</title>
-    <url>/depressed/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>日常很丧的各种不开心，小确丧。</p>
-<a id="more"></a>
-<h1 id="section">2018-09-21</h1>
-<p>一直在试char-rnn生成，可能notebook硬盘io频繁了一点，终于把工作站的硬盘搞到写保护了。现在整个硬盘全是坏道。情绪稳定。</p>
-<p>顺便，Linux检查硬盘坏道的方法：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo badblocks -s -v /dev/sdXX &gt; badblocks.txt</span><br></pre></td></tr></table></figure>
-<p>-s可以显示检查进度，不过一般显示进度的话实际检查速度貌似会变慢。</p>
-<p>然后可以用recovery模式去修复一下，fsck -a /dev/sdXX。运气好是逻辑坏道的话能修复好，如果跟我一样修复好一会儿会儿就又写保护了，估计十有八九是物理坏道。</p>
-]]></content>
-      <categories>
-        <category>今天份的不开心</category>
       </categories>
   </entry>
   <entry>
@@ -454,32 +480,6 @@ z, &amp; \mbox{if }z&gt;0
       </categories>
   </entry>
   <entry>
-    <title>深度学习工作站配置</title>
-    <url>/deeplearning_set_up/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>深度学习工作站配置简介。</p>
-<a id="more"></a>
-<p>这是我在意识到已经落后别人太多的情况下，姗姗来迟的深度学习环境搭建。虽然我觉得深度学习已经被过度消费，但是现状是，如果现在还不追赶，就彻底没机会了。大部分的东西都是轻车熟路的，就不赘述了，说几个碰到的坑。</p>
-<ul>
-<li><p>显卡是GTX 1070往上的机器，安装Ubuntu的时候有可能出现显示器无法显示的状况。不同显示器报错不一，解决方案是拆掉独显，用核显装机并安装显卡驱动，最后插回显卡。</p></li>
-<li><p>装机过程，首先安装系统，固态硬盘挂载系统，机械硬盘挂/home。</p></li>
-<li><p>装好系统换软件源，一般我选阿里云。之后就是常见的sudo apt update &amp;&amp; sudo apt upgrade。</p></li>
-<li><p>第一件事情，安装小飞机。GFW，用Ubuntu你懂得。 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:hzwhuang/ss-qt5</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install shadowsocks-qt5 tsocks</span><br></pre></td></tr></table></figure></p></li>
-<li><p>第二件事情，搜狗官网下载输入法安装包，注销重新登录生效。 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install gdebi</span><br><span class="line">sudo gdebi sougou.deb</span><br></pre></td></tr></table></figure></p></li>
-<li><p>后面很多基本上靠谷歌搜，基本上能搞定全部的东西。</p></li>
-<li>多线程运算是个坑。
-<ul>
-<li>OpenBLAS是个坑，用Ubuntu的好处是用apt安装libopenblas-base和libopenblas-dev后，R、NumPy可以自动调用。但是NumPy要注意一个神坑，所有的BLAS加速仅对float类型有效。</li>
-<li>MKL是个大坑，安装完，R、NumPy均不能自动调用，需要从源码编译。 R还有一个简单解决方案是安装微软改造的R，原来的RRO，安装完用/path/to/RRO/R/lib下的所有文件替换掉/usr/lib/R/lib下的文件。NumPy的解决方法可以是使用英特尔的ICC编译源码，也可以使用anaconda。MKL效率比OpenBLAS高。但是有原生工具就坚决不用第三方的我表示，MKL我放弃了。</li>
-</ul></li>
-<li><p>安装CUDA，cuDNN。现在安装CUDA已经非常容易了，deb一装就行。</p></li>
-<li><p>安装MXNet/TensorFlow。TF已经可以用pip直接安装了，CPU版本就是tensorflow，GPU版本是tensorflow-gpu。MXNet稍微有点搞，需要修改配置文件，但也比较简单，默认直接编译是CPU版本的。好处是MXNet支持R，单纯倒腾数据，其实R的坑比Python少一点，对小白更友好。</p></li>
-</ul>
-]]></content>
-      <categories>
-        <category>深度学习</category>
-      </categories>
-  </entry>
-  <entry>
     <title>遗传算法</title>
     <url>/genetic_algorithm/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>遗传算法的简要实现</p>
@@ -543,6 +543,40 @@ z, &amp; \mbox{if }z&gt;0
 ]]></content>
       <categories>
         <category>碎碎念</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>LeetCode 刷着玩</title>
+    <url>/leetcode/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>作为一个技术渣，每天刷2-3道LeetCode自虐。233</p>
+<a id="more"></a>
+<p>我就是吃饱了撑的找死。 solved list：</p>
+<ul>
+<li><p>No.1 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Two_Sum.py" target="_blank" rel="noopener">Two Sum</a></p></li>
+<li><p>No.2 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Add_Two_Numbers.py" target="_blank" rel="noopener">Add Two Numbers</a></p></li>
+<li><p>No.3 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Longest_Substring_Without_Repeating_Characters.py" target="_blank" rel="noopener">Longest Substring Without Repeating Characters</a></p></li>
+<li><p>No.7 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Reverse_Integer.py" target="_blank" rel="noopener">Reverse Integer</a></p></li>
+<li><p>No.9 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Palindrome_Number.py" target="_blank" rel="noopener">Palindrom Number</a></p></li>
+<li><p>No.12 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Roman_to_Int.py" target="_blank" rel="noopener">Roman to Int</a></p></li>
+<li><p>No.13 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Int_to_Roman.py" target="_blank" rel="noopener">Int to Roman</a></p></li>
+<li><p>No.14 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Longest_Common_Prefix.py" target="_blank" rel="noopener">Longest Common Prefix</a></p></li>
+<li><p>No.15 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/3Sum.py" target="_blank" rel="noopener">3Sum</a></p></li>
+<li><p>No.20 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Valid_Parentheses.py" target="_blank" rel="noopener">Valid Parentheses</a></p></li>
+<li><p>No.26 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Remove_Duplicates_from_Sorted_Array.py" target="_blank" rel="noopener">Remove Duplicates from Sorted Array</a></p></li>
+<li><p>No.27 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Remove_Element.py" target="_blank" rel="noopener">Remove Element</a></p></li>
+<li><p>No.29 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Divide_Two_Integers.py" target="_blank" rel="noopener">Divide Two Integers</a></p></li>
+<li><p>No.35 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Search_Insert_Position.py" target="_blank" rel="noopener">Search Insert Position</a></p></li>
+<li><p>No.38 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Count_and_Say.py" target="_blank" rel="noopener">Count and Say</a></p></li>
+<li><p>No.53 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Maximum_Subarray.py" target="_blank" rel="noopener">Maximum Subarray</a></p></li>
+<li><p>No.58 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Length_of_Last_Word.py" target="_blank" rel="noopener">Length of Last Word</a></p></li>
+<li><p>No.66 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Plus_One.py" target="_blank" rel="noopener">Plus One</a></p></li>
+<li><p>No.67 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Add_Binary.py" target="_blank" rel="noopener">Add Binary</a></p></li>
+<li><p>No.88 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Merge_Sorted_Array.py" target="_blank" rel="noopener">Merge Sorted Array</a></p></li>
+<li><p>No.191 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Number_of_1_Bits.py" target="_blank" rel="noopener">Number of 1 Bits</a></p></li>
+</ul>
+]]></content>
+      <categories>
+        <category>LeetCode</category>
       </categories>
   </entry>
   <entry>
@@ -634,40 +668,6 @@ a_{ij} b_{ij}
       </categories>
   </entry>
   <entry>
-    <title>LeetCode 刷着玩</title>
-    <url>/leetcode/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>作为一个技术渣，每天刷2-3道LeetCode自虐。233</p>
-<a id="more"></a>
-<p>我就是吃饱了撑的找死。 solved list：</p>
-<ul>
-<li><p>No.1 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Two_Sum.py" target="_blank" rel="noopener">Two Sum</a></p></li>
-<li><p>No.2 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Add_Two_Numbers.py" target="_blank" rel="noopener">Add Two Numbers</a></p></li>
-<li><p>No.3 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Longest_Substring_Without_Repeating_Characters.py" target="_blank" rel="noopener">Longest Substring Without Repeating Characters</a></p></li>
-<li><p>No.7 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Reverse_Integer.py" target="_blank" rel="noopener">Reverse Integer</a></p></li>
-<li><p>No.9 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Palindrome_Number.py" target="_blank" rel="noopener">Palindrom Number</a></p></li>
-<li><p>No.12 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Roman_to_Int.py" target="_blank" rel="noopener">Roman to Int</a></p></li>
-<li><p>No.13 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Int_to_Roman.py" target="_blank" rel="noopener">Int to Roman</a></p></li>
-<li><p>No.14 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Longest_Common_Prefix.py" target="_blank" rel="noopener">Longest Common Prefix</a></p></li>
-<li><p>No.15 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/3Sum.py" target="_blank" rel="noopener">3Sum</a></p></li>
-<li><p>No.20 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Valid_Parentheses.py" target="_blank" rel="noopener">Valid Parentheses</a></p></li>
-<li><p>No.26 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Remove_Duplicates_from_Sorted_Array.py" target="_blank" rel="noopener">Remove Duplicates from Sorted Array</a></p></li>
-<li><p>No.27 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Remove_Element.py" target="_blank" rel="noopener">Remove Element</a></p></li>
-<li><p>No.29 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Divide_Two_Integers.py" target="_blank" rel="noopener">Divide Two Integers</a></p></li>
-<li><p>No.35 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Search_Insert_Position.py" target="_blank" rel="noopener">Search Insert Position</a></p></li>
-<li><p>No.38 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Count_and_Say.py" target="_blank" rel="noopener">Count and Say</a></p></li>
-<li><p>No.53 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Maximum_Subarray.py" target="_blank" rel="noopener">Maximum Subarray</a></p></li>
-<li><p>No.58 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Length_of_Last_Word.py" target="_blank" rel="noopener">Length of Last Word</a></p></li>
-<li><p>No.66 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Plus_One.py" target="_blank" rel="noopener">Plus One</a></p></li>
-<li><p>No.67 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Add_Binary.py" target="_blank" rel="noopener">Add Binary</a></p></li>
-<li><p>No.88 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Merge_Sorted_Array.py" target="_blank" rel="noopener">Merge Sorted Array</a></p></li>
-<li><p>No.191 <a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/sp/leetcode/Number_of_1_Bits.py" target="_blank" rel="noopener">Number of 1 Bits</a></p></li>
-</ul>
-]]></content>
-      <categories>
-        <category>LeetCode</category>
-      </categories>
-  </entry>
-  <entry>
     <title>线性代数 11</title>
     <url>/linear_algebra_step11/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>向量正交，如果从几何的角度来看，向量的正交可以看作是两个向量垂直。</p>
@@ -716,46 +716,6 @@ v_n &amp; = u_n - \frac{u_n \cdot v_{n-1}}{\|v_{n-1}\|^2}v_{n-1} - \cdots - \fra
 <p>这样的矩阵有一些特性，首先，orthogonal matrix <span class="math inline">\(Q\)</span>的transpose和inverse相等。也就是<span class="math inline">\(Q^{\top} = Q^{-1}，且这两个矩阵都是orthogonal的\)</span>，另外，<span class="math inline">\(\det(Q) = \pm 1\)</span>。最后，orthogonal matrix和orthogonal matrix叉乘之后还是orthogonal matrix。</p>
 <p>orthogonal matrix还有一个很特殊的特性，就是向量和orthogonal matrix相乘以后，向量的norm不变。</p>
 <p>另一种特殊矩阵是symmetric matrix，也就是类似<span class="math inline">\(\begin{bmatrix}a &amp; b \\ b &amp; c \end{bmatrix}\)</span>。首先，symmetric matrix一定有实特征根。其次，symmetric matrix一定有orthogonal eigenvectors。最后，symmetric matrix一定是diagonalizable的。这里存在一个等价关系<span class="math inline">\(A \text{ is symmetric等价于} P^{\top}AP = D 或 A = PDP^{\top}\)</span>。而这的<span class="math inline">\(P\)</span>包含<span class="math inline">\(A\)</span>的特征向量，<span class="math inline">\(D\)</span>是<span class="math inline">\(A\)</span>的特征根组成的对角矩阵。</p>
-]]></content>
-      <categories>
-        <category>统计学习</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>线性代数 02</title>
-    <url>/linear_algebra_step2/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>关于行列式是否有解，以及如何求解</p>
-<a id="more"></a>
-<p>要判断一个行列式是否有解，我们先从一个简单的行列式看起。假设我们有一个方程式： <span class="math display">\[
-\begin{align}
-&amp; a_{11} x_1 + a_{12} x_2 = b_1 \\
-&amp; a_{21} x_1 + a_{22} x_2 = b_2
-\end{align}
-\]</span> 我们可以这样认为，一个方程代表的是一条直线，所以这样的方程组代表了两条直线。在一个平面上，两条直线的关系可以是完全重合、平行、以及相交。因此，很直观可以看到，当两条直线平行或者重合的时候，有无穷多的点可以满足方程等式。而当两条直线相交的时候，就很明显有且仅有一个解。</p>
-<p>接下来看第二个方程组： <span class="math display">\[
-\begin{align}
-&amp; a_{11} x_1 + a_{12} x_2 + a_{13} x_3 = b_1 \\
-&amp; a_{21} x_1 + a_{22} x_2 + a_{23} x_3 = b_2
-\end{align}
-\]</span> 因为是三个未知数，这样的方程确定的是一个平面。现在这里提供了两个平面，因此，不论两个平面是平行还是相交，我们都会得到无穷多的解。</p>
-<p>如果现在我们的方程组是 <span class="math display">\[
-\begin{align}
-&amp; a_{11} x_1 + a_{12} x_2 + a_{13} x_3 = b_1 \\
-&amp; a_{21} x_1 + a_{22} x_2 + a_{23} x_3 = b_2 \\
-&amp; a_{31} x_1 + a_{32} x_2 + a_{33} x_3 = b_3
-\end{align}
-\]</span> 那么现在我们有了三个平面，我们可以想到，三个平面可以相交于一个点，也可以相交于一条直线，也可以完全重叠，或者完全平行，也可以两个平面平行与另一个平面相交于两条直线等等。</p>
-<p>因此我们一样会发现，这样的方程组可能有一个解，或者无穷多解。</p>
-<p>如果现在是四维的数据，我们就很难用图形来表示了，那么怎么判断是否有解。我们可以引入线性组合（linear combination）的概念。</p>
-<p>我们将线性组合定义为：<span class="math inline">\(v = a_1 u_1 + a_2 u_2 + \cdots a_n u_n\)</span>。这里的<span class="math inline">\(u\)</span>和<span class="math inline">\(v\)</span>都是向量。当我们发现一个向量是另外一个向量的线性组合的时候，例如<span class="math inline">\(v = c u\)</span>，那么其实类比到直线的话，这两个向量就是平行的。</p>
-<p>然后我们可以将上面的方程组用矩阵的形式表示为<span class="math inline">\(Ax = b\)</span>，这里<span class="math inline">\(b\)</span>就可以看做是<span class="math inline">\(A\)</span>的线性组合。</p>
-<p>这里再引入另一个概念span。span我们可以认为是一个向量的大集合，但是这些向量都是由一些基础向量通过线性组合得到的。一般可以记做是<span class="math inline">\(\{u_1, u_2, \cdots, u_k \}\)</span>或者是<span class="math inline">\(S=\{c_1 u_1 + c_2 u_2 + \cdots\}\)</span>。这里需要注意，对于一个span而言，所谓基础向量，就是不平行的向量。例如<span class="math inline">\(S_2\)</span>就必须有两个不平行的二维向量才能确定。同理，其他维度的可以推理得到。</p>
-<p>那么这个span跟上面的线性组合有什么关系呢？其实如果<span class="math inline">\(b\)</span>是<span class="math inline">\(A\)</span>的线性组合，那么<span class="math inline">\(b\)</span>就是<span class="math inline">\(A\)</span>的span。所以当方程式满足这样的条件的时候，就有解。</p>
-<p>然后我们回想，刚刚提到了，有时候虽然有解，但是可能有无穷多的解。那么现在的问题就是，如果有解，那么有多少解？</p>
-<p>这里先直接抛出结论，当<span class="math inline">\(A\)</span>线性无关（independent）时候有唯一解，线性相关（depend）时有无穷多解。</p>
-<p>那么什么是线性相关。线性相关就是给定一组向量<span class="math inline">\(\{a_1, a_2, \cdots \}\)</span>，当存在一组标量<span class="math inline">\(\{x_1, x_2 \cdots \}\)</span>，且<span class="math inline">\(x_i\)</span>不全为0，那么只要能让<span class="math inline">\(x_1 a_1 + x_2 a_2 + \cdots = 0\)</span>就是线性相关。而当且仅当所有的<span class="math inline">\(x\)</span>都是0，则说明这是线性无关的。</p>
-<p>最后引入一个概念秩（rank）。秩是表示矩阵内所有线性无关的向量的数量。比如说满秩就说明矩阵的column全都是线性无关的。</p>
-<p>判断完是否有解后，一般采用高斯消元法（Gaussian Elimination）。就是下图的过程： <img src="https://i.imgur.com/1wVVjhQ.png"> 这里提一下的就是augment matrix就是将<span class="math inline">\(b\)</span>拼到<span class="math inline">\(A\)</span>后面，叫做增广矩阵。这样高斯消元法得到的就是最后的解。</p>
 ]]></content>
       <categories>
         <category>统计学习</category>
@@ -834,6 +794,46 @@ x_4 &amp; = \frac{1}{3} x_1 + \frac{1}{2} x_2
       </categories>
   </entry>
   <entry>
+    <title>线性代数 02</title>
+    <url>/linear_algebra_step2/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>关于行列式是否有解，以及如何求解</p>
+<a id="more"></a>
+<p>要判断一个行列式是否有解，我们先从一个简单的行列式看起。假设我们有一个方程式： <span class="math display">\[
+\begin{align}
+&amp; a_{11} x_1 + a_{12} x_2 = b_1 \\
+&amp; a_{21} x_1 + a_{22} x_2 = b_2
+\end{align}
+\]</span> 我们可以这样认为，一个方程代表的是一条直线，所以这样的方程组代表了两条直线。在一个平面上，两条直线的关系可以是完全重合、平行、以及相交。因此，很直观可以看到，当两条直线平行或者重合的时候，有无穷多的点可以满足方程等式。而当两条直线相交的时候，就很明显有且仅有一个解。</p>
+<p>接下来看第二个方程组： <span class="math display">\[
+\begin{align}
+&amp; a_{11} x_1 + a_{12} x_2 + a_{13} x_3 = b_1 \\
+&amp; a_{21} x_1 + a_{22} x_2 + a_{23} x_3 = b_2
+\end{align}
+\]</span> 因为是三个未知数，这样的方程确定的是一个平面。现在这里提供了两个平面，因此，不论两个平面是平行还是相交，我们都会得到无穷多的解。</p>
+<p>如果现在我们的方程组是 <span class="math display">\[
+\begin{align}
+&amp; a_{11} x_1 + a_{12} x_2 + a_{13} x_3 = b_1 \\
+&amp; a_{21} x_1 + a_{22} x_2 + a_{23} x_3 = b_2 \\
+&amp; a_{31} x_1 + a_{32} x_2 + a_{33} x_3 = b_3
+\end{align}
+\]</span> 那么现在我们有了三个平面，我们可以想到，三个平面可以相交于一个点，也可以相交于一条直线，也可以完全重叠，或者完全平行，也可以两个平面平行与另一个平面相交于两条直线等等。</p>
+<p>因此我们一样会发现，这样的方程组可能有一个解，或者无穷多解。</p>
+<p>如果现在是四维的数据，我们就很难用图形来表示了，那么怎么判断是否有解。我们可以引入线性组合（linear combination）的概念。</p>
+<p>我们将线性组合定义为：<span class="math inline">\(v = a_1 u_1 + a_2 u_2 + \cdots a_n u_n\)</span>。这里的<span class="math inline">\(u\)</span>和<span class="math inline">\(v\)</span>都是向量。当我们发现一个向量是另外一个向量的线性组合的时候，例如<span class="math inline">\(v = c u\)</span>，那么其实类比到直线的话，这两个向量就是平行的。</p>
+<p>然后我们可以将上面的方程组用矩阵的形式表示为<span class="math inline">\(Ax = b\)</span>，这里<span class="math inline">\(b\)</span>就可以看做是<span class="math inline">\(A\)</span>的线性组合。</p>
+<p>这里再引入另一个概念span。span我们可以认为是一个向量的大集合，但是这些向量都是由一些基础向量通过线性组合得到的。一般可以记做是<span class="math inline">\(\{u_1, u_2, \cdots, u_k \}\)</span>或者是<span class="math inline">\(S=\{c_1 u_1 + c_2 u_2 + \cdots\}\)</span>。这里需要注意，对于一个span而言，所谓基础向量，就是不平行的向量。例如<span class="math inline">\(S_2\)</span>就必须有两个不平行的二维向量才能确定。同理，其他维度的可以推理得到。</p>
+<p>那么这个span跟上面的线性组合有什么关系呢？其实如果<span class="math inline">\(b\)</span>是<span class="math inline">\(A\)</span>的线性组合，那么<span class="math inline">\(b\)</span>就是<span class="math inline">\(A\)</span>的span。所以当方程式满足这样的条件的时候，就有解。</p>
+<p>然后我们回想，刚刚提到了，有时候虽然有解，但是可能有无穷多的解。那么现在的问题就是，如果有解，那么有多少解？</p>
+<p>这里先直接抛出结论，当<span class="math inline">\(A\)</span>线性无关（independent）时候有唯一解，线性相关（depend）时有无穷多解。</p>
+<p>那么什么是线性相关。线性相关就是给定一组向量<span class="math inline">\(\{a_1, a_2, \cdots \}\)</span>，当存在一组标量<span class="math inline">\(\{x_1, x_2 \cdots \}\)</span>，且<span class="math inline">\(x_i\)</span>不全为0，那么只要能让<span class="math inline">\(x_1 a_1 + x_2 a_2 + \cdots = 0\)</span>就是线性相关。而当且仅当所有的<span class="math inline">\(x\)</span>都是0，则说明这是线性无关的。</p>
+<p>最后引入一个概念秩（rank）。秩是表示矩阵内所有线性无关的向量的数量。比如说满秩就说明矩阵的column全都是线性无关的。</p>
+<p>判断完是否有解后，一般采用高斯消元法（Gaussian Elimination）。就是下图的过程： <img src="https://i.imgur.com/1wVVjhQ.png"> 这里提一下的就是augment matrix就是将<span class="math inline">\(b\)</span>拼到<span class="math inline">\(A\)</span>后面，叫做增广矩阵。这样高斯消元法得到的就是最后的解。</p>
+]]></content>
+      <categories>
+        <category>统计学习</category>
+      </categories>
+  </entry>
+  <entry>
     <title>线性代数 04</title>
     <url>/linear_algebra_step4/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>矩阵乘法</p>
@@ -897,6 +897,77 @@ B = BI = B(AC) = (BA)C = IC = C
 <p>判断完是否可逆之后，如何计算逆矩阵呢？</p>
 <p>这里引入一个概念，叫做elementary matrix，比如说<span class="math inline">\(E = \begin{bmatrix} 1 &amp;0 &amp;0 \\ 0 &amp;0 &amp;1 \\ 0 &amp;1 &amp;0 \end{bmatrix}\)</span>。那这个变换矩阵的作用就是交换第二行和第三行。我们回顾一下，之前说的RREF其实做的事情就是多次的elementary matrix乘原来的矩阵。那么如果我们的RREF是单位矩阵，那么其实<span class="math inline">\(A\)</span>的逆矩阵就是这么多elementary matrix的乘积，不过这里要注意的是elementary matrix <span class="math inline">\(E\)</span>的顺序。</p>
 <p>矩阵的逆大概就是这么多内容，简单一点判断，如果矩阵是方阵，且满秩，就可逆。计算方法就用高斯消元法的那一套来。</p>
+]]></content>
+      <categories>
+        <category>统计学习</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>线性代数 06</title>
+    <url>/linear_algebra_step6/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>矩阵的行列式</p>
+<a id="more"></a>
+<p>矩阵的行列式是非常重要的一个概念，包括到后面的矩阵求导什么的，都有用到。如果上过吴恩达的machine learning课程就会发现这一点。一般来说我们用<span class="math inline">\(\det(A)\)</span>表示行列式。</p>
+<p>二阶方阵还有三阶方阵的行列式计算方法都是高中的内容，不多说，回顾一下行列式的一些特性：</p>
+<blockquote>
+<ol type="a">
+<li>单位矩阵的行列式一定为1</li>
+<li>交换矩阵两个行的位置一次，行列式乘一次<span class="math inline">\(-1\)</span></li>
+<li>如果矩阵线性相关，行列式为0</li>
+<li><span class="math inline">\(\det(\begin{bmatrix} ta &amp;tb \\ c &amp;d \end{bmatrix}) = t \det(\begin{bmatrix} a &amp;b \\ c &amp;d \end{bmatrix})\)</span></li>
+<li><span class="math inline">\(\det(\begin{bmatrix} a + a&#39; &amp;b + b&#39; \\ c &amp;d \end{bmatrix}) = \det(\begin{bmatrix} a &amp;b \\ c &amp;d \end{bmatrix}) + \det(\begin{bmatrix} a&#39; &amp;b&#39; \\ c &amp;d \end{bmatrix})\)</span></li>
+<li><span class="math inline">\(\det(AB) = \det(A) \det(B)\)</span></li>
+<li><span class="math inline">\(\det(A^{\top}) = \det(A)\)</span></li>
+</ol>
+</blockquote>
+<p>那行列式和前面的矩阵可逆之间有什么关系呢？很直觉的，如果矩阵的行列式为0，那么这个矩阵就不可逆，如果行列式不为0，那么这个矩阵就可逆。</p>
+<p>大部分人应该都忘了大学线代教的高阶矩阵如何计算行列式，所以这里复习一下。我们引入一个定义<span class="math inline">\(A_{ij}\)</span>表示的是原来的矩阵<span class="math inline">\(A\)</span>不包含<span class="math inline">\(i\)</span>行<span class="math inline">\(j\)</span>列的所有元素，也可以记做<span class="math inline">\(c_{ij}\)</span>。这个英文是cofactor，就是代数余子式，所以取了首字母。然后我们可以这样定义行列式： <span class="math display">\[
+\det(A) = a_{11} c_{11} + a_{12} c_{12} + \cdots + a_{1n} c_{1n}
+\]</span></p>
+<p>其中<span class="math inline">\(c_{ij} = (-1)^{i+j} \det A_{ij}\)</span>。</p>
+<p>当然，除了用一行的元素，也可以用一列的元素。</p>
+<p>那这样一来，不论是多么高阶的矩阵，我们都可以不断拆解，直到一直拆到二阶矩阵求行列式。</p>
+<p>行列式的计算大概就这么一回事，计算量比较大，原理不难。</p>
+]]></content>
+      <categories>
+        <category>统计学习</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>线性代数 09</title>
+    <url>/linear_algebra_step9/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>矩阵的特征根与特征向量。这两个是线性代数里面非常重要的概念。</p>
+<a id="more"></a>
+<p>我们对这两个概念的定义是这样的，如果存在一个矩阵<span class="math inline">\(A\)</span>可以使得常数<span class="math inline">\(\lambda\)</span>和向量<span class="math inline">\(v\)</span>满足： <span class="math display">\[
+Av = \lambda v
+\]</span> 那么<span class="math inline">\(\lambda\)</span>就是矩阵的特征根，而<span class="math inline">\(v\)</span>就是特征向量。但是这里需要注意的是，<span class="math inline">\(A\)</span>一定是方阵。举个例子： <span class="math display">\[
+\begin{bmatrix}5 &amp; 2 &amp; 1 \\ -2 &amp; 1 &amp; -1 \\ 2 &amp; 2 &amp; 4\end{bmatrix} \begin{bmatrix}1 \\ -1 \\ 1\end{bmatrix} = \begin{bmatrix}4 \\ -4 \\ 4\end{bmatrix} = 4\begin{bmatrix}1 \\ -1 \\ 1\end{bmatrix}
+\]</span></p>
+<p>不过要注意的是，零向量不能作为特征向量。</p>
+<p>所以直观的感受上，特征向量就是经过线性变换以后，只是改变向量长度或者是变成相反的方向。</p>
+<p>那么在特征根特征向量在图像中有什么意义呢？下面举四个例子。</p>
+<p>首先是扭曲，如下图：</p>
+<p><img src="https://i.imgur.com/4z9YFVw.png"></p>
+<p>那么这样的变换过程中，落在横轴上的向量是没有发生任何变换的，因此图片中蓝色的向量就是特征向量，特征根是1。</p>
+<p>第二个变换是映射，如下：</p>
+<p><img src="https://i.imgur.com/KFeF5NV.png"></p>
+<p>在这个变换中，<span class="math inline">\(b_1\)</span>是没有变化的，所以是一个特征根为1的特征向量。而<span class="math inline">\(b_2\)</span>则是刚好反了一个方向，因此是一个特征根为-1的特征向量。</p>
+<p>第三种变换是缩放，如下：</p>
+<p><img src="https://i.imgur.com/hSWgUwf.png"></p>
+<p>在这种情况下，图片的所有向量都是特征向量，特征根就是缩放倍数。</p>
+<p>第四种是旋转，如下：</p>
+<p><img src="https://i.imgur.com/03ETOyW.png"></p>
+<p>因为上面的旋转过程中，没有一个向量保持了原来的方向，或者转到完全相反的方向，因此这样的变换过程中，没有特征向量。</p>
+<p>从上面的四个例子我们还可以发现一个很重要的事情，就是一个特征向量只有唯一对应一个特征根，但是一个特征根可以有多个特征向量。然后，我们就可以顺势定义一个新的概念，eigenspace。也就是<span class="math inline">\(\lambda\)</span>对应的所有特征向量加上零向量构成的subspace。</p>
+<p>那么我们要怎么去找到特征向量和特征根呢？</p>
+<p>首先我们回顾一下之前的公式： <span class="math display">\[
+Av = \lambda v = \lambda I v
+\]</span> 所以<span class="math inline">\((A-\lambda I) v = 0\)</span>。这样一来，我们就知道，当我们知道<span class="math inline">\(\lambda\)</span>的时候，只要找到上面那个等式的非零解，就是我们的特征根。</p>
+<p>那么如果现在要判断一个常数是不是特征根，我们依照上面那个等式一步步向下推理，因为<span class="math inline">\((A-\lambda I)v = 0\)</span>有多个解，因此我们可以知道<span class="math inline">\(\text{Rank} (A - \lambda I) &lt; n\)</span>，所以<span class="math inline">\(A - \lambda I\)</span>不可逆，也就是说它的行列式为0。</p>
+<p>比如说矩阵<span class="math inline">\(A = \begin{bmatrix}-4 &amp; 3 \\ 3 &amp; 6 \end{bmatrix}\)</span>，我们计算行列式<span class="math inline">\(\begin{bmatrix}-4-\lambda &amp; 3 \\ 3 &amp; 6-\lambda \end{bmatrix} = 0\)</span>。也就是说<span class="math inline">\((-4-\lambda)(6-\lambda) - 9 = 0\)</span>。所以我们就可以求出来，<span class="math inline">\(\lambda = -3\)</span>或<span class="math inline">\(\lambda = 5\)</span>。</p>
+<p>那么特征根有一些特性。首先，一般来说，一个矩阵跟它的RREF的特征根是不一样的。如果是两个矩阵的因式分解一样，那么就有一样的特征根。</p>
+<p>假设现在有个矩阵<span class="math inline">\(A\)</span>有<span class="math inline">\(n\)</span>个特征根（这里只考虑实数根），那么特征根的和刚好就是<span class="math inline">\(\text{trace } A\)</span>，也就是<span class="math inline">\(A\)</span>的对角线元素的和；特征根的乘积刚好就是<span class="math inline">\(\det A\)</span>。</p>
+<p>实际上，理解一下特征根和特征向量在图像中的意义，然后知道特征根的解法是<span class="math inline">\(\det(A - \lambda I)\)</span>，特征向量的解法是<span class="math inline">\((A - \lambda I)v = 0\)</span>就好了。</p>
 ]]></content>
       <categories>
         <category>统计学习</category>
@@ -1002,77 +1073,6 @@ B = BI = B(AC) = (BA)C = IC = C
 ]]></content>
       <categories>
         <category>搞着玩</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>线性代数 06</title>
-    <url>/linear_algebra_step6/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>矩阵的行列式</p>
-<a id="more"></a>
-<p>矩阵的行列式是非常重要的一个概念，包括到后面的矩阵求导什么的，都有用到。如果上过吴恩达的machine learning课程就会发现这一点。一般来说我们用<span class="math inline">\(\det(A)\)</span>表示行列式。</p>
-<p>二阶方阵还有三阶方阵的行列式计算方法都是高中的内容，不多说，回顾一下行列式的一些特性：</p>
-<blockquote>
-<ol type="a">
-<li>单位矩阵的行列式一定为1</li>
-<li>交换矩阵两个行的位置一次，行列式乘一次<span class="math inline">\(-1\)</span></li>
-<li>如果矩阵线性相关，行列式为0</li>
-<li><span class="math inline">\(\det(\begin{bmatrix} ta &amp;tb \\ c &amp;d \end{bmatrix}) = t \det(\begin{bmatrix} a &amp;b \\ c &amp;d \end{bmatrix})\)</span></li>
-<li><span class="math inline">\(\det(\begin{bmatrix} a + a&#39; &amp;b + b&#39; \\ c &amp;d \end{bmatrix}) = \det(\begin{bmatrix} a &amp;b \\ c &amp;d \end{bmatrix}) + \det(\begin{bmatrix} a&#39; &amp;b&#39; \\ c &amp;d \end{bmatrix})\)</span></li>
-<li><span class="math inline">\(\det(AB) = \det(A) \det(B)\)</span></li>
-<li><span class="math inline">\(\det(A^{\top}) = \det(A)\)</span></li>
-</ol>
-</blockquote>
-<p>那行列式和前面的矩阵可逆之间有什么关系呢？很直觉的，如果矩阵的行列式为0，那么这个矩阵就不可逆，如果行列式不为0，那么这个矩阵就可逆。</p>
-<p>大部分人应该都忘了大学线代教的高阶矩阵如何计算行列式，所以这里复习一下。我们引入一个定义<span class="math inline">\(A_{ij}\)</span>表示的是原来的矩阵<span class="math inline">\(A\)</span>不包含<span class="math inline">\(i\)</span>行<span class="math inline">\(j\)</span>列的所有元素，也可以记做<span class="math inline">\(c_{ij}\)</span>。这个英文是cofactor，就是代数余子式，所以取了首字母。然后我们可以这样定义行列式： <span class="math display">\[
-\det(A) = a_{11} c_{11} + a_{12} c_{12} + \cdots + a_{1n} c_{1n}
-\]</span></p>
-<p>其中<span class="math inline">\(c_{ij} = (-1)^{i+j} \det A_{ij}\)</span>。</p>
-<p>当然，除了用一行的元素，也可以用一列的元素。</p>
-<p>那这样一来，不论是多么高阶的矩阵，我们都可以不断拆解，直到一直拆到二阶矩阵求行列式。</p>
-<p>行列式的计算大概就这么一回事，计算量比较大，原理不难。</p>
-]]></content>
-      <categories>
-        <category>统计学习</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>线性代数 09</title>
-    <url>/linear_algebra_step9/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>矩阵的特征根与特征向量。这两个是线性代数里面非常重要的概念。</p>
-<a id="more"></a>
-<p>我们对这两个概念的定义是这样的，如果存在一个矩阵<span class="math inline">\(A\)</span>可以使得常数<span class="math inline">\(\lambda\)</span>和向量<span class="math inline">\(v\)</span>满足： <span class="math display">\[
-Av = \lambda v
-\]</span> 那么<span class="math inline">\(\lambda\)</span>就是矩阵的特征根，而<span class="math inline">\(v\)</span>就是特征向量。但是这里需要注意的是，<span class="math inline">\(A\)</span>一定是方阵。举个例子： <span class="math display">\[
-\begin{bmatrix}5 &amp; 2 &amp; 1 \\ -2 &amp; 1 &amp; -1 \\ 2 &amp; 2 &amp; 4\end{bmatrix} \begin{bmatrix}1 \\ -1 \\ 1\end{bmatrix} = \begin{bmatrix}4 \\ -4 \\ 4\end{bmatrix} = 4\begin{bmatrix}1 \\ -1 \\ 1\end{bmatrix}
-\]</span></p>
-<p>不过要注意的是，零向量不能作为特征向量。</p>
-<p>所以直观的感受上，特征向量就是经过线性变换以后，只是改变向量长度或者是变成相反的方向。</p>
-<p>那么在特征根特征向量在图像中有什么意义呢？下面举四个例子。</p>
-<p>首先是扭曲，如下图：</p>
-<p><img src="https://i.imgur.com/4z9YFVw.png"></p>
-<p>那么这样的变换过程中，落在横轴上的向量是没有发生任何变换的，因此图片中蓝色的向量就是特征向量，特征根是1。</p>
-<p>第二个变换是映射，如下：</p>
-<p><img src="https://i.imgur.com/KFeF5NV.png"></p>
-<p>在这个变换中，<span class="math inline">\(b_1\)</span>是没有变化的，所以是一个特征根为1的特征向量。而<span class="math inline">\(b_2\)</span>则是刚好反了一个方向，因此是一个特征根为-1的特征向量。</p>
-<p>第三种变换是缩放，如下：</p>
-<p><img src="https://i.imgur.com/hSWgUwf.png"></p>
-<p>在这种情况下，图片的所有向量都是特征向量，特征根就是缩放倍数。</p>
-<p>第四种是旋转，如下：</p>
-<p><img src="https://i.imgur.com/03ETOyW.png"></p>
-<p>因为上面的旋转过程中，没有一个向量保持了原来的方向，或者转到完全相反的方向，因此这样的变换过程中，没有特征向量。</p>
-<p>从上面的四个例子我们还可以发现一个很重要的事情，就是一个特征向量只有唯一对应一个特征根，但是一个特征根可以有多个特征向量。然后，我们就可以顺势定义一个新的概念，eigenspace。也就是<span class="math inline">\(\lambda\)</span>对应的所有特征向量加上零向量构成的subspace。</p>
-<p>那么我们要怎么去找到特征向量和特征根呢？</p>
-<p>首先我们回顾一下之前的公式： <span class="math display">\[
-Av = \lambda v = \lambda I v
-\]</span> 所以<span class="math inline">\((A-\lambda I) v = 0\)</span>。这样一来，我们就知道，当我们知道<span class="math inline">\(\lambda\)</span>的时候，只要找到上面那个等式的非零解，就是我们的特征根。</p>
-<p>那么如果现在要判断一个常数是不是特征根，我们依照上面那个等式一步步向下推理，因为<span class="math inline">\((A-\lambda I)v = 0\)</span>有多个解，因此我们可以知道<span class="math inline">\(\text{Rank} (A - \lambda I) &lt; n\)</span>，所以<span class="math inline">\(A - \lambda I\)</span>不可逆，也就是说它的行列式为0。</p>
-<p>比如说矩阵<span class="math inline">\(A = \begin{bmatrix}-4 &amp; 3 \\ 3 &amp; 6 \end{bmatrix}\)</span>，我们计算行列式<span class="math inline">\(\begin{bmatrix}-4-\lambda &amp; 3 \\ 3 &amp; 6-\lambda \end{bmatrix} = 0\)</span>。也就是说<span class="math inline">\((-4-\lambda)(6-\lambda) - 9 = 0\)</span>。所以我们就可以求出来，<span class="math inline">\(\lambda = -3\)</span>或<span class="math inline">\(\lambda = 5\)</span>。</p>
-<p>那么特征根有一些特性。首先，一般来说，一个矩阵跟它的RREF的特征根是不一样的。如果是两个矩阵的因式分解一样，那么就有一样的特征根。</p>
-<p>假设现在有个矩阵<span class="math inline">\(A\)</span>有<span class="math inline">\(n\)</span>个特征根（这里只考虑实数根），那么特征根的和刚好就是<span class="math inline">\(\text{trace } A\)</span>，也就是<span class="math inline">\(A\)</span>的对角线元素的和；特征根的乘积刚好就是<span class="math inline">\(\det A\)</span>。</p>
-<p>实际上，理解一下特征根和特征向量在图像中的意义，然后知道特征根的解法是<span class="math inline">\(\det(A - \lambda I)\)</span>，特征向量的解法是<span class="math inline">\((A - \lambda I)v = 0\)</span>就好了。</p>
-]]></content>
-      <categories>
-        <category>统计学习</category>
       </categories>
   </entry>
   <entry>
@@ -1338,49 +1338,6 @@ L = \sum_i KL(P(*|x_i) || Q(*|z_i)) = \sum_i \sum_j P(x_j | x_i) \log(\frac{P(x_
       </categories>
   </entry>
   <entry>
-    <title>台大李宏毅机器学习——词向量</title>
-    <url>/machine_learning_step13/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Word embedding <a id="more"></a></p>
-<h1 id="word-embedding">Word embedding</h1>
-<p>Word embedding之前比较流行的叫法是word vector。那其实要理解word embedding之前我们需要回过头看一下到底之前是如何做这个操作的。</p>
-<p>在很古老很古老的时候，如果我们要用向量表示一个单词，只能用一个one-hot的方法来表示，也就是一串很长很长的0-1向量。这个很长很长的向量长度跟单词的数量一样多。比如说，我们有10w个英文单词，那么这个向量就有10w维，然后给每个词在这个向量里面找个位置标记为1，其他位置标记为0，这样就得到了最原始的词向量。</p>
-<p>但是这个向量不用想都知道，一个很突出的问题，太大了。另外有一个很大的问题就是这样的表示，没有办法表达出词语的含义。所以word embedding做的事情就是将这个很长很长的向量，压缩到低维。比如现在最常用的100-200维之间。</p>
-<p>那word embedding实际上可以做到通过读海量的文档内容，然后理解单词的意思。比如 The cat sat on the pat和The dog sat on the pat这两句话，cat和dog是接近的。</p>
-<p>那做到word embedding有两种做法。第一种是计算词语的共现次数，另一种是通过上下文的方法去做预测。</p>
-<h2 id="词语共现">词语共现</h2>
-<p>这种做法的代表是Glove Vector。这种方法是假设两个经常共同出现的词，他们的向量应该是类似的。</p>
-<p>用其实就是<span class="math inline">\(V(w_i) \cdot V(w_j)\)</span>和他们共现的次数<span class="math inline">\(N_{ij}\)</span>相关。</p>
-<h2 id="基于预测">基于预测</h2>
-<p>基于预测的word embedding做法一般是按照输入的单词，预测输出的单词。就像下图表示的：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml078.png"></p>
-<p>这样的方法可以用来文本接龙，当然也可以用于语音辨识上面。</p>
-<p>那实践上，我们做的事情就像下面：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml079.png"></p>
-<p>我们实际上得到的word vector就是中间绿色层的output。那理论上而言，我们在这一层得到的vector在某种程度上，可以体现一定程度的语义。因为同样类型的词，后面需要predict的词应该也是类似的。</p>
-<p>那我们做predict-based approach的时候，我们实际使用的神经网络仅有一层，而且激活函数是linear的。那这么做的原因其实是因为作者实验发现，单层网络就可以做到很好的效果，同时，因为我们需要训练海量的数据，因此单层的网络速度上可以做到更快。</p>
-<p>现在我们直接考虑这个模型，我们在训练模型的时候，其实会碰到一个很明显的问题，那就是我们做linear transform的时候，每一个input layer需要乘上一个非常大的weight matrix。所以实践上，我们会用共享参数的方法：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml080.png"></p>
-<p>那我们用这样的方法有什么好处呢？第一是我们不需要训练非常多很大的weight matrix，另外同一个word不会得到不一样的vector。训练模型的方法一般有两种，一种是cbow，一种是skip-gram。cbow就是用上下文猜中间的词，skip-gram是按照中间的词猜上下文。两个结构大概如下：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml081.jpg"></p>
-<p>不过坦白说，课程里面讲的比较少，也不是很深。网上流传最广的是有道团队写的一篇。不过渣渣表示，二十几页拆源码的看起来好累。实践上有很多trick的地方，比如说最后的loss function用的不是softmax，现在用的比较多的是nce。文章及代码可以参考项亮的<a href="https://zhuanlan.zhihu.com/p/21642643" target="_blank" rel="noopener">专栏</a>或者<a href="http://www.jianshu.com/p/e439b43ea464" target="_blank" rel="noopener">简书</a>。或者参考TensorFlow的一个实现<sup id="fnref:1"><a href="#fn:1" rel="footnote"><span class="hint--top hint--error hint--medium hint--rounded hint--bounce" data-aria-label="https://fangpin.github.io/2016/08/22/word2vec
-">[1]</span></a></sup>，代码看起来相对简单一点点。TensorFlow这个实现可以比较清楚看懂训练数据是如何准备的，之前一直没搞懂的就是不知道训练数据是怎么准备的。不过这个博客里面说用的是cbow，我看了源码，感觉博主写的不是cbow，就是根据上一个词猜下一个词。</p>
-<p>最好理解的就是训练数据在准备的时候需要准备两份，第一份是词表以及词频等数据，另一个就是每个sentence，这样才能找到每个词的上下文。然后根据不同的模型决定如何设计feature和target。</p>
-<div id="footnotes">
-<hr>
-<div id="footnotelist">
-<ol style="list-style: none; padding-left: 0; margin-left: 40px">
-<li id="fn:1">
-<span style="display: inline-block; vertical-align: top; padding-right: 10px; margin-left: -40px">1.</span><span style="display: inline-block; vertical-align: top; margin-left: 10px;">https://fangpin.github.io/2016/08/22/word2vec<a href="#fnref:1" rev="footnote"> ↩</a></span>
-</li>
-</ol>
-</div>
-</div>
-]]></content>
-      <categories>
-        <category>统计学习</category>
-      </categories>
-  </entry>
-  <entry>
     <title>台大李宏毅机器学习-GAN简介</title>
     <url>/machine_learning_step14/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>生成模型，可以用来做炼金术师的禁忌之术，人体炼成。 <a id="more"></a></p>
@@ -1450,6 +1407,49 @@ L = \sum_i KL(P(*|x_i) || Q(*|z_i)) = \sum_i \sum_j P(x_j | x_i) \log(\frac{P(x_
 <p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml104.png"></p>
 <p>整个做法就是这边把图片放进来，然后预测出来一半是狮子，一半是老虎，然后把老虎跟狮子的词向量做加权平均，找一个离加权平均值最近的向量就是最终的label。这个实验可以看这篇文章<a href="https://arxiv.org/pdf/1312.5650v3.pdf" class="uri" target="_blank" rel="noopener">https://arxiv.org/pdf/1312.5650v3.pdf</a>。</p>
 <p>最后的一开始的那个表格内剩下的两个格子没有细讲，都是一笔带过，这里也就不多说啥了。感觉那两个才是真的transfer learning，毕竟还有戴文渊的文章。后面好好研读吧。</p>
+]]></content>
+      <categories>
+        <category>统计学习</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>台大李宏毅机器学习——词向量</title>
+    <url>/machine_learning_step13/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Word embedding <a id="more"></a></p>
+<h1 id="word-embedding">Word embedding</h1>
+<p>Word embedding之前比较流行的叫法是word vector。那其实要理解word embedding之前我们需要回过头看一下到底之前是如何做这个操作的。</p>
+<p>在很古老很古老的时候，如果我们要用向量表示一个单词，只能用一个one-hot的方法来表示，也就是一串很长很长的0-1向量。这个很长很长的向量长度跟单词的数量一样多。比如说，我们有10w个英文单词，那么这个向量就有10w维，然后给每个词在这个向量里面找个位置标记为1，其他位置标记为0，这样就得到了最原始的词向量。</p>
+<p>但是这个向量不用想都知道，一个很突出的问题，太大了。另外有一个很大的问题就是这样的表示，没有办法表达出词语的含义。所以word embedding做的事情就是将这个很长很长的向量，压缩到低维。比如现在最常用的100-200维之间。</p>
+<p>那word embedding实际上可以做到通过读海量的文档内容，然后理解单词的意思。比如 The cat sat on the pat和The dog sat on the pat这两句话，cat和dog是接近的。</p>
+<p>那做到word embedding有两种做法。第一种是计算词语的共现次数，另一种是通过上下文的方法去做预测。</p>
+<h2 id="词语共现">词语共现</h2>
+<p>这种做法的代表是Glove Vector。这种方法是假设两个经常共同出现的词，他们的向量应该是类似的。</p>
+<p>用其实就是<span class="math inline">\(V(w_i) \cdot V(w_j)\)</span>和他们共现的次数<span class="math inline">\(N_{ij}\)</span>相关。</p>
+<h2 id="基于预测">基于预测</h2>
+<p>基于预测的word embedding做法一般是按照输入的单词，预测输出的单词。就像下图表示的：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml078.png"></p>
+<p>这样的方法可以用来文本接龙，当然也可以用于语音辨识上面。</p>
+<p>那实践上，我们做的事情就像下面：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml079.png"></p>
+<p>我们实际上得到的word vector就是中间绿色层的output。那理论上而言，我们在这一层得到的vector在某种程度上，可以体现一定程度的语义。因为同样类型的词，后面需要predict的词应该也是类似的。</p>
+<p>那我们做predict-based approach的时候，我们实际使用的神经网络仅有一层，而且激活函数是linear的。那这么做的原因其实是因为作者实验发现，单层网络就可以做到很好的效果，同时，因为我们需要训练海量的数据，因此单层的网络速度上可以做到更快。</p>
+<p>现在我们直接考虑这个模型，我们在训练模型的时候，其实会碰到一个很明显的问题，那就是我们做linear transform的时候，每一个input layer需要乘上一个非常大的weight matrix。所以实践上，我们会用共享参数的方法：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml080.png"></p>
+<p>那我们用这样的方法有什么好处呢？第一是我们不需要训练非常多很大的weight matrix，另外同一个word不会得到不一样的vector。训练模型的方法一般有两种，一种是cbow，一种是skip-gram。cbow就是用上下文猜中间的词，skip-gram是按照中间的词猜上下文。两个结构大概如下：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml081.jpg"></p>
+<p>不过坦白说，课程里面讲的比较少，也不是很深。网上流传最广的是有道团队写的一篇。不过渣渣表示，二十几页拆源码的看起来好累。实践上有很多trick的地方，比如说最后的loss function用的不是softmax，现在用的比较多的是nce。文章及代码可以参考项亮的<a href="https://zhuanlan.zhihu.com/p/21642643" target="_blank" rel="noopener">专栏</a>或者<a href="http://www.jianshu.com/p/e439b43ea464" target="_blank" rel="noopener">简书</a>。或者参考TensorFlow的一个实现<sup id="fnref:1"><a href="#fn:1" rel="footnote"><span class="hint--top hint--error hint--medium hint--rounded hint--bounce" data-aria-label="https://fangpin.github.io/2016/08/22/word2vec
+">[1]</span></a></sup>，代码看起来相对简单一点点。TensorFlow这个实现可以比较清楚看懂训练数据是如何准备的，之前一直没搞懂的就是不知道训练数据是怎么准备的。不过这个博客里面说用的是cbow，我看了源码，感觉博主写的不是cbow，就是根据上一个词猜下一个词。</p>
+<p>最好理解的就是训练数据在准备的时候需要准备两份，第一份是词表以及词频等数据，另一个就是每个sentence，这样才能找到每个词的上下文。然后根据不同的模型决定如何设计feature和target。</p>
+<div id="footnotes">
+<hr>
+<div id="footnotelist">
+<ol style="list-style: none; padding-left: 0; margin-left: 40px">
+<li id="fn:1">
+<span style="display: inline-block; vertical-align: top; padding-right: 10px; margin-left: -40px">1.</span><span style="display: inline-block; vertical-align: top; margin-left: 10px;">https://fangpin.github.io/2016/08/22/word2vec<a href="#fnref:1" rev="footnote"> ↩</a></span>
+</li>
+</ol>
+</div>
+</div>
 ]]></content>
       <categories>
         <category>统计学习</category>
@@ -1573,46 +1573,6 @@ L(f) = \sum_n \delta(f(x^n) \ne \hat{y}^n)。
       </categories>
   </entry>
   <entry>
-    <title>台大李宏毅机器学习——深度学习入门</title>
-    <url>/machine_learning_step6/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>深度学习入门介绍，主要是MLP <a id="more"></a></p>
-<p>深度学习本身不是很复杂的模型，只是机器学习的一个子分支，就是神经网络的加深加宽版本。当然，这么说也不完全对，不过深度学习的基础还是神经网络。</p>
-<p>最早的时候深度学习就是 MLP 或者就叫神经网络，但是因为种种历史原因，早年间这种方法死活干不过 SVM，所以只能改名重出江湖。这其中各种恩怨情仇很八卦。</p>
-<p>当然，后来 MLP 改名深度学习之后就重出江湖了，在 ImageNet 这个大赛上一举夺冠之后就一发不可收拾了。</p>
-<p>深度学习其实就是机器学习的一个子分支，因此深度学习也满足机器学习的一般流程：提出假设模型，计算模型好坏，选择表现最好的模型。对于深度学习而言，模型就是神经网络。</p>
-<p>一般最基础的深度学习模型就是全连接，也就是 Fully Connect Feedforward Network，如下图。</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml024.png"></p>
-<p>这个神经网络的基本工作流程就是输入一个向量，乘以不同的系数，再将结果用 sigmoid 函数输出到下一层作为输入。这里每一个神经元都是一个函数，我们叫做激活函数。现在的神经网络设计中，sigmoid 函数已经很少用了，比较常用的是 ReLu 或者 tanh。</p>
-<p>一个常见的神经网络可以分为输入层（Input Layer），隐藏层（Hidden Layer）以及输出层（Output Layer），基本结构如下：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml025.png"></p>
-<p>所以深度学习这边的模型假设就是设计神经网络结构，包括网络层数，每层的神经元数量等等。</p>
-<p>其他的部分，设计 Loss function 和其他机器学习方法并没有什么本质区别，多分类一样可以用交叉熵，回归一样可以用 MSE。求解方法也是用梯度下降。</p>
-<p>从理论上而言，只要有一个隐藏层就可以拟合任何连续函数。那么为什么我们要设计 Deep Learning 而不是 Fat Learning 呢？事实上，虽然理论上多层神经网络的表达能力和单层神经网络一样，但是在实操中，单层神经网络效果不如多层神经网络。</p>
-<p>在之前的课程中，梯度下降需要求导的函数是比较简单的，现在多层神经网络要如何求导呢？神经网络本质上就是一个向量乘以多个矩阵，再经过激活函数进行变换。因此这里需要使用到链式求导：</p>
-<ol type="1">
-<li><p>如果<span class="math inline">\(y=g(x), z=h(y)\)</span>，则 <span class="math inline">\(\frac{d z}{d x} = \frac{d z}{d y} \frac{d y}{d x}\)</span></p></li>
-<li><p>如果<span class="math inline">\(x=g(s), y=h(s), z=k(x, y)\)</span>，则<span class="math inline">\(\frac{d z}{d s} = \frac{\partial z}{\partial x} \frac{d x}{d s} + \frac{\partial z}{\partial y} \frac{d y}{d s}\)</span></p></li>
-</ol>
-<p>这样我们就可以想办法对神经网络进行求导。神经网络求系数的方法叫做 Backpropagation。假设我们这里要对多分类问题进行求导，我们整个模型的 loss function 定义为<span class="math inline">\(L(\theta) = \sum_{n=1}^N l_n(\theta)\)</span>，每一个 <span class="math inline">\(l\)</span> 是每个小分类的交叉熵。因此我们要求的就是<span class="math inline">\(\frac{\partial L(\theta)}{\partial w} = \sum_{n=1}^N \frac{\partial l_n(\theta)}{\partial w}\)</span>。</p>
-<p>我们拿一个 neuron 来分析：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml026.png"></p>
-<p>那基于链式求导，我们可以知道，我们要求的是<span class="math inline">\(\frac{\partial l_n(\theta)}{\partial w}\)</span>，那么可以拆解为<span class="math inline">\(\frac{\partial z}{\partial w} \frac{\partial l_n(\theta)}{\partial z}\)</span>。因此Backpropagation 分为两个步骤，一个是 Forward（<span class="math inline">\(\frac{\partial z}{\partial w}\)</span>），一个是 Backward（<span class="math inline">\(\frac{\partial l_n(\theta)}{\partial w}\)</span>）。</p>
-<p>首先是 Forward 部分，我们要计算<span class="math inline">\(\frac{\partial z}{\partial w}\)</span>，这个其实很好算，就是这一层的 input。</p>
-<p>最后是 Backward 部分。我们假设 <span class="math inline">\(a = \sigma(z)\)</span>：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml027.png"></p>
-<p>那么<span class="math inline">\(\frac{\partial l}{\partial z} = \frac{\partial a}{\partial z} \frac{\partial l}{\partial a}\)</span>，而因为<span class="math inline">\(a\)</span>会影响后面的参数，因此 <span class="math inline">\(\frac{\partial l}{\partial a} = \frac{\partial z&#39;}{\partial a} \frac{\partial l}{\partial z&#39;} + \frac{\partial z&#39;&#39;}{\partial a} \frac{\partial l}{\partial z&#39;&#39;}\)</span>。那事实上，<span class="math inline">\(\frac{\partial z&#39;}{\partial a}\)</span>就是<span class="math inline">\(w_3\)</span>，其他相应可以算出来。如下图：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml028.png"></p>
-<p>我们现在假设<span class="math inline">\(\frac{\partial l}{\partial z&#39;}\)</span>和<span class="math inline">\(\frac{\partial l}{\partial z&#39;&#39;}\)</span>已知，那么<span class="math inline">\(\frac{\partial l}{\partial z} = \sigma&#39;(z)\Big[w_3 \frac{\partial l}{\partial z&#39;} + w_4 \frac{\partial l}{\partial z&#39;&#39;} \Big]\)</span>，这里用<span class="math inline">\(\sigma&#39;(z)\)</span>表示激活函数的导数。因此我们也可以将这个方程看成另一个类似神经网络的结构：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml029.png"></p>
-<p>如果这就是最后的output layer，那么<span class="math inline">\(\frac{\partial l}{\partial z&#39;} = \frac{\partial y_1}{\partial z&#39;} \frac{\partial l}{\partial y_1}\)</span>，其他同理可求。</p>
-<p>如果这不是output layer，就一直算，一直算到最后的output layer。这样的方法计算量似乎非常大，那么为了提高运算效率，我们可以从output向前计算。所以整个的解法大概如下：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml030.png"></p>
-]]></content>
-      <categories>
-        <category>统计学习</category>
-      </categories>
-  </entry>
-  <entry>
     <title>台大李宏毅机器学习——梯度下降</title>
     <url>/machine_learning_step3/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>关于梯度下降的理论基础</p>
@@ -1690,6 +1650,46 @@ v
       </categories>
   </entry>
   <entry>
+    <title>台大李宏毅机器学习——深度学习入门</title>
+    <url>/machine_learning_step6/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>深度学习入门介绍，主要是MLP <a id="more"></a></p>
+<p>深度学习本身不是很复杂的模型，只是机器学习的一个子分支，就是神经网络的加深加宽版本。当然，这么说也不完全对，不过深度学习的基础还是神经网络。</p>
+<p>最早的时候深度学习就是 MLP 或者就叫神经网络，但是因为种种历史原因，早年间这种方法死活干不过 SVM，所以只能改名重出江湖。这其中各种恩怨情仇很八卦。</p>
+<p>当然，后来 MLP 改名深度学习之后就重出江湖了，在 ImageNet 这个大赛上一举夺冠之后就一发不可收拾了。</p>
+<p>深度学习其实就是机器学习的一个子分支，因此深度学习也满足机器学习的一般流程：提出假设模型，计算模型好坏，选择表现最好的模型。对于深度学习而言，模型就是神经网络。</p>
+<p>一般最基础的深度学习模型就是全连接，也就是 Fully Connect Feedforward Network，如下图。</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml024.png"></p>
+<p>这个神经网络的基本工作流程就是输入一个向量，乘以不同的系数，再将结果用 sigmoid 函数输出到下一层作为输入。这里每一个神经元都是一个函数，我们叫做激活函数。现在的神经网络设计中，sigmoid 函数已经很少用了，比较常用的是 ReLu 或者 tanh。</p>
+<p>一个常见的神经网络可以分为输入层（Input Layer），隐藏层（Hidden Layer）以及输出层（Output Layer），基本结构如下：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml025.png"></p>
+<p>所以深度学习这边的模型假设就是设计神经网络结构，包括网络层数，每层的神经元数量等等。</p>
+<p>其他的部分，设计 Loss function 和其他机器学习方法并没有什么本质区别，多分类一样可以用交叉熵，回归一样可以用 MSE。求解方法也是用梯度下降。</p>
+<p>从理论上而言，只要有一个隐藏层就可以拟合任何连续函数。那么为什么我们要设计 Deep Learning 而不是 Fat Learning 呢？事实上，虽然理论上多层神经网络的表达能力和单层神经网络一样，但是在实操中，单层神经网络效果不如多层神经网络。</p>
+<p>在之前的课程中，梯度下降需要求导的函数是比较简单的，现在多层神经网络要如何求导呢？神经网络本质上就是一个向量乘以多个矩阵，再经过激活函数进行变换。因此这里需要使用到链式求导：</p>
+<ol type="1">
+<li><p>如果<span class="math inline">\(y=g(x), z=h(y)\)</span>，则 <span class="math inline">\(\frac{d z}{d x} = \frac{d z}{d y} \frac{d y}{d x}\)</span></p></li>
+<li><p>如果<span class="math inline">\(x=g(s), y=h(s), z=k(x, y)\)</span>，则<span class="math inline">\(\frac{d z}{d s} = \frac{\partial z}{\partial x} \frac{d x}{d s} + \frac{\partial z}{\partial y} \frac{d y}{d s}\)</span></p></li>
+</ol>
+<p>这样我们就可以想办法对神经网络进行求导。神经网络求系数的方法叫做 Backpropagation。假设我们这里要对多分类问题进行求导，我们整个模型的 loss function 定义为<span class="math inline">\(L(\theta) = \sum_{n=1}^N l_n(\theta)\)</span>，每一个 <span class="math inline">\(l\)</span> 是每个小分类的交叉熵。因此我们要求的就是<span class="math inline">\(\frac{\partial L(\theta)}{\partial w} = \sum_{n=1}^N \frac{\partial l_n(\theta)}{\partial w}\)</span>。</p>
+<p>我们拿一个 neuron 来分析：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml026.png"></p>
+<p>那基于链式求导，我们可以知道，我们要求的是<span class="math inline">\(\frac{\partial l_n(\theta)}{\partial w}\)</span>，那么可以拆解为<span class="math inline">\(\frac{\partial z}{\partial w} \frac{\partial l_n(\theta)}{\partial z}\)</span>。因此Backpropagation 分为两个步骤，一个是 Forward（<span class="math inline">\(\frac{\partial z}{\partial w}\)</span>），一个是 Backward（<span class="math inline">\(\frac{\partial l_n(\theta)}{\partial w}\)</span>）。</p>
+<p>首先是 Forward 部分，我们要计算<span class="math inline">\(\frac{\partial z}{\partial w}\)</span>，这个其实很好算，就是这一层的 input。</p>
+<p>最后是 Backward 部分。我们假设 <span class="math inline">\(a = \sigma(z)\)</span>：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml027.png"></p>
+<p>那么<span class="math inline">\(\frac{\partial l}{\partial z} = \frac{\partial a}{\partial z} \frac{\partial l}{\partial a}\)</span>，而因为<span class="math inline">\(a\)</span>会影响后面的参数，因此 <span class="math inline">\(\frac{\partial l}{\partial a} = \frac{\partial z&#39;}{\partial a} \frac{\partial l}{\partial z&#39;} + \frac{\partial z&#39;&#39;}{\partial a} \frac{\partial l}{\partial z&#39;&#39;}\)</span>。那事实上，<span class="math inline">\(\frac{\partial z&#39;}{\partial a}\)</span>就是<span class="math inline">\(w_3\)</span>，其他相应可以算出来。如下图：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml028.png"></p>
+<p>我们现在假设<span class="math inline">\(\frac{\partial l}{\partial z&#39;}\)</span>和<span class="math inline">\(\frac{\partial l}{\partial z&#39;&#39;}\)</span>已知，那么<span class="math inline">\(\frac{\partial l}{\partial z} = \sigma&#39;(z)\Big[w_3 \frac{\partial l}{\partial z&#39;} + w_4 \frac{\partial l}{\partial z&#39;&#39;} \Big]\)</span>，这里用<span class="math inline">\(\sigma&#39;(z)\)</span>表示激活函数的导数。因此我们也可以将这个方程看成另一个类似神经网络的结构：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml029.png"></p>
+<p>如果这就是最后的output layer，那么<span class="math inline">\(\frac{\partial l}{\partial z&#39;} = \frac{\partial y_1}{\partial z&#39;} \frac{\partial l}{\partial y_1}\)</span>，其他同理可求。</p>
+<p>如果这不是output layer，就一直算，一直算到最后的output layer。这样的方法计算量似乎非常大，那么为了提高运算效率，我们可以从output向前计算。所以整个的解法大概如下：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml030.png"></p>
+]]></content>
+      <categories>
+        <category>统计学习</category>
+      </categories>
+  </entry>
+  <entry>
     <title>台大李宏毅机器学习——深度学习的必要性</title>
     <url>/machine_learning_step9/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>现在我们来考虑一下，模型是不是越深越好。 <a id="more"></a></p>
@@ -1724,29 +1724,8 @@ v
 <p>这个notebook的脚本没啥通用性，一个是其实没有解决unknown的词的问题，另外是没有解决训练效率的问题。PyTorch没有nce_loss或者是negative sampling这样的loss function，所以后面用softmax做cross entropy的时候复杂度是O(vocab_size)。之前写的negative sampling是针对word2vec写的，所以没什么通用性，看了其他人写的通用性的nce或者negative sampling，总感觉哪里怪怪的。后面还是要考虑自己实现一个。有点烦(╯﹏╰)。</p>
 ]]></content>
       <categories>
-        <category>PyTorch</category>
         <category>深度学习</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>未来一段时间更新计划</title>
-    <url>/schedule/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>年前换了个坑，结果一堆事情，那段时间烦心事也多，啥都没更新。大概拍了一下未来一段时间的更新计划。主要是5月以后的。</p>
-<a id="more"></a>
-<p>五一节左右会更新一篇DBSCAN跟OPTICS算法的原理和代码，主要是基于密度的聚类算法。然后如果顺利的话再更新一篇经济思想史笔记。</p>
-<p>六月以后看到李宏毅老师的深度学习课程加了好多新的内容，主要是GAN、DRL这一些，之前都是草草看一遍，打算这之后一周一篇到两篇课程笔记。争取一个季度内全部补全吧。另外立个flag吧，如果一个季度内补全了，顺便复习了一遍机器学习的内容，把之前可能理解错误的内容勘定了，给自己买块2080ti。括弧笑～</p>
-<p>再有是被同事刺激了，感觉要每天提高专业技能呀。后面看看是不是开个专门记录刷吉米多维奇和概率论的栏目。之前刷leetcode的都半途而废了，有点可惜啊，看看是不是也重启一下。要不一三五数学，二四六leetcode，每天背50个单词这样？！讲道理英语词汇量感觉只剩下机器学习相关的了。</p>
-<p>然后是读书方面，简单分了三类：</p>
-<ul>
-<li>经管类，目前主要在看经济思想史，不过是漫漫长路，一点点看。然后打算看一些量化的东西吧，做点策略什么的，不然钱都是死的，血亏。这部分的书单还在打理中，五一着重安排一下，毕竟是一个有专业门槛的领域。</li>
-<li>技术/数学类，主要想研究一下微软研究院出的《分布式机器学习》。换大厂了嘛，还是小机器单机就配不上大厂了。然后其他的机器学习、深度学习教程就当做是看李宏毅老师课程时候的参考资料看好了，可能参考一下邱锡鹏老师的新书，经典的花书这一些。其他技术类讲算法的书随便翻翻，看到之前没实现的算法可能有时间就复现一下，作为彩蛋更新。数学类的书籍就是打算跟同事一样开始刷题了，不然牛逼的人太多，我都不知道以后该怎么混。</li>
-<li>杂书类，杂七杂八的书就随意了，看眼缘了。这一个多月看了《思考快与慢》、《黑天鹅》还有《随机游走的傻瓜》，怎么说呢，基本上都是说认知偏差这一大类的，现在看的《世界观》也差不多，大概扫一扫吧。然后可能想看一些行为心理学方面的书吧，改改拖延症，培养节奏感啥的。最后就是随缘翻一翻《易经》。</li>
-</ul>
-<p>另外就是现在每天记录睡眠时间想逼自己早睡，虽然没啥效果吧，不过每次看看也是挺触目惊心的。尽量把时间排满，不逼自己996么，感觉太懒散了，时间上满一点，有节奏一点，看看会不会以后不熬夜了。</p>
-<p>大概就这么个计划吧，现在觉得吧，还是得逼自己一把。</p>
-]]></content>
-      <categories>
-        <category>碎碎念</category>
+        <category>PyTorch</category>
       </categories>
   </entry>
   <entry>
@@ -1775,8 +1754,91 @@ v
 <p>anyway，想了一下，这样训练完的hidden是不是就包含了一个作者的文风信息？！</p>
 ]]></content>
       <categories>
-        <category>PyTorch</category>
         <category>深度学习</category>
+        <category>PyTorch</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>未来一段时间更新计划</title>
+    <url>/schedule/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>年前换了个坑，结果一堆事情，那段时间烦心事也多，啥都没更新。大概拍了一下未来一段时间的更新计划。主要是5月以后的。</p>
+<a id="more"></a>
+<p>五一节左右会更新一篇DBSCAN跟OPTICS算法的原理和代码，主要是基于密度的聚类算法。然后如果顺利的话再更新一篇经济思想史笔记。</p>
+<p>六月以后看到李宏毅老师的深度学习课程加了好多新的内容，主要是GAN、DRL这一些，之前都是草草看一遍，打算这之后一周一篇到两篇课程笔记。争取一个季度内全部补全吧。另外立个flag吧，如果一个季度内补全了，顺便复习了一遍机器学习的内容，把之前可能理解错误的内容勘定了，给自己买块2080ti。括弧笑～</p>
+<p>再有是被同事刺激了，感觉要每天提高专业技能呀。后面看看是不是开个专门记录刷吉米多维奇和概率论的栏目。之前刷leetcode的都半途而废了，有点可惜啊，看看是不是也重启一下。要不一三五数学，二四六leetcode，每天背50个单词这样？！讲道理英语词汇量感觉只剩下机器学习相关的了。</p>
+<p>然后是读书方面，简单分了三类：</p>
+<ul>
+<li>经管类，目前主要在看经济思想史，不过是漫漫长路，一点点看。然后打算看一些量化的东西吧，做点策略什么的，不然钱都是死的，血亏。这部分的书单还在打理中，五一着重安排一下，毕竟是一个有专业门槛的领域。</li>
+<li>技术/数学类，主要想研究一下微软研究院出的《分布式机器学习》。换大厂了嘛，还是小机器单机就配不上大厂了。然后其他的机器学习、深度学习教程就当做是看李宏毅老师课程时候的参考资料看好了，可能参考一下邱锡鹏老师的新书，经典的花书这一些。其他技术类讲算法的书随便翻翻，看到之前没实现的算法可能有时间就复现一下，作为彩蛋更新。数学类的书籍就是打算跟同事一样开始刷题了，不然牛逼的人太多，我都不知道以后该怎么混。</li>
+<li>杂书类，杂七杂八的书就随意了，看眼缘了。这一个多月看了《思考快与慢》、《黑天鹅》还有《随机游走的傻瓜》，怎么说呢，基本上都是说认知偏差这一大类的，现在看的《世界观》也差不多，大概扫一扫吧。然后可能想看一些行为心理学方面的书吧，改改拖延症，培养节奏感啥的。最后就是随缘翻一翻《易经》。</li>
+</ul>
+<p>另外就是现在每天记录睡眠时间想逼自己早睡，虽然没啥效果吧，不过每次看看也是挺触目惊心的。尽量把时间排满，不逼自己996么，感觉太懒散了，时间上满一点，有节奏一点，看看会不会以后不熬夜了。</p>
+<p>大概就这么个计划吧，现在觉得吧，还是得逼自己一把。</p>
+]]></content>
+      <categories>
+        <category>碎碎念</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>DBSCAN &amp; OPTICS</title>
+    <url>/dbscan_and_optics/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>我如期来更新啦！！！聚类算法是很常用的一种算法，不过最常见的就是KMeans了，虽然很多人都会用，不过讲道理，如果是调用现成机器学习库里面的KMeans的话，我敢保证90%的人答不上来具体的是什么算法。相信我，库里的KMeans跟教科书讲的那个随机取初始点的KMeans不是一个算法哟～</p>
+<p>因为KMeans依赖K，但是我怎么知道K要用多少呢？另外，KMeans受限于算法本身，对于球状的数据效果较好，但是不规则形状的就不行了。这种情况下，相对而言，基于密度的聚类算法就比较好用了。sklearn里面现在是放了一个DBSCAN，下一版会更新OPTICS。刚好最近都用了，这里把DBSCAN跟OPTICS算法复现一遍。</p>
+<a id="more"></a>
+<h1 id="dbscan">DBSCAN</h1>
+<p>DBSCAN算法的原始论文是96年的这篇<a href="https://www.aaai.org/Papers/KDD/1996/KDD96-037.pdf" target="_blank" rel="noopener">《A Density-Based Algorithm for Discovering Clusters in Large Spatial Database with Noise》</a>。</p>
+<p>DBSCAN是一种基于密度的聚类算法，也就是说，密度高的区域自动聚成一类。这样一来，我们就避免了人为去设定群组数量的问题，算法可以自动发现群组数量。另外用这种方法，如果一个sample不在高密度区域，就有可能被判定为异常值，那么也可以拿来作为异常值检验的方法。</p>
+<p>DBSCAN的思路非常简单，有两个参数，一个是<span class="math inline">\(\varepsilon\)</span>，另一个是minimum points。这里首先定义DBSCAN的几个核心概念，一个是<span class="math inline">\(\varepsilon\)</span>-neighborhood，另一个是core object，还有就是reachable。</p>
+<p>首先是<span class="math inline">\(\varepsilon\)</span>-neighborhood。DBSCAN开始的时候会随机选取一个初始点，然后按照<span class="math inline">\(\varepsilon\)</span>的距离寻找临近点，这些点的集合叫做<span class="math inline">\(\varepsilon\)</span>-neighborhood。参数里面的minimum points就是限定这个点的集合的。minimum points限定了这个集合最小需要包含多少样本点，<span class="math inline">\(\varepsilon\)</span>则是限定了要用多大的范围去框定这些样本点。这里有个小细节要注意，那就是，算neighborhood的时候，中心点自己是算进来的。</p>
+<p>那么这样圈完一波neighborhood后，我们会将符合样本数量大于等于minpts的中心点叫做core object。而core object跟这些neighbor就是reachable的。</p>
+<p>然后为了让算法运作起来，只要neighborhood这个集合里面有点，我们就不断重复这样圈地的动作，然后把中心点从集合中拿掉，直到neighborhood为空。</p>
+<p>那我们很自然就会想到，一定会圈到一些点，它们不是core object，但是也在集合里面。这些点我们叫做border，也就是说，这些点是这个类的边界了。那么我们就很自然会想到，也有一些点压根不在neighborhood里面，也不是core的点，这些点就是noise。那既然样本点多了两个状态，reachable的情况也就变得多了，如果是直接可以在neighborhood里面找到的，我们叫做directly-reachable；如果通过neighborhood一层层找，最后找到的，我们叫density-reachable。</p>
+<p>可以看图说话：</p>
+<p align="center">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/DBSCAN-Illustration.svg/1280px-DBSCAN-Illustration.svg.png" width="50%">
+</p>
+<p>这个图里面，A是core，B、C是border，N是noise。A跟B、C都是density-reachable。但是有没有发现，B是没法返回去找到A的。所以这种reachable是有方向的。</p>
+<p>如果对SNA有点了解的朋友就知道，就是一度人脉和N度人脉，但是是一个有向图。</p>
+<p>那么算法思路理清了，代码就好写了，这里我就用最常用的欧氏距离了。有人可能会想，如果还是欧氏距离，那跟KMeans还有什么分别，都是画圈圈嘛！请回想一个微积分，只要圈画的够小，就能做出各种形状来。下面是核心部分的代码，详细的可以去看我的<a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/fun/DBSCAN.ipynb" target="_blank" rel="noopener">notebook</a>。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_euclidean_dist</span><span class="params">(p, q)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> np.sqrt(np.power(p - q, <span class="number">2</span>).sum())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_eps_reachable</span><span class="params">(p, q, eps)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> _euclidean_dist(p, q) &lt; eps</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_eps_neighborhood</span><span class="params">(data, point_id, eps)</span>:</span></span><br><span class="line">    neighborhood = []</span><br><span class="line">    point = data[point_id]</span><br><span class="line">    <span class="keyword">for</span> q <span class="keyword">in</span> range(len(data)):</span><br><span class="line">        <span class="keyword">if</span> _eps_reachable(point, data[q], eps):</span><br><span class="line">            neighborhood.append(q)</span><br><span class="line">    <span class="keyword">return</span> neighborhood</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_is_core_object</span><span class="params">(neighborhood, minpts)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> len(neighborhood) &gt;= minpts:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dbscan</span><span class="params">(data, eps, minpts)</span>:</span></span><br><span class="line">    class_id = <span class="number">0</span></span><br><span class="line">    class_label = np.full(len(data), <span class="number">-1</span>)</span><br><span class="line">    <span class="keyword">for</span> p_id <span class="keyword">in</span> range(len(data)):</span><br><span class="line">        <span class="keyword">if</span> class_label[p_id] == <span class="number">-1</span>:</span><br><span class="line">            neighborhood = _eps_neighborhood(data, p_id, eps)</span><br><span class="line">        <span class="keyword">if</span> _is_core_object(neighborhood, minpts):</span><br><span class="line">            class_label[neighborhood] = class_id</span><br><span class="line">            neighborhood.remove(p_id)</span><br><span class="line">            <span class="keyword">while</span> len(neighborhood) &gt; <span class="number">0</span>:</span><br><span class="line">                current_p = neighborhood[<span class="number">0</span>]</span><br><span class="line">                current_neighborhood = _eps_neighborhood(data, current_p, eps)</span><br><span class="line">                <span class="keyword">for</span> n <span class="keyword">in</span> current_neighborhood:</span><br><span class="line">                    <span class="keyword">if</span> class_label[n] == <span class="number">-1</span>:</span><br><span class="line">                        class_label[n] = class_id</span><br><span class="line">                        neighborhood.append(n)</span><br><span class="line">                neighborhood = neighborhood[<span class="number">1</span>:]</span><br><span class="line">            class_id += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> class_label</span><br></pre></td></tr></table></figure>
+<h1 id="optics">OPTICS</h1>
+<p>那么DBSCAN本身是一个非常牛逼的算法，它解决了我们找K的问题，这样在海量群组的时候，我们不用像KMeans一样去到处尝试K的大小。但是DBSCAN有个问题，那就是这个算法只能检测一个密度。换句话说，如果现在存在一个数据集有两个类，一个类是方差小的，一个类是方差大的。且这两个群组离得不算太远。如果我们为了照顾方差大的群组将eps设得很大，minpts设得很小，那么可能把两个类聚在一起。反过来，我们就可能找不到方差大的类。</p>
+<p>那么问题来了，有没有办法量化这个距离呢？三年后，同一组作者在DBSCAN的基础上进化出了<a href="http://www.dbs.ifi.lmu.de/Publikationen/Papers/OPTICS.pdf" target="_blank" rel="noopener">OPTICS算法</a>。</p>
+<p>既然是DBSCAN的进化版，所以很多概念上都是互通的，只是OPTICS算法多了几个概念，一个是core-distance，一个是reachability-distance。</p>
+<p>我们知道，DBSCAN是不断跑马圈地的一个过程，但是我们很直观想就知道，有些密度大的地方，可能不需要<span class="math inline">\(\varepsilon\)</span>那么大的范围就可以圈到minpts个样本，所以在OPTICS算法里面，我们将满足minpts这么多样本点的<span class="math inline">\(\varepsilon&#39;\)</span>叫做core-distance。而reachability-distance就是中心点与临近点的距离，但是，如果临近点落在<span class="math inline">\(\varepsilon&#39;\)</span>内，reachability-distance就用core-distance来替代。如下图：</p>
+<p align="center">
+<img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/blog/optics_001.png" width="50%">
+</p>
+<p>那么用OPTICS的时候我们就需要定义两个列表，一个是seeds，一个是ordered result。seeds就是我们每一轮迭代时候的候选列表，而ordered result就是最终的结果。</p>
+<p>具体的过程是这样的。我们先找到一个点，然后一样跑马圈地，接着计算reachability-distance，然后放到seeds里面从小到大排序。每次取第一个seed出来继续圈地，把被取出来的点以及这个点的reachability distance存在ordered result里面。接着就跟DBSCAN一样，不断重复，直到neighborhood为空。这样做的好处就是，我们可以量化评估每个群的密度大小。效果如下图：</p>
+<p align="center">
+<img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/blog/optics_002.jpg" width="50%">
+</p>
+<p>那么我们又会想到，有些seeds里面的点可能随着核心点的移动，reachability distance会不断变小。因为A的core distance里可能是B，而C不在A的core distance里面，但是C在B的core distance里面。如果第一个处理的点是A，第二个处理的点是B，那C其实还是很核心的一个点。那这种时候我们就要跟一它开始的reachability distance做比较，如果新的reachability distance比原来的小，就把原来的值替换掉。</p>
+<p>那么废话不多说，上代码，很多地方跟DBSCAN是可以复用的，我就放了一些OPTICS的核心部分，老规矩，详细见<a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/fun/OPTICS.ipynb" target="_blank" rel="noopener">notebook</a>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_eps_neighborhood</span><span class="params">(data, point_id, eps)</span>:</span></span><br><span class="line">    neighborhood = []</span><br><span class="line">    rdist = []</span><br><span class="line">    point = data[point_id]</span><br><span class="line">    <span class="keyword">for</span> q <span class="keyword">in</span> range(len(data)):</span><br><span class="line">        dist = _euclidean_dist(point, data[q])</span><br><span class="line">        <span class="keyword">if</span> dist &lt; eps:</span><br><span class="line">            neighborhood.append((q, dist))</span><br><span class="line">    neighborhood = np.array(neighborhood, dtype=[(<span class="string">'id'</span>, <span class="string">'i'</span>), (<span class="string">'dist'</span>, <span class="string">'f'</span>)])</span><br><span class="line">    neighborhood = np.delete(neighborhood, np.where(neighborhood[<span class="string">'id'</span>] == point_id))</span><br><span class="line">    <span class="keyword">return</span> neighborhood</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_update_order_seeds</span><span class="params">(neighborhood, minpts, reach_dists, processed, seeds)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> _is_core_object(neighborhood, minpts):</span><br><span class="line">        <span class="keyword">return</span> seeds</span><br><span class="line">    core_dist = np.sort(neighborhood[<span class="string">'dist'</span>])[minpts - <span class="number">2</span>]</span><br><span class="line">    <span class="keyword">for</span> obj <span class="keyword">in</span> neighborhood[<span class="string">'id'</span>]:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> processed[obj]:</span><br><span class="line">            obj_dist = neighborhood[neighborhood[<span class="string">'id'</span>] == obj][<span class="string">'dist'</span>][<span class="number">0</span>]</span><br><span class="line">            newRdist = max(core_dist, obj_dist)</span><br><span class="line">            <span class="keyword">if</span> np.isnan(reach_dists[obj]):</span><br><span class="line">                reach_dists[obj] = newRdist</span><br><span class="line">                seeds[obj] = newRdist</span><br><span class="line">            <span class="keyword">elif</span> newRdist &lt; reach_dists[obj]:</span><br><span class="line">                reach_dists[obj] = newRdist</span><br><span class="line">                seeds[obj] = newRdist</span><br><span class="line">    <span class="keyword">return</span> seeds</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">optics</span><span class="params">(data, eps, minpts)</span>:</span></span><br><span class="line">    processed = np.array([<span class="literal">False</span>] * len(data))</span><br><span class="line">    core_dists = np.full(len(data), np.nan)</span><br><span class="line">    reach_dists = np.full(len(data), np.nan)</span><br><span class="line">    ordered_res = []</span><br><span class="line">    seeds = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> p_id <span class="keyword">in</span> range(len(data)):</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> processed[p_id]:</span><br><span class="line">            ordered_res.append(p_id)</span><br><span class="line">            processed[p_id] = <span class="literal">True</span></span><br><span class="line">            neighbors = _eps_neighborhood(data, p_id, eps)</span><br><span class="line">            <span class="keyword">if</span> _is_core_object(neighbors, minpts):</span><br><span class="line">                core_dists[p_id] = np.sort(neighbors[<span class="string">'dist'</span>])[minpts - <span class="number">2</span>]</span><br><span class="line">            seeds = _update_order_seeds(neighbors, minpts, reach_dists, processed, seeds)</span><br><span class="line">            <span class="keyword">while</span> len(seeds) &gt; <span class="number">0</span>:</span><br><span class="line">                nextId = sorted(seeds.items(), key=operator.itemgetter(<span class="number">1</span>))[<span class="number">0</span>][<span class="number">0</span>]</span><br><span class="line">                <span class="keyword">del</span> seeds[nextId]</span><br><span class="line">                processed[nextId] = <span class="literal">True</span></span><br><span class="line">                ordered_res.append(nextId)</span><br><span class="line">                newNeighbors = _eps_neighborhood(data, nextId, eps)</span><br><span class="line">                <span class="keyword">if</span> _is_core_object(newNeighbors, minpts):</span><br><span class="line">                    core_dists[nextId] = np.sort(newNeighbors[<span class="string">'dist'</span>])[minpts - <span class="number">2</span>]</span><br><span class="line">                    seeds = _update_order_seeds(newNeighbors, minpts, reach_dists, processed, seeds)</span><br><span class="line">    <span class="comment"># 这里只是我的一个操作，强迫症看不惯有个nan存在。</span></span><br><span class="line">    reach_dists[ordered_res[<span class="number">0</span>]] = core_dists[ordered_res[<span class="number">0</span>]]</span><br><span class="line">    <span class="keyword">return</span> ordered_res, reach_dists, core_dists</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cluster_optics_dbscan</span><span class="params">(data, eps_reachable, eps, minpts)</span>:</span></span><br><span class="line">    orders, reach_dists, core_dists = optics(data, eps, minpts)</span><br><span class="line">    n_samples = len(data)</span><br><span class="line">    labels = np.zeros(n_samples, dtype=int)</span><br><span class="line">    far_reach = reach_dists &gt; eps_reachable</span><br><span class="line">    near_core = core_dists &lt;= eps_reachable</span><br><span class="line">    labels[orders] = np.cumsum(far_reach[orders] &amp; near_core[orders])</span><br><span class="line">    labels[far_reach &amp; ~near_core] = <span class="number">-1</span></span><br><span class="line">    <span class="keyword">return</span> labels, orders, reach_dists, core_dists</span><br></pre></td></tr></table></figure>
+<p>OPTICS的优点就是，不管是什么形状的密度，基本上都可以把这个凹槽给跑出来，但是问题就是最后的这个抽取群组小算法。目前我还没找到一个比较好的方法来自动抽取，如果是按照论文里面的分层抽取，我试过会抽的太细，如果是按照论文里面的DBSCAN来抽，就是我实现的这个，不过是一刀切的方式，太复杂的样本效果就不好了。目前还在探索用其他平滑方法来替代，有突破再来更新。</p>
+<p>试了两种平滑方式，最后的做法是，先用一维高斯平滑，然后用max filter抹掉因为高斯平滑最大值向左漂的问题。</p>
+<h1 id="hdbscan">HDBSCAN</h1>
+<p>然后又发现了一个新的聚类算法，类似OPTICS算法，叫<a href="https://link.springer.com/chapter/10.1007/978-3-642-37456-2_14" target="_blank" rel="noopener">HDBSCAN</a>，顾名思义，就是H就是hierarchical。事实上就是OPTICS算法的一个改进版本。</p>
+<p>与OPTICS类似，HDBSCAN一样要算core distance和reachability distance。这个算法跟OPTICS是一样的。但是reachability distance的公式是：<span class="math inline">\(d_{\text{reach}-k}(a, b) = \max\{\text{core}_k(a), \text{core}_k(b), d(a, b)\}\)</span>，这里的<span class="math inline">\(d(a, b)\)</span>是两个点用距离公式算的距离。如下图所示：</p>
+<p align="center">
+<img src="https://nbviewer.jupyter.org/github/scikit-learn-contrib/hdbscan/blob/master/notebooks/distance4.svg" width="50%">
+</p>
+<p>蓝绿两点直接的reachability distance就是绿点的core distance，红绿两点的就是红绿两点的距离。</p>
+<p>那么这样一来，就可以得到每个点之间的reachability distance。然后就可以用这个距离作为权重来绘制一个带权重的连接图。<a href="https://arxiv.org/pdf/1506.06422v2.pdf" target="_blank" rel="noopener">Beyond Hartigan Consistency</a>这篇论文认为，无论是那种概率密度分布，这种相互距离可以更好的表示单链接聚类的层次结构。</p>
+<p>然后可以用<a href="https://en.wikipedia.org/wiki/Prim%27s_algorithm" target="_blank" rel="noopener">Prim算法</a>构建最小生成树，然后转化为层次结构，就类似层次聚类了。这个可以参考一下基于最小生成树的层次聚类。然后通过设定最小簇大小，对这个树进行剪枝。也就从下面的第一个图变成第二个图：</p>
+<p align="center">
+<img src="https://hdbscan.readthedocs.io/en/latest/_images/how_hdbscan_works_12_1.png" width="50%">
+</p>
+<p align="center">
+<img src="https://hdbscan.readthedocs.io/en/latest/_images/how_hdbscan_works_15_1.png" width="50%">
+</p>
+<p>之后就是抽取簇。上面剪枝后的树其实已经有了结果，但是我们希望抽的簇可以自动抽取，且是稳定的。因此我们需要一种度量方式来衡量簇的稳定性。我们定义一个值<span class="math inline">\(f(x) = \lambda = \frac{1}{\text{distance}_{\text{core}}}\)</span>。这里的distance就是一个点。所以用<span class="math inline">\(\lambda_{\text{birth}}\)</span>和<span class="math inline">\(\lambda_{\text{death}}\)</span>分别表示簇生成和簇分裂时候的<span class="math inline">\(\lambda\)</span>大小，也就是<span class="math inline">\(\lambda_{\text{min}}C_i\)</span>和<span class="math inline">\(\lambda_{\text{max}}C_i\)</span>，那么簇的稳定性就是<span class="math inline">\(S = \sum_{p \in \text{cluster}} (\lambda_p - \lambda_{\text{birth}})\)</span>，<span class="math inline">\(\lambda_p = \lambda_{\text{max}}(x, C) = \min(f(x), \lambda_{\text{max}}C)\)</span>每轮优化的方向就是让这个稳定性最大，同时满足最小簇大小。</p>
+<p>那么HDBSCAN跟DBSCAN比的话，DBSCAN实际上就是上面剪枝前的hierarchical tree切一刀，而HDBSCAN会自适应地去寻找合适的划分。</p>
+]]></content>
+      <categories>
+        <category>统计学习</category>
       </categories>
   </entry>
   <entry>
@@ -1861,68 +1923,6 @@ R_2 = \frac{x_2 - x}{x_2 - x_1}Q_{12} + \frac{x - x_1}{x_2 - x_1}Q_{22}
 ]]></content>
       <categories>
         <category>深度学习</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>DBSCAN &amp; OPTICS</title>
-    <url>/dbscan_and_optics/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>我如期来更新啦！！！聚类算法是很常用的一种算法，不过最常见的就是KMeans了，虽然很多人都会用，不过讲道理，如果是调用现成机器学习库里面的KMeans的话，我敢保证90%的人答不上来具体的是什么算法。相信我，库里的KMeans跟教科书讲的那个随机取初始点的KMeans不是一个算法哟～</p>
-<p>因为KMeans依赖K，但是我怎么知道K要用多少呢？另外，KMeans受限于算法本身，对于球状的数据效果较好，但是不规则形状的就不行了。这种情况下，相对而言，基于密度的聚类算法就比较好用了。sklearn里面现在是放了一个DBSCAN，下一版会更新OPTICS。刚好最近都用了，这里把DBSCAN跟OPTICS算法复现一遍。</p>
-<a id="more"></a>
-<h1 id="dbscan">DBSCAN</h1>
-<p>DBSCAN算法的原始论文是96年的这篇<a href="https://www.aaai.org/Papers/KDD/1996/KDD96-037.pdf" target="_blank" rel="noopener">《A Density-Based Algorithm for Discovering Clusters in Large Spatial Database with Noise》</a>。</p>
-<p>DBSCAN是一种基于密度的聚类算法，也就是说，密度高的区域自动聚成一类。这样一来，我们就避免了人为去设定群组数量的问题，算法可以自动发现群组数量。另外用这种方法，如果一个sample不在高密度区域，就有可能被判定为异常值，那么也可以拿来作为异常值检验的方法。</p>
-<p>DBSCAN的思路非常简单，有两个参数，一个是<span class="math inline">\(\varepsilon\)</span>，另一个是minimum points。这里首先定义DBSCAN的几个核心概念，一个是<span class="math inline">\(\varepsilon\)</span>-neighborhood，另一个是core object，还有就是reachable。</p>
-<p>首先是<span class="math inline">\(\varepsilon\)</span>-neighborhood。DBSCAN开始的时候会随机选取一个初始点，然后按照<span class="math inline">\(\varepsilon\)</span>的距离寻找临近点，这些点的集合叫做<span class="math inline">\(\varepsilon\)</span>-neighborhood。参数里面的minimum points就是限定这个点的集合的。minimum points限定了这个集合最小需要包含多少样本点，<span class="math inline">\(\varepsilon\)</span>则是限定了要用多大的范围去框定这些样本点。这里有个小细节要注意，那就是，算neighborhood的时候，中心点自己是算进来的。</p>
-<p>那么这样圈完一波neighborhood后，我们会将符合样本数量大于等于minpts的中心点叫做core object。而core object跟这些neighbor就是reachable的。</p>
-<p>然后为了让算法运作起来，只要neighborhood这个集合里面有点，我们就不断重复这样圈地的动作，然后把中心点从集合中拿掉，直到neighborhood为空。</p>
-<p>那我们很自然就会想到，一定会圈到一些点，它们不是core object，但是也在集合里面。这些点我们叫做border，也就是说，这些点是这个类的边界了。那么我们就很自然会想到，也有一些点压根不在neighborhood里面，也不是core的点，这些点就是noise。那既然样本点多了两个状态，reachable的情况也就变得多了，如果是直接可以在neighborhood里面找到的，我们叫做directly-reachable；如果通过neighborhood一层层找，最后找到的，我们叫density-reachable。</p>
-<p>可以看图说话：</p>
-<p align="center">
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/DBSCAN-Illustration.svg/1280px-DBSCAN-Illustration.svg.png" width="50%">
-</p>
-<p>这个图里面，A是core，B、C是border，N是noise。A跟B、C都是density-reachable。但是有没有发现，B是没法返回去找到A的。所以这种reachable是有方向的。</p>
-<p>如果对SNA有点了解的朋友就知道，就是一度人脉和N度人脉，但是是一个有向图。</p>
-<p>那么算法思路理清了，代码就好写了，这里我就用最常用的欧氏距离了。有人可能会想，如果还是欧氏距离，那跟KMeans还有什么分别，都是画圈圈嘛！请回想一个微积分，只要圈画的够小，就能做出各种形状来。下面是核心部分的代码，详细的可以去看我的<a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/fun/DBSCAN.ipynb" target="_blank" rel="noopener">notebook</a>。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_euclidean_dist</span><span class="params">(p, q)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> np.sqrt(np.power(p - q, <span class="number">2</span>).sum())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_eps_reachable</span><span class="params">(p, q, eps)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> _euclidean_dist(p, q) &lt; eps</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_eps_neighborhood</span><span class="params">(data, point_id, eps)</span>:</span></span><br><span class="line">    neighborhood = []</span><br><span class="line">    point = data[point_id]</span><br><span class="line">    <span class="keyword">for</span> q <span class="keyword">in</span> range(len(data)):</span><br><span class="line">        <span class="keyword">if</span> _eps_reachable(point, data[q], eps):</span><br><span class="line">            neighborhood.append(q)</span><br><span class="line">    <span class="keyword">return</span> neighborhood</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_is_core_object</span><span class="params">(neighborhood, minpts)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> len(neighborhood) &gt;= minpts:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dbscan</span><span class="params">(data, eps, minpts)</span>:</span></span><br><span class="line">    class_id = <span class="number">0</span></span><br><span class="line">    class_label = np.full(len(data), <span class="number">-1</span>)</span><br><span class="line">    <span class="keyword">for</span> p_id <span class="keyword">in</span> range(len(data)):</span><br><span class="line">        <span class="keyword">if</span> class_label[p_id] == <span class="number">-1</span>:</span><br><span class="line">            neighborhood = _eps_neighborhood(data, p_id, eps)</span><br><span class="line">        <span class="keyword">if</span> _is_core_object(neighborhood, minpts):</span><br><span class="line">            class_label[neighborhood] = class_id</span><br><span class="line">            neighborhood.remove(p_id)</span><br><span class="line">            <span class="keyword">while</span> len(neighborhood) &gt; <span class="number">0</span>:</span><br><span class="line">                current_p = neighborhood[<span class="number">0</span>]</span><br><span class="line">                current_neighborhood = _eps_neighborhood(data, current_p, eps)</span><br><span class="line">                <span class="keyword">for</span> n <span class="keyword">in</span> current_neighborhood:</span><br><span class="line">                    <span class="keyword">if</span> class_label[n] == <span class="number">-1</span>:</span><br><span class="line">                        class_label[n] = class_id</span><br><span class="line">                        neighborhood.append(n)</span><br><span class="line">                neighborhood = neighborhood[<span class="number">1</span>:]</span><br><span class="line">            class_id += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> class_label</span><br></pre></td></tr></table></figure>
-<h1 id="optics">OPTICS</h1>
-<p>那么DBSCAN本身是一个非常牛逼的算法，它解决了我们找K的问题，这样在海量群组的时候，我们不用像KMeans一样去到处尝试K的大小。但是DBSCAN有个问题，那就是这个算法只能检测一个密度。换句话说，如果现在存在一个数据集有两个类，一个类是方差小的，一个类是方差大的。且这两个群组离得不算太远。如果我们为了照顾方差大的群组将eps设得很大，minpts设得很小，那么可能把两个类聚在一起。反过来，我们就可能找不到方差大的类。</p>
-<p>那么问题来了，有没有办法量化这个距离呢？三年后，同一组作者在DBSCAN的基础上进化出了<a href="http://www.dbs.ifi.lmu.de/Publikationen/Papers/OPTICS.pdf" target="_blank" rel="noopener">OPTICS算法</a>。</p>
-<p>既然是DBSCAN的进化版，所以很多概念上都是互通的，只是OPTICS算法多了几个概念，一个是core-distance，一个是reachability-distance。</p>
-<p>我们知道，DBSCAN是不断跑马圈地的一个过程，但是我们很直观想就知道，有些密度大的地方，可能不需要<span class="math inline">\(\varepsilon\)</span>那么大的范围就可以圈到minpts个样本，所以在OPTICS算法里面，我们将满足minpts这么多样本点的<span class="math inline">\(\varepsilon&#39;\)</span>叫做core-distance。而reachability-distance就是中心点与临近点的距离，但是，如果临近点落在<span class="math inline">\(\varepsilon&#39;\)</span>内，reachability-distance就用core-distance来替代。如下图：</p>
-<p align="center">
-<img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/blog/optics_001.png" width="50%">
-</p>
-<p>那么用OPTICS的时候我们就需要定义两个列表，一个是seeds，一个是ordered result。seeds就是我们每一轮迭代时候的候选列表，而ordered result就是最终的结果。</p>
-<p>具体的过程是这样的。我们先找到一个点，然后一样跑马圈地，接着计算reachability-distance，然后放到seeds里面从小到大排序。每次取第一个seed出来继续圈地，把被取出来的点以及这个点的reachability distance存在ordered result里面。接着就跟DBSCAN一样，不断重复，直到neighborhood为空。这样做的好处就是，我们可以量化评估每个群的密度大小。效果如下图：</p>
-<p align="center">
-<img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/blog/optics_002.jpg" width="50%">
-</p>
-<p>那么我们又会想到，有些seeds里面的点可能随着核心点的移动，reachability distance会不断变小。因为A的core distance里可能是B，而C不在A的core distance里面，但是C在B的core distance里面。如果第一个处理的点是A，第二个处理的点是B，那C其实还是很核心的一个点。那这种时候我们就要跟一它开始的reachability distance做比较，如果新的reachability distance比原来的小，就把原来的值替换掉。</p>
-<p>那么废话不多说，上代码，很多地方跟DBSCAN是可以复用的，我就放了一些OPTICS的核心部分，老规矩，详细见<a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/fun/OPTICS.ipynb" target="_blank" rel="noopener">notebook</a>：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_eps_neighborhood</span><span class="params">(data, point_id, eps)</span>:</span></span><br><span class="line">    neighborhood = []</span><br><span class="line">    rdist = []</span><br><span class="line">    point = data[point_id]</span><br><span class="line">    <span class="keyword">for</span> q <span class="keyword">in</span> range(len(data)):</span><br><span class="line">        dist = _euclidean_dist(point, data[q])</span><br><span class="line">        <span class="keyword">if</span> dist &lt; eps:</span><br><span class="line">            neighborhood.append((q, dist))</span><br><span class="line">    neighborhood = np.array(neighborhood, dtype=[(<span class="string">'id'</span>, <span class="string">'i'</span>), (<span class="string">'dist'</span>, <span class="string">'f'</span>)])</span><br><span class="line">    neighborhood = np.delete(neighborhood, np.where(neighborhood[<span class="string">'id'</span>] == point_id))</span><br><span class="line">    <span class="keyword">return</span> neighborhood</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_update_order_seeds</span><span class="params">(neighborhood, minpts, reach_dists, processed, seeds)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> _is_core_object(neighborhood, minpts):</span><br><span class="line">        <span class="keyword">return</span> seeds</span><br><span class="line">    core_dist = np.sort(neighborhood[<span class="string">'dist'</span>])[minpts - <span class="number">2</span>]</span><br><span class="line">    <span class="keyword">for</span> obj <span class="keyword">in</span> neighborhood[<span class="string">'id'</span>]:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> processed[obj]:</span><br><span class="line">            obj_dist = neighborhood[neighborhood[<span class="string">'id'</span>] == obj][<span class="string">'dist'</span>][<span class="number">0</span>]</span><br><span class="line">            newRdist = max(core_dist, obj_dist)</span><br><span class="line">            <span class="keyword">if</span> np.isnan(reach_dists[obj]):</span><br><span class="line">                reach_dists[obj] = newRdist</span><br><span class="line">                seeds[obj] = newRdist</span><br><span class="line">            <span class="keyword">elif</span> newRdist &lt; reach_dists[obj]:</span><br><span class="line">                reach_dists[obj] = newRdist</span><br><span class="line">                seeds[obj] = newRdist</span><br><span class="line">    <span class="keyword">return</span> seeds</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">optics</span><span class="params">(data, eps, minpts)</span>:</span></span><br><span class="line">    processed = np.array([<span class="literal">False</span>] * len(data))</span><br><span class="line">    core_dists = np.full(len(data), np.nan)</span><br><span class="line">    reach_dists = np.full(len(data), np.nan)</span><br><span class="line">    ordered_res = []</span><br><span class="line">    seeds = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> p_id <span class="keyword">in</span> range(len(data)):</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> processed[p_id]:</span><br><span class="line">            ordered_res.append(p_id)</span><br><span class="line">            processed[p_id] = <span class="literal">True</span></span><br><span class="line">            neighbors = _eps_neighborhood(data, p_id, eps)</span><br><span class="line">            <span class="keyword">if</span> _is_core_object(neighbors, minpts):</span><br><span class="line">                core_dists[p_id] = np.sort(neighbors[<span class="string">'dist'</span>])[minpts - <span class="number">2</span>]</span><br><span class="line">            seeds = _update_order_seeds(neighbors, minpts, reach_dists, processed, seeds)</span><br><span class="line">            <span class="keyword">while</span> len(seeds) &gt; <span class="number">0</span>:</span><br><span class="line">                nextId = sorted(seeds.items(), key=operator.itemgetter(<span class="number">1</span>))[<span class="number">0</span>][<span class="number">0</span>]</span><br><span class="line">                <span class="keyword">del</span> seeds[nextId]</span><br><span class="line">                processed[nextId] = <span class="literal">True</span></span><br><span class="line">                ordered_res.append(nextId)</span><br><span class="line">                newNeighbors = _eps_neighborhood(data, nextId, eps)</span><br><span class="line">                <span class="keyword">if</span> _is_core_object(newNeighbors, minpts):</span><br><span class="line">                    core_dists[nextId] = np.sort(newNeighbors[<span class="string">'dist'</span>])[minpts - <span class="number">2</span>]</span><br><span class="line">                    seeds = _update_order_seeds(newNeighbors, minpts, reach_dists, processed, seeds)</span><br><span class="line">    <span class="comment"># 这里只是我的一个操作，强迫症看不惯有个nan存在。</span></span><br><span class="line">    reach_dists[ordered_res[<span class="number">0</span>]] = core_dists[ordered_res[<span class="number">0</span>]]</span><br><span class="line">    <span class="keyword">return</span> ordered_res, reach_dists, core_dists</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cluster_optics_dbscan</span><span class="params">(data, eps_reachable, eps, minpts)</span>:</span></span><br><span class="line">    orders, reach_dists, core_dists = optics(data, eps, minpts)</span><br><span class="line">    n_samples = len(data)</span><br><span class="line">    labels = np.zeros(n_samples, dtype=int)</span><br><span class="line">    far_reach = reach_dists &gt; eps_reachable</span><br><span class="line">    near_core = core_dists &lt;= eps_reachable</span><br><span class="line">    labels[orders] = np.cumsum(far_reach[orders] &amp; near_core[orders])</span><br><span class="line">    labels[far_reach &amp; ~near_core] = <span class="number">-1</span></span><br><span class="line">    <span class="keyword">return</span> labels, orders, reach_dists, core_dists</span><br></pre></td></tr></table></figure>
-<p>OPTICS的优点就是，不管是什么形状的密度，基本上都可以把这个凹槽给跑出来，但是问题就是最后的这个抽取群组小算法。目前我还没找到一个比较好的方法来自动抽取，如果是按照论文里面的分层抽取，我试过会抽的太细，如果是按照论文里面的DBSCAN来抽，就是我实现的这个，不过是一刀切的方式，太复杂的样本效果就不好了。目前还在探索用其他平滑方法来替代，有突破再来更新。</p>
-<p>试了两种平滑方式，最后的做法是，先用一维高斯平滑，然后用max filter抹掉因为高斯平滑最大值向左漂的问题。</p>
-<h1 id="hdbscan">HDBSCAN</h1>
-<p>然后又发现了一个新的聚类算法，类似OPTICS算法，叫<a href="https://link.springer.com/chapter/10.1007/978-3-642-37456-2_14" target="_blank" rel="noopener">HDBSCAN</a>，顾名思义，就是H就是hierarchical。事实上就是OPTICS算法的一个改进版本。</p>
-<p>与OPTICS类似，HDBSCAN一样要算core distance和reachability distance。这个算法跟OPTICS是一样的。但是reachability distance的公式是：<span class="math inline">\(d_{\text{reach}-k}(a, b) = \max\{\text{core}_k(a), \text{core}_k(b), d(a, b)\}\)</span>，这里的<span class="math inline">\(d(a, b)\)</span>是两个点用距离公式算的距离。如下图所示：</p>
-<p align="center">
-<img src="https://nbviewer.jupyter.org/github/scikit-learn-contrib/hdbscan/blob/master/notebooks/distance4.svg" width="50%">
-</p>
-<p>蓝绿两点直接的reachability distance就是绿点的core distance，红绿两点的就是红绿两点的距离。</p>
-<p>那么这样一来，就可以得到每个点之间的reachability distance。然后就可以用这个距离作为权重来绘制一个带权重的连接图。<a href="https://arxiv.org/pdf/1506.06422v2.pdf" target="_blank" rel="noopener">Beyond Hartigan Consistency</a>这篇论文认为，无论是那种概率密度分布，这种相互距离可以更好的表示单链接聚类的层次结构。</p>
-<p>然后可以用<a href="https://en.wikipedia.org/wiki/Prim%27s_algorithm" target="_blank" rel="noopener">Prim算法</a>构建最小生成树，然后转化为层次结构，就类似层次聚类了。这个可以参考一下基于最小生成树的层次聚类。然后通过设定最小簇大小，对这个树进行剪枝。也就从下面的第一个图变成第二个图：</p>
-<p align="center">
-<img src="https://hdbscan.readthedocs.io/en/latest/_images/how_hdbscan_works_12_1.png" width="50%">
-</p>
-<p align="center">
-<img src="https://hdbscan.readthedocs.io/en/latest/_images/how_hdbscan_works_15_1.png" width="50%">
-</p>
-<p>之后就是抽取簇。上面剪枝后的树其实已经有了结果，但是我们希望抽的簇可以自动抽取，且是稳定的。因此我们需要一种度量方式来衡量簇的稳定性。我们定义一个值<span class="math inline">\(f(x) = \lambda = \frac{1}{\text{distance}_{\text{core}}}\)</span>。这里的distance就是一个点。所以用<span class="math inline">\(\lambda_{\text{birth}}\)</span>和<span class="math inline">\(\lambda_{\text{death}}\)</span>分别表示簇生成和簇分裂时候的<span class="math inline">\(\lambda\)</span>大小，也就是<span class="math inline">\(\lambda_{\text{min}}C_i\)</span>和<span class="math inline">\(\lambda_{\text{max}}C_i\)</span>，那么簇的稳定性就是<span class="math inline">\(S = \sum_{p \in \text{cluster}} (\lambda_p - \lambda_{\text{birth}})\)</span>，<span class="math inline">\(\lambda_p = \lambda_{\text{max}}(x, C) = \min(f(x), \lambda_{\text{max}}C)\)</span>每轮优化的方向就是让这个稳定性最大，同时满足最小簇大小。</p>
-<p>那么HDBSCAN跟DBSCAN比的话，DBSCAN实际上就是上面剪枝前的hierarchical tree切一刀，而HDBSCAN会自适应地去寻找合适的划分。</p>
-]]></content>
-      <categories>
-        <category>统计学习</category>
       </categories>
   </entry>
   <entry>
@@ -2413,6 +2413,68 @@ w^*, b^* = \arg \max_{w,b}(L(w, b)) = \arg \min_{w, b}-\ln(L(w, b))
       </categories>
   </entry>
   <entry>
+    <title>台大李宏毅机器学习——CNN</title>
+    <url>/machine_learning_step8/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>卷积网络入门 <a id="more"></a></p>
+<p>卷积就是现在活跃在CV领域的大杀器，简写做CNN，实际上是一个fully connected network的变种。</p>
+<p>CNN有三个特性：</p>
+<ul>
+<li><p>可以找到图像中特定的pattern，而且这个pattern是比原来的图像要小的。</p></li>
+<li><p>同样的pattern可以出现在图片中不同的地方，都会被CNN探测到。</p></li>
+<li><p>可以做subsampling而不会过分影响图像的质量</p></li>
+</ul>
+<p>如图，CNN的做法是这样的：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml042.png"></p>
+<p>假设我们有一个image如左图，有一个filter如右上角，这个filter是可以被学习出来的。不过filter的大小是需要被人工设定好的，例如这里设定的是<span class="math inline">\(3 \times 3\)</span>。那CNN的工作原理就是，将这个filter放到image上面，然后等大小的一个matrix跟filter做inner product。所以红色框出来的部分跟filter的内积就是3。</p>
+<p>然后我们会移动filter来遍历整个image，这个移动的步伐我们叫做stride，stride的大小表示filter每一次移动的像素数量。例如这里我们stride设为1，那么我们下一步得到的就是下图：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml043.png"></p>
+<p>这样一直扫描，直到一排结束，然后向下移动stride的长度再向右继续扫描。</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml044.png"></p>
+<p>最后我们就能得到这样一个结果：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml045.png"></p>
+<p>这个filter因为对角线都是1，因此我们这个filter要寻找的就是对角线上的pattern。那么这个image中有两个对角线是1的pattern，一个在左上角，一个在左下角。这就满足了CNN的两个特性。一个是找到一个小于image的pattern，另一个是image中不同位置的pattern可以用一个filter找出来。</p>
+<p>我们可以将这个结果看作是经过过滤器处理的新图片，多个filter过滤之后的图片就是feature map。</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml046.png"></p>
+<p>那这个是黑白单通道的图片，如果现在用的是彩色图片，实际上就是拆开为Red、Green、Blue三通道。整个做法如下图：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml047.png"></p>
+<p>下面一个动图比较形象：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml041.gif"></p>
+<p>那为什么我们认为卷积是一个特殊的fully connected network呢？</p>
+<p>我们现在想象将一个image摊平，从一个matrix摊平成一个vector。我们上面的<span class="math inline">\(6 \times 6\)</span>的矩阵就可以摊平为一个长度为36的vector。这样我们每个filter的作用就可以用下图来表示：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml048.png"></p>
+<p>这样的设计有很多好处，首先，我们需要训练的参数远远小于全连接层，如果原来是全连接，我们需要训练36个参数，而现在我们只需要9个。其次，同一个filter移动的时候，参数是一样的，如下图：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml049.png"></p>
+<p>这样的好处同样是减少了需要训练的参数。如果是全连接层，现在接了2个neuron，我们需要训练的参数是72个，而在卷积里面，我们还是只需要训练9个。如果后面filter连接的越多，减少训练参数的效果越明显。</p>
+<p>那卷积提取完特征之后，我们会过一个subsampling的过程，也就是pooling的过程。这个过程当中当前有两种常用的方法，一种是average pooling，一种是max pooling。</p>
+<p>max pooling的过程就是下图：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml050.png"></p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml051.png"></p>
+<p>这里我们需要设定的是每一次pooling的窗口有多大，也就是在多大的一个区域内做subsampling，上图设定的大小是<span class="math inline">\(2 \times 2\)</span>。当然，这里可以用average，也可以用max，也可以两个都用。但是实践上，max的效果好像比average要好一点。那事实上，现在的框架中，pooling层也有stride。</p>
+<p>根据要做的事情不一样，不管是filter还是pooling，不一定非要将窗口设定为长宽相等的，也可以是不同的，比如filter也可以设计为<span class="math inline">\(2 \times 1\)</span>的矩阵这样。另外卷积的过程也可以反复进行好几次。比如VGG-16就有16层卷积。</p>
+<p>另外需要提一点的就是，用现在的方法做卷积，原始图片的边边角角会丢失掉，如果filter设计的越大，丢失的就越多。那么为了避免丢失，有一种做法是filter设计的小一点，另一种就是把图片的边边角角拼一段像素上去。拼像素的方法在这里就叫做padding，有几种常见的方法，一种是填0，另一种是将边边角角的像素直接复制一个填进去。那padding要拼多少像素可以根据filter大小来定。filter越大，需要拼的就越多。padding是不是一定比不做效果好，这个视情况而定，多炼丹才知道。</p>
+<p>那做完卷积后，我们需要做一个flatten的步骤，也就是将矩阵摊平成向量。如下图：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml052.png" width="50%"></p>
+<p>这样的结果最后就可以过fully connected network做分类或者回归了。当然，现在深度学习做分类的还是比较多的。</p>
+<p>我们现在可以看一看CNN到底在做什么，下图是AlexNet第一个layer的参数：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml053.png"></p>
+<p>这个图我们可以看到，上面的filter主要是看是否有一些pattern存在，而下面则是侦测颜色。事实上有各种各样的可视化方法，比如我们也可以把每个layer的output拿出来做图。</p>
+<p>还有一种方法来看CNN是如何work的。例如我们想要分析更高层次layer，我们可以定义一个指标，degree of the activation of the k-th filter： <span class="math display">\[
+a^k = \sum_i^m\sum_j^n a_{ij}^k
+\]</span> 我们希望当input一个image（用<span class="math inline">\(x\)</span>表示）的时候，可以让<span class="math inline">\(a^k\)</span>最大。也就是<span class="math inline">\(x^* = \arg \max_x a^k\)</span>。举例来说，如果做了一个识别猫狗的分类器，从仿生的角度而言，我们可以认为一张猫的照片，可以让一个识别猫的特征的神经元兴奋，而识别狗的神经元静默。</p>
+<p>那这个公式就可以求导用梯度下降来做这个事情。也就是计算<span class="math inline">\(\frac{a^k}{x_{ij}}\)</span>。如下图就是这样的效果：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml054.png"></p>
+<p>但是在CNN中，如果输出最后一层output的image，实际上我是得不到我们想象中的图片。比如说如果我们做mnist的分类，最后一层输出的图片并不会是数字，很可能得到的就是一片上世纪老电视的雪花屏。所以这样的结果是很容易被欺骗的，也就有了对抗样本这样的存在。另外就是网上有不少介绍的，将同一张图片变换一些像素，就会被识别为别的，比如把熊猫识别成汽车之类的。</p>
+<p>那如果我们做一些regularization，比如<span class="math inline">\(x^* = \arg \max_x (a^k + \sum|x_{ij}|)\)</span>，这样最后一个layer的输出相对会规则一点。</p>
+<p>当然我们还可以用另一个方式来看CNN到底是不是work的，比如我们取image中某个pixel，<span class="math inline">\(x_{ij}\)</span>，计算<span class="math inline">\(|\frac{\partial y_k}{\partial x_{ij}}|\)</span>，如果这个值很大，那么这个pixel是很重要的。将每个pixel算出来，我们就能知道模型到底聚焦在图片的哪个部分。如下图：</p>
+<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml055.png"></p>
+<p>那另外一种简单一点的方法是用一个纯色的框挡掉一些image，这样就能判断模型是不是无法正确识别，这样也能达到类似的效果。比如识别狗的模型，就挡掉狗，不挡掉狗分别试一下模型是不是可以正确分类。</p>
+<p>CNN入门大概就这些，应用场景非常的多，反正还是那句话，多炼丹，多开脑洞。</p>
+]]></content>
+      <categories>
+        <category>统计学习</category>
+      </categories>
+  </entry>
+  <entry>
     <title>台大李宏毅机器学习——深度学习调参</title>
     <url>/machine_learning_step7/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>深度学习调参技巧入门 <a id="more"></a></p>
@@ -2502,68 +2564,6 @@ w^{t+1} = w^{t} - \eta \frac{\partial L&#39;}{\partial w} = w^t - \eta(\frac{\pa
       </categories>
   </entry>
   <entry>
-    <title>台大李宏毅机器学习——CNN</title>
-    <url>/machine_learning_step8/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>卷积网络入门 <a id="more"></a></p>
-<p>卷积就是现在活跃在CV领域的大杀器，简写做CNN，实际上是一个fully connected network的变种。</p>
-<p>CNN有三个特性：</p>
-<ul>
-<li><p>可以找到图像中特定的pattern，而且这个pattern是比原来的图像要小的。</p></li>
-<li><p>同样的pattern可以出现在图片中不同的地方，都会被CNN探测到。</p></li>
-<li><p>可以做subsampling而不会过分影响图像的质量</p></li>
-</ul>
-<p>如图，CNN的做法是这样的：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml042.png"></p>
-<p>假设我们有一个image如左图，有一个filter如右上角，这个filter是可以被学习出来的。不过filter的大小是需要被人工设定好的，例如这里设定的是<span class="math inline">\(3 \times 3\)</span>。那CNN的工作原理就是，将这个filter放到image上面，然后等大小的一个matrix跟filter做inner product。所以红色框出来的部分跟filter的内积就是3。</p>
-<p>然后我们会移动filter来遍历整个image，这个移动的步伐我们叫做stride，stride的大小表示filter每一次移动的像素数量。例如这里我们stride设为1，那么我们下一步得到的就是下图：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml043.png"></p>
-<p>这样一直扫描，直到一排结束，然后向下移动stride的长度再向右继续扫描。</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml044.png"></p>
-<p>最后我们就能得到这样一个结果：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml045.png"></p>
-<p>这个filter因为对角线都是1，因此我们这个filter要寻找的就是对角线上的pattern。那么这个image中有两个对角线是1的pattern，一个在左上角，一个在左下角。这就满足了CNN的两个特性。一个是找到一个小于image的pattern，另一个是image中不同位置的pattern可以用一个filter找出来。</p>
-<p>我们可以将这个结果看作是经过过滤器处理的新图片，多个filter过滤之后的图片就是feature map。</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml046.png"></p>
-<p>那这个是黑白单通道的图片，如果现在用的是彩色图片，实际上就是拆开为Red、Green、Blue三通道。整个做法如下图：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml047.png"></p>
-<p>下面一个动图比较形象：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml041.gif"></p>
-<p>那为什么我们认为卷积是一个特殊的fully connected network呢？</p>
-<p>我们现在想象将一个image摊平，从一个matrix摊平成一个vector。我们上面的<span class="math inline">\(6 \times 6\)</span>的矩阵就可以摊平为一个长度为36的vector。这样我们每个filter的作用就可以用下图来表示：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml048.png"></p>
-<p>这样的设计有很多好处，首先，我们需要训练的参数远远小于全连接层，如果原来是全连接，我们需要训练36个参数，而现在我们只需要9个。其次，同一个filter移动的时候，参数是一样的，如下图：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml049.png"></p>
-<p>这样的好处同样是减少了需要训练的参数。如果是全连接层，现在接了2个neuron，我们需要训练的参数是72个，而在卷积里面，我们还是只需要训练9个。如果后面filter连接的越多，减少训练参数的效果越明显。</p>
-<p>那卷积提取完特征之后，我们会过一个subsampling的过程，也就是pooling的过程。这个过程当中当前有两种常用的方法，一种是average pooling，一种是max pooling。</p>
-<p>max pooling的过程就是下图：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml050.png"></p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml051.png"></p>
-<p>这里我们需要设定的是每一次pooling的窗口有多大，也就是在多大的一个区域内做subsampling，上图设定的大小是<span class="math inline">\(2 \times 2\)</span>。当然，这里可以用average，也可以用max，也可以两个都用。但是实践上，max的效果好像比average要好一点。那事实上，现在的框架中，pooling层也有stride。</p>
-<p>根据要做的事情不一样，不管是filter还是pooling，不一定非要将窗口设定为长宽相等的，也可以是不同的，比如filter也可以设计为<span class="math inline">\(2 \times 1\)</span>的矩阵这样。另外卷积的过程也可以反复进行好几次。比如VGG-16就有16层卷积。</p>
-<p>另外需要提一点的就是，用现在的方法做卷积，原始图片的边边角角会丢失掉，如果filter设计的越大，丢失的就越多。那么为了避免丢失，有一种做法是filter设计的小一点，另一种就是把图片的边边角角拼一段像素上去。拼像素的方法在这里就叫做padding，有几种常见的方法，一种是填0，另一种是将边边角角的像素直接复制一个填进去。那padding要拼多少像素可以根据filter大小来定。filter越大，需要拼的就越多。padding是不是一定比不做效果好，这个视情况而定，多炼丹才知道。</p>
-<p>那做完卷积后，我们需要做一个flatten的步骤，也就是将矩阵摊平成向量。如下图：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml052.png" width="50%"></p>
-<p>这样的结果最后就可以过fully connected network做分类或者回归了。当然，现在深度学习做分类的还是比较多的。</p>
-<p>我们现在可以看一看CNN到底在做什么，下图是AlexNet第一个layer的参数：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml053.png"></p>
-<p>这个图我们可以看到，上面的filter主要是看是否有一些pattern存在，而下面则是侦测颜色。事实上有各种各样的可视化方法，比如我们也可以把每个layer的output拿出来做图。</p>
-<p>还有一种方法来看CNN是如何work的。例如我们想要分析更高层次layer，我们可以定义一个指标，degree of the activation of the k-th filter： <span class="math display">\[
-a^k = \sum_i^m\sum_j^n a_{ij}^k
-\]</span> 我们希望当input一个image（用<span class="math inline">\(x\)</span>表示）的时候，可以让<span class="math inline">\(a^k\)</span>最大。也就是<span class="math inline">\(x^* = \arg \max_x a^k\)</span>。举例来说，如果做了一个识别猫狗的分类器，从仿生的角度而言，我们可以认为一张猫的照片，可以让一个识别猫的特征的神经元兴奋，而识别狗的神经元静默。</p>
-<p>那这个公式就可以求导用梯度下降来做这个事情。也就是计算<span class="math inline">\(\frac{a^k}{x_{ij}}\)</span>。如下图就是这样的效果：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml054.png"></p>
-<p>但是在CNN中，如果输出最后一层output的image，实际上我是得不到我们想象中的图片。比如说如果我们做mnist的分类，最后一层输出的图片并不会是数字，很可能得到的就是一片上世纪老电视的雪花屏。所以这样的结果是很容易被欺骗的，也就有了对抗样本这样的存在。另外就是网上有不少介绍的，将同一张图片变换一些像素，就会被识别为别的，比如把熊猫识别成汽车之类的。</p>
-<p>那如果我们做一些regularization，比如<span class="math inline">\(x^* = \arg \max_x (a^k + \sum|x_{ij}|)\)</span>，这样最后一个layer的输出相对会规则一点。</p>
-<p>当然我们还可以用另一个方式来看CNN到底是不是work的，比如我们取image中某个pixel，<span class="math inline">\(x_{ij}\)</span>，计算<span class="math inline">\(|\frac{\partial y_k}{\partial x_{ij}}|\)</span>，如果这个值很大，那么这个pixel是很重要的。将每个pixel算出来，我们就能知道模型到底聚焦在图片的哪个部分。如下图：</p>
-<p><img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml055.png"></p>
-<p>那另外一种简单一点的方法是用一个纯色的框挡掉一些image，这样就能判断模型是不是无法正确识别，这样也能达到类似的效果。比如识别狗的模型，就挡掉狗，不挡掉狗分别试一下模型是不是可以正确分类。</p>
-<p>CNN入门大概就这些，应用场景非常的多，反正还是那句话，多炼丹，多开脑洞。</p>
-]]></content>
-      <categories>
-        <category>统计学习</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Progressive Growing of GANs</title>
     <url>/pytorch-pggan/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>虽然我没看完李嘉图，但是也没闲着呀，我还是在写pggan的呀。代号屁股gan计划。我是不会承认我想拿pggan去生成大长腿的。</p>
@@ -2597,6 +2597,51 @@ a^k = \sum_i^m\sum_j^n a_{ij}^k
 <p>然后这里面最要注意的是，wgan-gp里面用到了一个很重要的方法，就是gradient penalty，也就是训练里面的这一部分：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">eps = torch.rand(b_size, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, device=device)</span><br><span class="line">x_hat = eps * real_cpu.data + (<span class="number">1</span> - eps) * fake.data</span><br><span class="line">x_hat.requires_grad = <span class="literal">True</span></span><br><span class="line">hat_predict = netD(x_hat, expand, alpha)</span><br><span class="line">grad_x_hat = autograd.grad(outputs=hat_predict.sum(), inputs=x_hat, create_graph=<span class="literal">True</span>)[<span class="number">0</span>]</span><br><span class="line">grad_penalty = ((grad_x_hat.view(grad_x_hat.size(<span class="number">0</span>), <span class="number">-1</span>).norm(<span class="number">2</span>, dim=<span class="number">1</span>) - <span class="number">1</span>) ** <span class="number">2</span>).mean()</span><br><span class="line">grad_penalty = <span class="number">10</span> * grad_penalty</span><br><span class="line">grad_penalty.backward()</span><br></pre></td></tr></table></figure>
 <p>别的也就没什么了，坐等结果就好了。具体在我的<a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/pggan/pggan-101.ipynb" target="_blank" rel="noopener">notebook</a>里面。</p>
+]]></content>
+      <categories>
+        <category>深度学习</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>文本生成</title>
+    <url>/pytorch_text_generation/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近诸事不顺，情绪不佳。继续做文本生成的事情。之前用的Char-RNN存在一定的缺陷，那就是你需要给定一个prefix，然后模型就会顺着prefix开始一个个往下预测。但是这样生成的文本随机性是很大的，所以我们希望能够让句子根据我们的关键词或者topic来生成。看了几篇论文，大框架上都是基于Attention的，其他的都是一些小的细节变化。这里打算实现两篇论文里的框架，一篇是哈工大的<a href="http://ir.hit.edu.cn/~xcfeng/xiaocheng%20Feng&#39;s%20Homepage_files/final-topic-essay-generation.pdf" target="_blank" rel="noopener">Topic-to-Essay Generation with Neural Networks</a>，另一篇是百度的<a href="https://arxiv.org/pdf/1610.09889.pdf" target="_blank" rel="noopener">Chinese Poetry Generation with Planning based Neural Networks</a>。</p>
+<hr>
+<p>2018年11月8号更新：认真看了一下百度的那篇paper，模型跟TAV的差不了太多，就是先用一个RNN把关键词做个双向的encoding，然后当做第一个词放进去训练。没什么兴趣弄了。</p>
+<a id="more"></a>
+<p>第一篇论文里面放了三种策略，由简到繁分别是Topic-Averaged LSTM，Attention-based LSTM，以及Multi-Topic-Aware LSTM。</p>
+<p>其实策略上来说，TAV-LSTM就是将topic的embedding做一个平均，然后作为prefix来训练，所以基本上网络设计上也和之前的Char-RNN差不多，比较容易实现。TAT-LSTM就是将topic做一个Attention，然后作为一个feature跟hidden并到一起喂到decoder里面去。MTA-LSTM还包含了一个叫做coverage vector的向量来计算topic的信息是否在训练过程中被喂进去了。</p>
+<p>官方放了一个很久以前的TensorFlow版本的<a href="https://github.com/hit-computer/MTA-LSTM" target="_blank" rel="noopener">MTA-LSTM</a>，一方面我不喜欢TF，另一方面版本太老旧了，所以就用只能自己摸索着写PyTorch版本的了。数据就直接用的这个git上面提供的composition和zhihu两个数据。</p>
+<p>然后这里都是用的贪婪法取候选词，没有做束搜索。当然，主要是因为懒，后面糟心事情过去了再说吧。</p>
+<h1 id="tav">TAV</h1>
+<p>TAV的大概工作原理上面也提到了，这里不赘述。然后同样偷懒，用了之前Char-RNN的模型直接修改。</p>
+<p>首先常规套路，训练词向量。说起来，腾讯之前开源了一个800w+的词向量，也可以用用。这个就不多说了，很简单。</p>
+<p>然后就是处理一下数据，首先我们要加入四个特殊字符PAD，BOS，EOS，和UNK。都是常规套路。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">fvec = KeyedVectors.load_word2vec_format(<span class="string">'vec.txt'</span>, binary=<span class="literal">False</span>)</span><br><span class="line">word_vec = fvec.vectors</span><br><span class="line">vocab = [<span class="string">'&lt;PAD&gt;'</span>, <span class="string">'&lt;BOS&gt;'</span>, <span class="string">'&lt;EOS&gt;'</span>, <span class="string">'&lt;UNK&gt;'</span>]</span><br><span class="line">vocab.extend(list(fvec.vocab.keys()))</span><br><span class="line">word_vec = np.concatenate((np.array([[<span class="number">0</span>]*word_vec.shape[<span class="number">1</span>]] * <span class="number">4</span>), word_vec))</span><br><span class="line">word_vec = torch.tensor(word_vec)</span><br></pre></td></tr></table></figure>
+<p>然后就是要做idx to word和word to idx的转换器。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">word_to_idx = &#123;ch: i <span class="keyword">for</span> i, ch <span class="keyword">in</span> enumerate(vocab)&#125;</span><br><span class="line">idx_to_word = &#123;i: ch <span class="keyword">for</span> i, ch <span class="keyword">in</span> enumerate(vocab)&#125;</span><br></pre></td></tr></table></figure>
+<p>然后就是读数据，做iterator。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">essays = []</span><br><span class="line">topics = []</span><br><span class="line"><span class="keyword">with</span> open(<span class="string">'composition.txt'</span>, <span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        essay, topic = line.replace(<span class="string">'\n'</span>, <span class="string">''</span>).split(<span class="string">' &lt;/d&gt; '</span>)</span><br><span class="line">        essays.append(essay.split(<span class="string">' '</span>))</span><br><span class="line">        topics.append(topic.split(<span class="string">' '</span>))</span><br><span class="line"></span><br><span class="line">corpus_indice = list(map(<span class="keyword">lambda</span> x: [word_to_idx[w] <span class="keyword">for</span> w <span class="keyword">in</span> x], essays[:<span class="number">8000</span>]))</span><br><span class="line">topics_indice = list(map(<span class="keyword">lambda</span> x: [word_to_idx[w] <span class="keyword">for</span> w <span class="keyword">in</span> x], topics[:<span class="number">8000</span>]))</span><br><span class="line">length = list(map(<span class="keyword">lambda</span> x: len(x), corpus_indice))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tav_data_iterator</span><span class="params">(corpus_indice, topics_indice, batch_size, num_steps)</span>:</span></span><br><span class="line">    epoch_size = len(corpus_indice) // batch_size</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(epoch_size):</span><br><span class="line">        raw_data = corpus_indice[i*batch_size: (i+<span class="number">1</span>)*batch_size]</span><br><span class="line">        key_words = topics_indice[i*batch_size: (i+<span class="number">1</span>)*batch_size]</span><br><span class="line">        data = np.zeros((len(raw_data), num_steps+<span class="number">1</span>), dtype=np.int64)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_size):</span><br><span class="line">            doc = raw_data[i]</span><br><span class="line">            tmp = [<span class="number">1</span>]</span><br><span class="line">            tmp.extend(doc)</span><br><span class="line">            tmp.extend([<span class="number">2</span>])</span><br><span class="line">            tmp = np.array(tmp, dtype=np.int64)</span><br><span class="line">            _size = tmp.shape[<span class="number">0</span>]</span><br><span class="line">            data[i][:_size] = tmp</span><br><span class="line">        key_words = np.array(key_words, dtype=np.int64)</span><br><span class="line">        x = data[:, <span class="number">0</span>:num_steps]</span><br><span class="line">        y = data[:, <span class="number">1</span>:]</span><br><span class="line">        mask = np.float32(x != <span class="number">0</span>)</span><br><span class="line">        x = torch.tensor(x)</span><br><span class="line">        y = torch.tensor(y)</span><br><span class="line">        mask = torch.tensor(mask)</span><br><span class="line">        key_words = torch.tensor(key_words)</span><br><span class="line">        <span class="keyword">yield</span>(x, y, mask, key_words)</span><br></pre></td></tr></table></figure>
+<p>这里也是简单处理了，很多细节慢慢修改吧，然后就是这里的mask，我也是偷懒不去弄了，其实是标识那些词用来训练，哪些是padding的，我后面在loss function那里直接将PAD的权重改成0了。</p>
+<p>然后就是定义网络。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TAVLSTM</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, hidden_dim, embed_dim, num_layers, weight,</span></span></span><br><span class="line"><span class="function"><span class="params">                 num_labels, bidirectional, dropout=<span class="number">0.5</span>, **kwargs)</span>:</span></span><br><span class="line">        super(TAVLSTM, self).__init__(**kwargs)</span><br><span class="line">        self.hidden_dim = hidden_dim</span><br><span class="line">        self.embed_dim = embed_dim</span><br><span class="line">        self.num_layers = num_layers</span><br><span class="line">        self.num_labels = num_labels</span><br><span class="line">        self.bidirectional = bidirectional</span><br><span class="line">        <span class="keyword">if</span> num_layers &lt;= <span class="number">1</span>:</span><br><span class="line">            self.dropout = <span class="number">0</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.dropout = dropout</span><br><span class="line">        self.embedding = nn.Embedding.from_pretrained(weight)</span><br><span class="line">        self.embedding.weight.requires_grad = <span class="literal">False</span></span><br><span class="line">        self.rnn = nn.GRU(input_size=self.embed_dim, hidden_size=self.hidden_dim,</span><br><span class="line">                          num_layers=self.num_layers, bidirectional=self.bidirectional,</span><br><span class="line">                          dropout=self.dropout)</span><br><span class="line">        <span class="keyword">if</span> self.bidirectional:</span><br><span class="line">            self.decoder = nn.Linear(hidden_dim * <span class="number">2</span>, self.num_labels)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.decoder = nn.Linear(hidden_dim, self.num_labels)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, inputs, topics, hidden=None)</span>:</span></span><br><span class="line">        embeddings = self.embedding(inputs)</span><br><span class="line">        topics_embed = self.embedding(topics)</span><br><span class="line">        topics_embed = topics_embed.mean(dim=<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(embeddings.shape[<span class="number">0</span>]):</span><br><span class="line">            embeddings[i][<span class="number">0</span>] = topics_embed[i]</span><br><span class="line">        states, hidden = self.rnn(embeddings.permute([<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>]).float(), hidden)</span><br><span class="line">        outputs = self.decoder(states.reshape((<span class="number">-1</span>, states.shape[<span class="number">-1</span>])))</span><br><span class="line">        <span class="keyword">return</span>(outputs, hidden)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_hidden</span><span class="params">(self, num_layers, batch_size, hidden_dim, **kwargs)</span>:</span></span><br><span class="line">        hidden = torch.zeros(num_layers, batch_size, hidden_dim)</span><br><span class="line">        <span class="keyword">return</span> hidden</span><br></pre></td></tr></table></figure>
+<p>基本结构没变化，就是forward的时候做了一点小修改，把第一个词变成topic average。</p>
+<p>然后定义预测函数：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">predict_rnn</span><span class="params">(topics, num_chars, model, device, idx_to_word, word_to_idx)</span>:</span></span><br><span class="line">    output = [<span class="number">1</span>]</span><br><span class="line">    topics = [word_to_idx[x] <span class="keyword">for</span> x <span class="keyword">in</span> topics]</span><br><span class="line">    topics = torch.tensor(topics)</span><br><span class="line">    hidden = torch.zeros(num_layers, <span class="number">1</span>, hidden_dim)</span><br><span class="line">    <span class="keyword">if</span> use_gpu:</span><br><span class="line">        hidden = hidden.to(device)</span><br><span class="line">        topics = topics.to(device)</span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> range(num_chars):</span><br><span class="line">        X = torch.tensor(output).reshape((<span class="number">1</span>, len(output)))</span><br><span class="line">        <span class="keyword">if</span> use_gpu:</span><br><span class="line">            X = X.to(device)</span><br><span class="line">        pred, hidden = model(X, topics, hidden)</span><br><span class="line">        <span class="keyword">if</span> pred.argmax(dim=<span class="number">1</span>)[<span class="number">-1</span>] == <span class="number">2</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            output.append(int(pred.argmax(dim=<span class="number">1</span>)[<span class="number">-1</span>]))</span><br><span class="line">    <span class="keyword">return</span>(<span class="string">''</span>.join([idx_to_word[i] <span class="keyword">for</span> i <span class="keyword">in</span> output[<span class="number">1</span>:]]))</span><br></pre></td></tr></table></figure>
+<p>设定一下参数：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">embedding_dim = <span class="number">300</span></span><br><span class="line">hidden_dim = <span class="number">256</span></span><br><span class="line">lr = <span class="number">1e2</span></span><br><span class="line">momentum = <span class="number">0.0</span></span><br><span class="line">num_epoch = <span class="number">100</span></span><br><span class="line">use_gpu = <span class="literal">True</span></span><br><span class="line">num_layers = <span class="number">1</span></span><br><span class="line">bidirectional = <span class="literal">False</span></span><br><span class="line">batch_size = <span class="number">8</span></span><br><span class="line">device = torch.device(<span class="string">'cuda:0'</span>)</span><br><span class="line">loss_function = nn.CrossEntropyLoss()</span><br><span class="line"></span><br><span class="line">model = TAVLSTM(hidden_dim=hidden_dim, embed_dim=embedding_dim, num_layers=num_layers,</span><br><span class="line">                num_labels=len(vocab), weight=word_vec, bidirectional=bidirectional)</span><br><span class="line">optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)</span><br><span class="line"><span class="keyword">if</span> use_gpu:</span><br><span class="line">    model.to(device)</span><br></pre></td></tr></table></figure>
+<p>接着训练就好了：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">since = time.time()</span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(num_epoch):</span><br><span class="line">    start = time.time()</span><br><span class="line">    num, total_loss = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line"><span class="comment">#     if epoch == 5000:</span></span><br><span class="line"><span class="comment">#         optimizer.param_groups[0]['lr'] = lr * 0.1</span></span><br><span class="line">    data = tav_data_iterator(corpus_indice, topics_indice, batch_size, max(length)+<span class="number">1</span>)</span><br><span class="line">    hidden = model.init_hidden(num_layers, batch_size, hidden_dim)</span><br><span class="line">    weight = torch.ones(len(vocab))</span><br><span class="line">    weight[<span class="number">0</span>] = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> X, Y, mask, topics <span class="keyword">in</span> tqdm(data):</span><br><span class="line">        num += <span class="number">1</span></span><br><span class="line">        hidden.detach_()</span><br><span class="line">        <span class="keyword">if</span> use_gpu:</span><br><span class="line">            X = X.to(device)</span><br><span class="line">            Y = Y.to(device)</span><br><span class="line">            mask = mask.to(device)</span><br><span class="line">            topics = topics.to(device)</span><br><span class="line">            hidden = hidden.to(device)</span><br><span class="line">            weight = weight.to(device)</span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line">        output, hidden = model(X, topics, hidden)</span><br><span class="line">        l = F.cross_entropy(output, Y.t().reshape((<span class="number">-1</span>,)), weight)</span><br><span class="line">        l.backward()</span><br><span class="line">        norm = nn.utils.clip_grad_norm_(model.parameters(), <span class="number">1e-2</span>)</span><br><span class="line">        optimizer.step()</span><br><span class="line">        total_loss += l.item()</span><br><span class="line">    end = time.time()</span><br><span class="line">    s = end - since</span><br><span class="line">    h = math.floor(s / <span class="number">3600</span>)</span><br><span class="line">    m = s - h * <span class="number">3600</span></span><br><span class="line">    m = math.floor(m / <span class="number">60</span>)</span><br><span class="line">    s -= m * <span class="number">60</span></span><br><span class="line">    <span class="keyword">if</span>(epoch % <span class="number">10</span> == <span class="number">0</span>) <span class="keyword">or</span> (epoch == (num_epoch - <span class="number">1</span>)):</span><br><span class="line">        print(<span class="string">'epoch %d/%d, loss %.4f, norm %.4f, time %.3fs, since %dh %dm %ds'</span></span><br><span class="line">              %(epoch+<span class="number">1</span>, num_epoch, total_loss / num, norm, end-start, h, m, s))</span><br><span class="line">        print(predict_rnn([<span class="string">'妈妈'</span>, <span class="string">'希望'</span>, <span class="string">'长大'</span>, <span class="string">'孩子'</span>, <span class="string">'母爱'</span>], <span class="number">100</span>, model, device, idx_to_word, word_to_idx))</span><br></pre></td></tr></table></figure>
+<p>具体还是看我的<a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/text%20generater/Topic2Essay_train.ipynb" target="_blank" rel="noopener">notebook</a>。不过梯度还是爆炸了，哎。</p>
+<h1 id="tat">TAT</h1>
+<p>就是在TAV的基础上修改，直接看<a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/text%20generater/Topic2Essay_TAT.ipynb" target="_blank" rel="noopener">notebook</a>吧。这个模型深刻地表达了我的内心正处在TAT的状态。</p>
+<h1 id="mat">MAT</h1>
+<p>论文里面的<span class="math inline">\(U_f\)</span>没看懂是什么意思，所以就自己演绎了一下，简单来说，为了让每个topic都有机会出现，那么很自然会想到要去调整Attention的权重，高的压低一点，低的抬高一点。所以我在每个epoch结束后调整一下： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">params = model.state_dict()</span><br><span class="line">params[<span class="string">'attn.weight'</span>].clamp_(<span class="number">0</span>)</span><br><span class="line">params[<span class="string">'attn.weight'</span>] *= <span class="number">1</span> / -torch.log(params[<span class="string">'attn.weight'</span>] / torch.sum(params[<span class="string">'attn.weight'</span>]) + <span class="number">0.000001</span>)</span><br></pre></td></tr></table></figure></p>
+<p>也就是说，每个Attention前面加了一个weight，这个weight是<span class="math inline">\(-\log(p+\lambda)\)</span>。加个lambda是避免变成0，而p就是这个topic的Attention在所有topic的Attention的比重。这个其实也可以试试每一个iteration就变化会怎么样。</p>
+<p>具体看<a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/text%20generater/Topic2Essay_MAT_bleu-adaptive.ipynb" target="_blank" rel="noopener">notebook</a>。</p>
+<p>另外要说的就是，用全量softmax速度太慢了，改用了PyTorch的adaptive softmax。0.41版本以上自带的一个功能，是一个softmax的优化方案，论文说比hierarchical softmax在GPU上的表现更好，虽然论文没太看懂。这里有篇老外的<a href="https://towardsdatascience.com/speed-up-your-deep-learning-language-model-up-to-1000-with-the-adaptive-softmax-part-1-e7cc1f89fcc9" target="_blank" rel="noopener">博客</a>大概讲了一下原理，不过也没证明为什么会更好。大概意思就是将所有的词按照词频排序，然后分成高频和低频两组，然后低频组再拆成两到四个组，然后判断这个词是在哪个组里面。</p>
+<p>还有就是TAT的模型改了一下要求Attention必须都是大于等于0的，MAT也是在这个基础上搞的。</p>
+<p>差不多就这么一回事吧。诸事不顺，近期要看个病，但愿不是重病。</p>
 ]]></content>
       <categories>
         <category>深度学习</category>
@@ -2653,51 +2698,6 @@ a^k = \sum_i^m\sum_j^n a_{ij}^k
 ]]></content>
       <categories>
         <category>PyTorch</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>文本生成</title>
-    <url>/pytorch_text_generation/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近诸事不顺，情绪不佳。继续做文本生成的事情。之前用的Char-RNN存在一定的缺陷，那就是你需要给定一个prefix，然后模型就会顺着prefix开始一个个往下预测。但是这样生成的文本随机性是很大的，所以我们希望能够让句子根据我们的关键词或者topic来生成。看了几篇论文，大框架上都是基于Attention的，其他的都是一些小的细节变化。这里打算实现两篇论文里的框架，一篇是哈工大的<a href="http://ir.hit.edu.cn/~xcfeng/xiaocheng%20Feng&#39;s%20Homepage_files/final-topic-essay-generation.pdf" target="_blank" rel="noopener">Topic-to-Essay Generation with Neural Networks</a>，另一篇是百度的<a href="https://arxiv.org/pdf/1610.09889.pdf" target="_blank" rel="noopener">Chinese Poetry Generation with Planning based Neural Networks</a>。</p>
-<hr>
-<p>2018年11月8号更新：认真看了一下百度的那篇paper，模型跟TAV的差不了太多，就是先用一个RNN把关键词做个双向的encoding，然后当做第一个词放进去训练。没什么兴趣弄了。</p>
-<a id="more"></a>
-<p>第一篇论文里面放了三种策略，由简到繁分别是Topic-Averaged LSTM，Attention-based LSTM，以及Multi-Topic-Aware LSTM。</p>
-<p>其实策略上来说，TAV-LSTM就是将topic的embedding做一个平均，然后作为prefix来训练，所以基本上网络设计上也和之前的Char-RNN差不多，比较容易实现。TAT-LSTM就是将topic做一个Attention，然后作为一个feature跟hidden并到一起喂到decoder里面去。MTA-LSTM还包含了一个叫做coverage vector的向量来计算topic的信息是否在训练过程中被喂进去了。</p>
-<p>官方放了一个很久以前的TensorFlow版本的<a href="https://github.com/hit-computer/MTA-LSTM" target="_blank" rel="noopener">MTA-LSTM</a>，一方面我不喜欢TF，另一方面版本太老旧了，所以就用只能自己摸索着写PyTorch版本的了。数据就直接用的这个git上面提供的composition和zhihu两个数据。</p>
-<p>然后这里都是用的贪婪法取候选词，没有做束搜索。当然，主要是因为懒，后面糟心事情过去了再说吧。</p>
-<h1 id="tav">TAV</h1>
-<p>TAV的大概工作原理上面也提到了，这里不赘述。然后同样偷懒，用了之前Char-RNN的模型直接修改。</p>
-<p>首先常规套路，训练词向量。说起来，腾讯之前开源了一个800w+的词向量，也可以用用。这个就不多说了，很简单。</p>
-<p>然后就是处理一下数据，首先我们要加入四个特殊字符PAD，BOS，EOS，和UNK。都是常规套路。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">fvec = KeyedVectors.load_word2vec_format(<span class="string">'vec.txt'</span>, binary=<span class="literal">False</span>)</span><br><span class="line">word_vec = fvec.vectors</span><br><span class="line">vocab = [<span class="string">'&lt;PAD&gt;'</span>, <span class="string">'&lt;BOS&gt;'</span>, <span class="string">'&lt;EOS&gt;'</span>, <span class="string">'&lt;UNK&gt;'</span>]</span><br><span class="line">vocab.extend(list(fvec.vocab.keys()))</span><br><span class="line">word_vec = np.concatenate((np.array([[<span class="number">0</span>]*word_vec.shape[<span class="number">1</span>]] * <span class="number">4</span>), word_vec))</span><br><span class="line">word_vec = torch.tensor(word_vec)</span><br></pre></td></tr></table></figure>
-<p>然后就是要做idx to word和word to idx的转换器。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">word_to_idx = &#123;ch: i <span class="keyword">for</span> i, ch <span class="keyword">in</span> enumerate(vocab)&#125;</span><br><span class="line">idx_to_word = &#123;i: ch <span class="keyword">for</span> i, ch <span class="keyword">in</span> enumerate(vocab)&#125;</span><br></pre></td></tr></table></figure>
-<p>然后就是读数据，做iterator。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">essays = []</span><br><span class="line">topics = []</span><br><span class="line"><span class="keyword">with</span> open(<span class="string">'composition.txt'</span>, <span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        essay, topic = line.replace(<span class="string">'\n'</span>, <span class="string">''</span>).split(<span class="string">' &lt;/d&gt; '</span>)</span><br><span class="line">        essays.append(essay.split(<span class="string">' '</span>))</span><br><span class="line">        topics.append(topic.split(<span class="string">' '</span>))</span><br><span class="line"></span><br><span class="line">corpus_indice = list(map(<span class="keyword">lambda</span> x: [word_to_idx[w] <span class="keyword">for</span> w <span class="keyword">in</span> x], essays[:<span class="number">8000</span>]))</span><br><span class="line">topics_indice = list(map(<span class="keyword">lambda</span> x: [word_to_idx[w] <span class="keyword">for</span> w <span class="keyword">in</span> x], topics[:<span class="number">8000</span>]))</span><br><span class="line">length = list(map(<span class="keyword">lambda</span> x: len(x), corpus_indice))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tav_data_iterator</span><span class="params">(corpus_indice, topics_indice, batch_size, num_steps)</span>:</span></span><br><span class="line">    epoch_size = len(corpus_indice) // batch_size</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(epoch_size):</span><br><span class="line">        raw_data = corpus_indice[i*batch_size: (i+<span class="number">1</span>)*batch_size]</span><br><span class="line">        key_words = topics_indice[i*batch_size: (i+<span class="number">1</span>)*batch_size]</span><br><span class="line">        data = np.zeros((len(raw_data), num_steps+<span class="number">1</span>), dtype=np.int64)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_size):</span><br><span class="line">            doc = raw_data[i]</span><br><span class="line">            tmp = [<span class="number">1</span>]</span><br><span class="line">            tmp.extend(doc)</span><br><span class="line">            tmp.extend([<span class="number">2</span>])</span><br><span class="line">            tmp = np.array(tmp, dtype=np.int64)</span><br><span class="line">            _size = tmp.shape[<span class="number">0</span>]</span><br><span class="line">            data[i][:_size] = tmp</span><br><span class="line">        key_words = np.array(key_words, dtype=np.int64)</span><br><span class="line">        x = data[:, <span class="number">0</span>:num_steps]</span><br><span class="line">        y = data[:, <span class="number">1</span>:]</span><br><span class="line">        mask = np.float32(x != <span class="number">0</span>)</span><br><span class="line">        x = torch.tensor(x)</span><br><span class="line">        y = torch.tensor(y)</span><br><span class="line">        mask = torch.tensor(mask)</span><br><span class="line">        key_words = torch.tensor(key_words)</span><br><span class="line">        <span class="keyword">yield</span>(x, y, mask, key_words)</span><br></pre></td></tr></table></figure>
-<p>这里也是简单处理了，很多细节慢慢修改吧，然后就是这里的mask，我也是偷懒不去弄了，其实是标识那些词用来训练，哪些是padding的，我后面在loss function那里直接将PAD的权重改成0了。</p>
-<p>然后就是定义网络。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TAVLSTM</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, hidden_dim, embed_dim, num_layers, weight,</span></span></span><br><span class="line"><span class="function"><span class="params">                 num_labels, bidirectional, dropout=<span class="number">0.5</span>, **kwargs)</span>:</span></span><br><span class="line">        super(TAVLSTM, self).__init__(**kwargs)</span><br><span class="line">        self.hidden_dim = hidden_dim</span><br><span class="line">        self.embed_dim = embed_dim</span><br><span class="line">        self.num_layers = num_layers</span><br><span class="line">        self.num_labels = num_labels</span><br><span class="line">        self.bidirectional = bidirectional</span><br><span class="line">        <span class="keyword">if</span> num_layers &lt;= <span class="number">1</span>:</span><br><span class="line">            self.dropout = <span class="number">0</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.dropout = dropout</span><br><span class="line">        self.embedding = nn.Embedding.from_pretrained(weight)</span><br><span class="line">        self.embedding.weight.requires_grad = <span class="literal">False</span></span><br><span class="line">        self.rnn = nn.GRU(input_size=self.embed_dim, hidden_size=self.hidden_dim,</span><br><span class="line">                          num_layers=self.num_layers, bidirectional=self.bidirectional,</span><br><span class="line">                          dropout=self.dropout)</span><br><span class="line">        <span class="keyword">if</span> self.bidirectional:</span><br><span class="line">            self.decoder = nn.Linear(hidden_dim * <span class="number">2</span>, self.num_labels)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.decoder = nn.Linear(hidden_dim, self.num_labels)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, inputs, topics, hidden=None)</span>:</span></span><br><span class="line">        embeddings = self.embedding(inputs)</span><br><span class="line">        topics_embed = self.embedding(topics)</span><br><span class="line">        topics_embed = topics_embed.mean(dim=<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(embeddings.shape[<span class="number">0</span>]):</span><br><span class="line">            embeddings[i][<span class="number">0</span>] = topics_embed[i]</span><br><span class="line">        states, hidden = self.rnn(embeddings.permute([<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>]).float(), hidden)</span><br><span class="line">        outputs = self.decoder(states.reshape((<span class="number">-1</span>, states.shape[<span class="number">-1</span>])))</span><br><span class="line">        <span class="keyword">return</span>(outputs, hidden)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_hidden</span><span class="params">(self, num_layers, batch_size, hidden_dim, **kwargs)</span>:</span></span><br><span class="line">        hidden = torch.zeros(num_layers, batch_size, hidden_dim)</span><br><span class="line">        <span class="keyword">return</span> hidden</span><br></pre></td></tr></table></figure>
-<p>基本结构没变化，就是forward的时候做了一点小修改，把第一个词变成topic average。</p>
-<p>然后定义预测函数：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">predict_rnn</span><span class="params">(topics, num_chars, model, device, idx_to_word, word_to_idx)</span>:</span></span><br><span class="line">    output = [<span class="number">1</span>]</span><br><span class="line">    topics = [word_to_idx[x] <span class="keyword">for</span> x <span class="keyword">in</span> topics]</span><br><span class="line">    topics = torch.tensor(topics)</span><br><span class="line">    hidden = torch.zeros(num_layers, <span class="number">1</span>, hidden_dim)</span><br><span class="line">    <span class="keyword">if</span> use_gpu:</span><br><span class="line">        hidden = hidden.to(device)</span><br><span class="line">        topics = topics.to(device)</span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> range(num_chars):</span><br><span class="line">        X = torch.tensor(output).reshape((<span class="number">1</span>, len(output)))</span><br><span class="line">        <span class="keyword">if</span> use_gpu:</span><br><span class="line">            X = X.to(device)</span><br><span class="line">        pred, hidden = model(X, topics, hidden)</span><br><span class="line">        <span class="keyword">if</span> pred.argmax(dim=<span class="number">1</span>)[<span class="number">-1</span>] == <span class="number">2</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            output.append(int(pred.argmax(dim=<span class="number">1</span>)[<span class="number">-1</span>]))</span><br><span class="line">    <span class="keyword">return</span>(<span class="string">''</span>.join([idx_to_word[i] <span class="keyword">for</span> i <span class="keyword">in</span> output[<span class="number">1</span>:]]))</span><br></pre></td></tr></table></figure>
-<p>设定一下参数：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">embedding_dim = <span class="number">300</span></span><br><span class="line">hidden_dim = <span class="number">256</span></span><br><span class="line">lr = <span class="number">1e2</span></span><br><span class="line">momentum = <span class="number">0.0</span></span><br><span class="line">num_epoch = <span class="number">100</span></span><br><span class="line">use_gpu = <span class="literal">True</span></span><br><span class="line">num_layers = <span class="number">1</span></span><br><span class="line">bidirectional = <span class="literal">False</span></span><br><span class="line">batch_size = <span class="number">8</span></span><br><span class="line">device = torch.device(<span class="string">'cuda:0'</span>)</span><br><span class="line">loss_function = nn.CrossEntropyLoss()</span><br><span class="line"></span><br><span class="line">model = TAVLSTM(hidden_dim=hidden_dim, embed_dim=embedding_dim, num_layers=num_layers,</span><br><span class="line">                num_labels=len(vocab), weight=word_vec, bidirectional=bidirectional)</span><br><span class="line">optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)</span><br><span class="line"><span class="keyword">if</span> use_gpu:</span><br><span class="line">    model.to(device)</span><br></pre></td></tr></table></figure>
-<p>接着训练就好了：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">since = time.time()</span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(num_epoch):</span><br><span class="line">    start = time.time()</span><br><span class="line">    num, total_loss = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line"><span class="comment">#     if epoch == 5000:</span></span><br><span class="line"><span class="comment">#         optimizer.param_groups[0]['lr'] = lr * 0.1</span></span><br><span class="line">    data = tav_data_iterator(corpus_indice, topics_indice, batch_size, max(length)+<span class="number">1</span>)</span><br><span class="line">    hidden = model.init_hidden(num_layers, batch_size, hidden_dim)</span><br><span class="line">    weight = torch.ones(len(vocab))</span><br><span class="line">    weight[<span class="number">0</span>] = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> X, Y, mask, topics <span class="keyword">in</span> tqdm(data):</span><br><span class="line">        num += <span class="number">1</span></span><br><span class="line">        hidden.detach_()</span><br><span class="line">        <span class="keyword">if</span> use_gpu:</span><br><span class="line">            X = X.to(device)</span><br><span class="line">            Y = Y.to(device)</span><br><span class="line">            mask = mask.to(device)</span><br><span class="line">            topics = topics.to(device)</span><br><span class="line">            hidden = hidden.to(device)</span><br><span class="line">            weight = weight.to(device)</span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line">        output, hidden = model(X, topics, hidden)</span><br><span class="line">        l = F.cross_entropy(output, Y.t().reshape((<span class="number">-1</span>,)), weight)</span><br><span class="line">        l.backward()</span><br><span class="line">        norm = nn.utils.clip_grad_norm_(model.parameters(), <span class="number">1e-2</span>)</span><br><span class="line">        optimizer.step()</span><br><span class="line">        total_loss += l.item()</span><br><span class="line">    end = time.time()</span><br><span class="line">    s = end - since</span><br><span class="line">    h = math.floor(s / <span class="number">3600</span>)</span><br><span class="line">    m = s - h * <span class="number">3600</span></span><br><span class="line">    m = math.floor(m / <span class="number">60</span>)</span><br><span class="line">    s -= m * <span class="number">60</span></span><br><span class="line">    <span class="keyword">if</span>(epoch % <span class="number">10</span> == <span class="number">0</span>) <span class="keyword">or</span> (epoch == (num_epoch - <span class="number">1</span>)):</span><br><span class="line">        print(<span class="string">'epoch %d/%d, loss %.4f, norm %.4f, time %.3fs, since %dh %dm %ds'</span></span><br><span class="line">              %(epoch+<span class="number">1</span>, num_epoch, total_loss / num, norm, end-start, h, m, s))</span><br><span class="line">        print(predict_rnn([<span class="string">'妈妈'</span>, <span class="string">'希望'</span>, <span class="string">'长大'</span>, <span class="string">'孩子'</span>, <span class="string">'母爱'</span>], <span class="number">100</span>, model, device, idx_to_word, word_to_idx))</span><br></pre></td></tr></table></figure>
-<p>具体还是看我的<a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/text%20generater/Topic2Essay_train.ipynb" target="_blank" rel="noopener">notebook</a>。不过梯度还是爆炸了，哎。</p>
-<h1 id="tat">TAT</h1>
-<p>就是在TAV的基础上修改，直接看<a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/text%20generater/Topic2Essay_TAT.ipynb" target="_blank" rel="noopener">notebook</a>吧。这个模型深刻地表达了我的内心正处在TAT的状态。</p>
-<h1 id="mat">MAT</h1>
-<p>论文里面的<span class="math inline">\(U_f\)</span>没看懂是什么意思，所以就自己演绎了一下，简单来说，为了让每个topic都有机会出现，那么很自然会想到要去调整Attention的权重，高的压低一点，低的抬高一点。所以我在每个epoch结束后调整一下： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">params = model.state_dict()</span><br><span class="line">params[<span class="string">'attn.weight'</span>].clamp_(<span class="number">0</span>)</span><br><span class="line">params[<span class="string">'attn.weight'</span>] *= <span class="number">1</span> / -torch.log(params[<span class="string">'attn.weight'</span>] / torch.sum(params[<span class="string">'attn.weight'</span>]) + <span class="number">0.000001</span>)</span><br></pre></td></tr></table></figure></p>
-<p>也就是说，每个Attention前面加了一个weight，这个weight是<span class="math inline">\(-\log(p+\lambda)\)</span>。加个lambda是避免变成0，而p就是这个topic的Attention在所有topic的Attention的比重。这个其实也可以试试每一个iteration就变化会怎么样。</p>
-<p>具体看<a href="https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/text%20generater/Topic2Essay_MAT_bleu-adaptive.ipynb" target="_blank" rel="noopener">notebook</a>。</p>
-<p>另外要说的就是，用全量softmax速度太慢了，改用了PyTorch的adaptive softmax。0.41版本以上自带的一个功能，是一个softmax的优化方案，论文说比hierarchical softmax在GPU上的表现更好，虽然论文没太看懂。这里有篇老外的<a href="https://towardsdatascience.com/speed-up-your-deep-learning-language-model-up-to-1000-with-the-adaptive-softmax-part-1-e7cc1f89fcc9" target="_blank" rel="noopener">博客</a>大概讲了一下原理，不过也没证明为什么会更好。大概意思就是将所有的词按照词频排序，然后分成高频和低频两组，然后低频组再拆成两到四个组，然后判断这个词是在哪个组里面。</p>
-<p>还有就是TAT的模型改了一下要求Attention必须都是大于等于0的，MAT也是在这个基础上搞的。</p>
-<p>差不多就这么一回事吧。诸事不顺，近期要看个病，但愿不是重病。</p>
-]]></content>
-      <categories>
-        <category>深度学习</category>
       </categories>
   </entry>
   <entry>
