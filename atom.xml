@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://samaelchen.github.io/"/>
-  <updated>2020-05-17T15:39:34.036Z</updated>
+  <updated>2020-05-17T15:52:57.061Z</updated>
   <id>https://samaelchen.github.io/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>NER</title>
+    <link href="https://samaelchen.github.io/ner/"/>
+    <id>https://samaelchen.github.io/ner/</id>
+    <published>2020-05-16T16:00:00.000Z</published>
+    <updated>2020-05-17T15:52:57.061Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>暌违一年的更新</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;暌违一年的更新&lt;/p&gt;
+
+      
+    
+    </summary>
+    
+      <category term="深度学习" scheme="https://samaelchen.github.io/categories/DeepLearning/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>DBSCAN &amp; OPTICS</title>
@@ -175,9 +199,9 @@
     
     </summary>
     
-      <category term="PyTorch" scheme="https://samaelchen.github.io/categories/PyTorch/"/>
-    
       <category term="深度学习" scheme="https://samaelchen.github.io/categories/DeepLearning/"/>
+    
+      <category term="PyTorch" scheme="https://samaelchen.github.io/categories/PyTorch/"/>
     
     
   </entry>
@@ -257,9 +281,9 @@
     
     </summary>
     
-      <category term="PyTorch" scheme="https://samaelchen.github.io/categories/PyTorch/"/>
-    
       <category term="深度学习" scheme="https://samaelchen.github.io/categories/DeepLearning/"/>
+    
+      <category term="PyTorch" scheme="https://samaelchen.github.io/categories/PyTorch/"/>
     
     
   </entry>
@@ -403,26 +427,6 @@
     </summary>
     
       <category term="读书笔记" scheme="https://samaelchen.github.io/categories/ReadingNotes/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>线性代数 11</title>
-    <link href="https://samaelchen.github.io/linear_algebra_step11/"/>
-    <id>https://samaelchen.github.io/linear_algebra_step11/</id>
-    <published>2018-07-10T16:00:00.000Z</published>
-    <updated>2020-05-17T15:39:34.040Z</updated>
-    
-    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>向量正交，如果从几何的角度来看，向量的正交可以看作是两个向量垂直。</p><a id="more"></a><p>首先，我们下一些定义。我们将向量的长度叫做norm，记做<span class="math inline">\(\| v \| = \sqrt{v_1^2 + v_2^2 + \cdots + v_n^2}\)</span>。那么两个向量之间的距离我们用两个向量差的norm表示，记做<span class="math inline">\(\| v - u \|\)</span>。</p><p>然后向量有两种乘积，一种是点乘，一种是叉乘。叉乘就看作是只有一列的矩阵，然后用矩阵的叉乘方法就好了。至于点乘，实际上也可以看作是叉乘。定义如下： <span class="math display">\[v \cdot u = \sum_i^n v_i u_i = v^{\top} u\]</span> 这里再说明一下，默认向量是列向量。</p><p>现在进入正题，向量正交就是两个向量的点内积为0，也就是<span class="math inline">\(u \cdot v = 0\)</span>。那么很自然就会知道，零向量与所有的向量正交。</p><p>那么向量的点内积有一些运算性质： 假设有向量<span class="math inline">\(u，v\)</span>，矩阵<span class="math inline">\(A\)</span>， 常数<span class="math inline">\(c\)</span></p><blockquote><ol type="1"><li><span class="math inline">\(u \cdot u = \| u \|^2\)</span></li><li><span class="math inline">\(u \cdot u = 0\)</span> if and only if <span class="math inline">\(u = 0\)</span></li><li><span class="math inline">\(u \cdot v = v \cdot u\)</span></li><li><span class="math inline">\(u \cdot (v + w) = u \cdot v + u \cdot w\)</span></li><li><span class="math inline">\((v + w) \cdot u = v \cdot u + w \cdot u\)</span></li><li><span class="math inline">\(cu \cdot v = u \cdot cv\)</span></li><li><span class="math inline">\(\| cu \| = |c| \| u \|\)</span></li><li><span class="math inline">\(Au \cdot v = (Au)^{\top} v = u^{\top}A^{\top}v = u \cdot A^{\top}v\)</span></li><li><span class="math inline">\(\| u+v \| \le \|u\| + \|v\|\)</span></li></ol></blockquote><p>如果我们现在有个向量集合，集合里所有的向量互相正交，那么我们就叫这个集合是orthogonal set。那么如果刚好这里的向量都是单位向量，这个集合就可以叫做orthonomal basis。</p><p>现在回过头来看，这样的一个集合有什么用呢？这个向量集合是不是非常像之前的坐标系。然后进一步来看，假设现在有一个集合<span class="math inline">\(S = \{ v_1 \; v_2 \; \cdots \; v_n \}\)</span>是一个orthogonal basis，有一个向量<span class="math inline">\(u\)</span>是这些向量的线性组合，也就是说<span class="math inline">\(u = c_1 v_1 + c_2 v_2 + \cdots + c_n v_n\)</span>，那么如果我们要求<span class="math inline">\(c_i\)</span>，其实非常简单就是<span class="math inline">\(c_i = \frac{u \cdot v_i}{\| v_i \|^2}\)</span>。如果现在再从几何的角度来看，这个<span class="math inline">\(c_i\)</span>其实就是<span class="math inline">\(u\)</span>在<span class="math inline">\(v_i\)</span>上投影的长度。</p><p>那如果现在随便给一个basis，<span class="math inline">\(\{u_1 \; u_2 \; \cdots \; u_n \}\)</span>，现在要将这个basis变成orthogonal basis，要做的是： <span class="math display">\[\begin{align}v_1 &amp; = u_1 \\v_2 &amp; = u_2 - \frac{u_2 \cdot v_1}{\|v_1\|^2}v_1 \\v_3 &amp; = u_3 - \frac{u_3 \cdot v_2}{\|v_2\|^2}v_2 - \frac{u_3 \cdot v_1}{\|v_1\|^2}v_1 \\&amp; \vdots \\v_n &amp; = u_n - \frac{u_n \cdot v_{n-1}}{\|v_{n-1}\|^2}v_{n-1} - \cdots - \frac{u_n \cdot v_1}{\|v_1\|^2}v_1\end{align}\]</span></p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;向量正交，如果从几何的角度来看，向量的正交可以看作是两个向量垂直。&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="统计学习" scheme="https://samaelchen.github.io/categories/StatisticalLearning/"/>
     
     
   </entry>
