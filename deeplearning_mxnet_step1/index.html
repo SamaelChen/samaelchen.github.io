@@ -163,7 +163,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log8.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log6.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log7.png">
-<meta property="og:updated_time" content="2020-03-22T18:08:49.198Z">
+<meta property="og:updated_time" content="2020-05-17T15:39:34.036Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CNN中文验证码识别">
 <meta name="twitter:description" content="基于CNN的中文验证码识别">
@@ -456,7 +456,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-03-23 02:08:49" itemprop="dateModified" datetime="2020-03-23T02:08:49+08:00">2020-03-23</time>
+                <time title="Modified: 2020-05-17 23:39:34" itemprop="dateModified" datetime="2020-05-17T23:39:34+08:00">2020-05-17</time>
               
             
           </span>
@@ -518,7 +518,7 @@
 <a id="more"></a>
 <p>出于对深度学习的实践目的，选择了CNN这一古老的工具以及OCR这个古老的问题。之前用AdaBoost，通过二值化，字符分割，再进行字符识别。准确率么是惨不忍睹，不过练练手还是可以的。</p>
 <p>传统方法上最难的是除噪和分割，尤其是碰到字符粘连，干扰线等等。</p>
-<p>深度学习的一个好处就是可以做end-to-end的学习。参考项亮大神的<a href="http://blog.xlvector.net/2016-05/mxnet-ocr-cnn/" target="_blank" rel="noopener">博客</a> <sup id="fnref:1"><a href="#fn:1" rel="footnote"><span class="hint--top-right hint--error hint--large" data-aria-label="端到端的OCR：基于CNN的实现 http://blog.csdn.net/acdreamers/article/details/24883305
+<p>深度学习的一个好处就是可以做end-to-end的学习。参考项亮大神的<a href="http://blog.xlvector.net/2016-05/mxnet-ocr-cnn/" target="_blank" rel="noopener">博客</a> <sup id="fnref:1"><a href="#fn:1" rel="footnote"><span class="hint--top hint--error hint--medium hint--rounded hint--bounce" data-aria-label="端到端的OCR：基于CNN的实现 http://blog.csdn.net/acdreamers/article/details/24883305
 ">[1]</span></a></sup>，深度学习解决OCR问题有两种解决思路：</p>
 <blockquote>
 <ol type="1">
@@ -530,7 +530,7 @@
 <p>首先需要搞定数据。深度学习对数据量的饥渴是很可怕的，我的目标是尽可能模拟新浪的验证码: <img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/weibocn2.png" width="350"></p>
 <p>为了方便生成数据，其实我还是对图片做了二值化，转化之后的图片是这样的： <img src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/weibocn2_wb.png"></p>
 <p>通过这样处理，我在生成数据的时候就不需要模拟背景色。另外新浪很友好没加干扰线，所以这一步也省了。</p>
-<p>参考另一篇Python生成中文验证码的<a href="http://blog.csdn.net/acdreamers/article/details/24883305" target="_blank" rel="noopener">博客</a><sup id="fnref:2"><a href="#fn:2" rel="footnote"><span class="hint--top-right hint--error hint--large" data-aria-label="PIL模块与随机生成中文验证码 http://blog.csdn.net/acdreamers/article/details/24883305
+<p>参考另一篇Python生成中文验证码的<a href="http://blog.csdn.net/acdreamers/article/details/24883305" target="_blank" rel="noopener">博客</a><sup id="fnref:2"><a href="#fn:2" rel="footnote"><span class="hint--top hint--error hint--medium hint--rounded hint--bounce" data-aria-label="PIL模块与随机生成中文验证码 http://blog.csdn.net/acdreamers/article/details/24883305
 ">[2]</span></a></sup>，这里做一些简单的修改。为什么不用项亮大神的代码，是因为不知道为毛我cv2就是没法用。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RandomChar</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="string">"""用于随机生成汉字"""</span></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">Unicode</span><span class="params">()</span>:</span></span><br><span class="line">        val = random.randint(<span class="number">0x4E00</span>, <span class="number">0x9FBF</span>)</span><br><span class="line">        <span class="keyword">return</span> chr(val)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">GB2312</span><span class="params">()</span>:</span></span><br><span class="line">        <span class="comment"># head = random.randint(0xB0, 0xD7)</span></span><br><span class="line">        <span class="comment"># body = random.randint(0xA1, 0xFE)</span></span><br><span class="line">        head = <span class="number">0xB0</span></span><br><span class="line">        body = random.randint(<span class="number">0xA1</span>, <span class="number">0xAA</span>)</span><br><span class="line">        val = (head &lt;&lt; <span class="number">8</span>) | body</span><br><span class="line">        str = <span class="string">"%x"</span> % val</span><br><span class="line">        str = codecs.decode(str, <span class="string">'hex'</span>)</span><br><span class="line">        str = str.decode(<span class="string">'gb2312'</span>)</span><br><span class="line">        <span class="keyword">return</span> str, val</span><br></pre></td></tr></table></figure>
 <p>首先是随机生成汉字。汉字字数其实非常多，尤其是Unicode编码的，所以这里我选择了GB2312的一级汉字，一共会有3755个。为了模型跑得快一点，这里放了前10个汉字，编码从B0A1到B0AA。</p>
@@ -718,7 +718,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">66</span>
+                    <span class="site-state-item-count">65</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

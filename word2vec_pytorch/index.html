@@ -150,7 +150,7 @@
 <meta property="og:site_name" content="碎碎念">
 <meta property="og:description" content="Word Embedding现在是现在NLP的入门必备，这里简单实现一个CBOW的W2V。 2018-07-06更新一发用一篇小说来训练模型的脚本。 2018-08-02更新一发negative sampling版本。">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2020-03-22T18:08:49.214Z">
+<meta property="og:updated_time" content="2020-05-17T15:39:34.040Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="word2vec的PyTorch实现">
 <meta name="twitter:description" content="Word Embedding现在是现在NLP的入门必备，这里简单实现一个CBOW的W2V。 2018-07-06更新一发用一篇小说来训练模型的脚本。 2018-08-02更新一发negative sampling版本。">
@@ -442,7 +442,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-03-23 02:08:49" itemprop="dateModified" datetime="2020-03-23T02:08:49+08:00">2020-03-23</time>
+                <time title="Modified: 2020-05-17 23:39:34" itemprop="dateModified" datetime="2020-05-17T23:39:34+08:00">2020-05-17</time>
               
             
           </span>
@@ -560,15 +560,15 @@ P(w_i) = \frac{f(w_i)^{0.75}}{\sum(f(w_j)^{0.75})}
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CONTEXT_SIZE = <span class="number">2</span></span><br><span class="line">batch_size = <span class="number">1024</span></span><br><span class="line">device = torch.device(<span class="string">'cuda:0'</span>)</span><br><span class="line">losses = []</span><br><span class="line">loss_function = nn.NLLLoss()</span><br><span class="line">model = CBOW(vocab_size, embedding_dim=<span class="number">100</span>,</span><br><span class="line">             context_size=CONTEXT_SIZE*<span class="number">2</span>)</span><br><span class="line">model.to(device)</span><br><span class="line"><span class="comment"># model = torch.nn.DataParallel(model, device_ids=[0, 1]).cuda()</span></span><br><span class="line">optimizer = optim.SGD(model.parameters(), lr=<span class="number">0.1</span>)</span><br></pre></td></tr></table></figure>
 <p>我这里本来写了多卡的跑法，但是不知道是不是我写法有问题还是为什么，每次我跑第二块卡的时候，PyTorch都会去第一块卡开一块空间出来，就算我只是在第二块卡跑也会在第一块卡开一些空间。比较神奇，后面再研究一下。</p>
 <p>然后定义一下data iterator。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data_iter = torch.utils.data.DataLoader(data, batch_size=batch_size,</span><br><span class="line">                                        shuffle=<span class="keyword">False</span>, num_workers=<span class="number">4</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data_iter = torch.utils.data.DataLoader(data, batch_size=batch_size,</span><br><span class="line">                                        shuffle=<span class="literal">False</span>, num_workers=<span class="number">4</span>)</span><br></pre></td></tr></table></figure>
 <p>然后这里要注意的是，shuffle参数会影响每次iter的速度，shuffle会慢很多。另外num_workers越多速度越快，但是很可能会内存爆炸，需要自己调一个合适的。</p>
 <p>然后就可以开始训练了：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">100</span>):</span><br><span class="line">    total_loss = torch.Tensor([<span class="number">0</span>])</span><br><span class="line">    <span class="keyword">for</span> context, target <span class="keyword">in</span> tqdm(data_iter):</span><br><span class="line">        context_ids = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(context[<span class="number">0</span>])):</span><br><span class="line">            context_ids.append(make_context_vector([context[j][i] <span class="keyword">for</span> j <span class="keyword">in</span> range(len(context))], word_to_ix))</span><br><span class="line">        context_ids = torch.stack(context_ids)</span><br><span class="line">        context_ids = context_ids.to(device)</span><br><span class="line"><span class="comment">#         context_ids = torch.autograd.Variable(context_ids.cuda())</span></span><br><span class="line">        model.zero_grad()</span><br><span class="line">        log_probs = model(context_ids)</span><br><span class="line">        label = make_context_vector(target, word_to_ix)</span><br><span class="line">        label = label.to(device)</span><br><span class="line"><span class="comment">#         label = torch.autograd.Variable(label.cuda())</span></span><br><span class="line">        loss = loss_function(log_probs, label)</span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line">        total_loss += loss.item()</span><br><span class="line">    losses.append(total_loss)</span><br><span class="line">    print(<span class="string">'epoch %d loss %.4f'</span> %(epoch, total_loss))</span><br><span class="line">print(losses)</span><br></pre></td></tr></table></figure>
 <p>如果要多卡可以把to(device)的代码改成注释的代码就可以了。</p>
 <p>然后就是需要<strong>注意</strong>的点了。</p>
 <p><strong>这个网络的确是work的，训练完可以试一下发现queen-woman+man和king的cosine similarity的确比monkey或者其他的单词要高。但是这个网络的效率很低！很低！很低！（你觉得我会告诉你一个epoch需要跑一个半小时么）。</strong></p>
-<p>原因在哪呢？其实很简单因为我这里使用的是softmax，也就是说，这个网络每一次训练都需要预测所有的词，比如我这个训练集里面有接近37万个词，那么每次就需要预测37万个类，效率之低可想而知。那么有什么解决方案呢？最早的时候，也就是谷歌C版本的解决方案是基于霍夫曼树的hierarchical softmax。后来DeepMind有一篇介绍把NCE（Noise-contrastive estimation）用来加速的论文<sup id="fnref:1"><a href="#fn:1" rel="footnote"><span class="hint--top-right hint--error hint--large" data-aria-label="http://papers.nips.cc/paper/5165-learning-word-embeddings-efficiently-with-noise-contrastive-estimation.pdf
-">[1]</span></a></sup>。再后来又出现了negative sampling的论文<sup id="fnref:2"><a href="#fn:2" rel="footnote"><span class="hint--top-right hint--error hint--large" data-aria-label="http://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf
+<p>原因在哪呢？其实很简单因为我这里使用的是softmax，也就是说，这个网络每一次训练都需要预测所有的词，比如我这个训练集里面有接近37万个词，那么每次就需要预测37万个类，效率之低可想而知。那么有什么解决方案呢？最早的时候，也就是谷歌C版本的解决方案是基于霍夫曼树的hierarchical softmax。后来DeepMind有一篇介绍把NCE（Noise-contrastive estimation）用来加速的论文<sup id="fnref:1"><a href="#fn:1" rel="footnote"><span class="hint--top hint--error hint--medium hint--rounded hint--bounce" data-aria-label="http://papers.nips.cc/paper/5165-learning-word-embeddings-efficiently-with-noise-contrastive-estimation.pdf
+">[1]</span></a></sup>。再后来又出现了negative sampling的论文<sup id="fnref:2"><a href="#fn:2" rel="footnote"><span class="hint--top hint--error hint--medium hint--rounded hint--bounce" data-aria-label="http://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf
 ">[2]</span></a></sup>。不过直观感受上，NCE和negative sampling是很像的，算是殊途同归吧。</p>
 <p>后面过段时间更新对这两种方法的理解和代码。</p>
 <div id="footnotes">
@@ -744,7 +744,7 @@ P(w_i) = \frac{f(w_i)^{0.75}}{\sum(f(w_j)^{0.75})}
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">66</span>
+                    <span class="site-state-item-count">65</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

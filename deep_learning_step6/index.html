@@ -155,7 +155,7 @@
 <meta property="og:image" content="https://i.loli.net/2018/09/06/5b90f03697a3c.png">
 <meta property="og:image" content="https://i.loli.net/2018/09/06/5b90fb86eac3c.png">
 <meta property="og:image" content="https://i.loli.net/2018/09/06/5b90fd0f9519e.png">
-<meta property="og:updated_time" content="2020-03-22T18:08:49.198Z">
+<meta property="og:updated_time" content="2020-05-17T15:39:34.036Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="台大李宏毅深度学习——seq2seq">
 <meta name="twitter:description" content="这节课的内容讲的有点浅，所以我看到是李沐的gluon教程，配合这节课的内容。">
@@ -448,7 +448,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-03-23 02:08:49" itemprop="dateModified" datetime="2020-03-23T02:08:49+08:00">2020-03-23</time>
+                <time title="Modified: 2020-05-17 23:39:34" itemprop="dateModified" datetime="2020-05-17T23:39:34+08:00">2020-05-17</time>
               
             
           </span>
@@ -533,16 +533,16 @@
 - \log\mathbb{P}(y_1, \ldots, y_{T&#39;} \mid x_1, \ldots, x_T) = -\sum_{t&#39;=1}^{T&#39;} \log \mathbb{P}(y_{t&#39;} \mid y_1, \ldots, y_{t&#39;-1}, \boldsymbol{c})
 \]</span></p>
 <h1 id="beam-search">beam search</h1>
-<p>通常情况下，我们会在输入和输出序列前后分别加一个特殊符号’&lt;bos&gt;‘和’&lt;eos&gt;‘，分别表示句子的开始和结束。不过很多时候好像’&lt;bos&gt;’不是必须加的，虽然我觉得不加很奇怪。</p>
+<p>通常情况下，我们会在输入和输出序列前后分别加一个特殊符号'&lt;bos&gt;'和'&lt;eos&gt;'，分别表示句子的开始和结束。不过很多时候好像'&lt;bos&gt;'不是必须加的，虽然我觉得不加很奇怪。</p>
 <p>假设我们输出一段文本序列，那么输出辞典<span class="math inline">\(\mathcal{Y}\)</span>，大小为<span class="math inline">\(|\mathcal{Y}|\)</span>，输出的序列长度为<span class="math inline">\(T&#39;\)</span>，那么我们一共有<span class="math inline">\(|\mathcal{Y}|^{T&#39;}\)</span>种可能。</p>
 <p>那么如果按照穷举检索，我们要评估的序列数量就是全部的可能性。假设我们有10000个词，输出长度为10的序列，那么我们的可能性就是<span class="math inline">\(10000^{10}\)</span>这么多种可能性。这几乎是不可能评估完的。</p>
-<p>那么换个思路，如果每一次我们都只拿概率最高的那一个词，也就是说每一次拿的是<span class="math inline">\(y_{t&#39;} = \arg\max_{y_{t&#39;} \in \mathcal{Y}} P(y_{t&#39;}|y_1, \dots, y_{t&#39;-1}, c)\)</span>。只要遇到’&lt;eos&gt;’就停止检索。这就是一个非常典型的贪婪算法。这样的话我们的计算开销会显著下降。</p>
+<p>那么换个思路，如果每一次我们都只拿概率最高的那一个词，也就是说每一次拿的是<span class="math inline">\(y_{t&#39;} = \arg\max_{y_{t&#39;} \in \mathcal{Y}} P(y_{t&#39;}|y_1, \dots, y_{t&#39;-1}, c)\)</span>。只要遇到'&lt;eos&gt;'就停止检索。这就是一个非常典型的贪婪算法。这样的话我们的计算开销会显著下降。</p>
 但是贪婪算法会有典型的问题，就是检索空间太小，无法保证最优解。比如下图：
 <p align="center">
 <img src="https://i.loli.net/2018/09/06/5b90ebf798140.png">
 </p>
 <p>这里的数字表示每一个state，ABC表示每一个词。中间的数字是条件概率，比如B2这里的0.4表示在<span class="math inline">\(P(B|A)\)</span>，而A2就是表示<span class="math inline">\(P(A|A)\)</span>。如果我们按照贪婪算法的话，我们会得到的结果是ABC，那么概率是<span class="math inline">\(0.5 \times 0.4 \times 0.2 \times 0.6\)</span>，而如果不是贪婪算法的话，我们得到ACB，概率是<span class="math inline">\(0.5 \times 0.3 \times 0.6 \times 0.6\)</span>明显概率更大。</p>
-<p>所以我们为了保证有更大的概率可以检索到较多的可能性，我们可以采用束搜索的方法，也就是说，我们每一次不再只看概率最高的那一个词，而是看概率最高的数个词。我们用束宽（beam size）<span class="math inline">\(k\)</span>来表示。之后根据<span class="math inline">\(k\)</span>个候选词输出下一个阶段的序列，接着再选出概率最高的<span class="math inline">\(k\)</span>个序列，不断重复这件事情。最后我们会在各个状态的候选序列中筛选出包含特殊符号’&lt;eos&gt;’的序列，并将这个符号后的子序列舍弃，得到最后的输出序列。然后再在这些序列中选择分数最高的作为最后的输出序列： <span class="math display">\[
+<p>所以我们为了保证有更大的概率可以检索到较多的可能性，我们可以采用束搜索的方法，也就是说，我们每一次不再只看概率最高的那一个词，而是看概率最高的数个词。我们用束宽（beam size）<span class="math inline">\(k\)</span>来表示。之后根据<span class="math inline">\(k\)</span>个候选词输出下一个阶段的序列，接着再选出概率最高的<span class="math inline">\(k\)</span>个序列，不断重复这件事情。最后我们会在各个状态的候选序列中筛选出包含特殊符号'&lt;eos&gt;'的序列，并将这个符号后的子序列舍弃，得到最后的输出序列。然后再在这些序列中选择分数最高的作为最后的输出序列： <span class="math display">\[
 \frac{1}{L^\alpha} \log \mathbb{P}(y_1, \ldots, y_{L}) = \frac{1}{L^\alpha} \sum_{t&#39;=1}^L \log \mathbb{P}(y_{t&#39;} \mid y_1, \ldots, y_{t&#39;-1}, \boldsymbol{c}),
 \]</span> 其中<span class="math inline">\(L\)</span>是最终序列的长度，<span class="math inline">\(\alpha\)</span>一般选0.75。这<span class="math inline">\(L\)</span>的系数起到的作用是惩罚太长的序列得分过高的情况。</p>
 事实上，贪婪搜索可以看做是beam size为1的束搜索。过程上就像下图：
@@ -723,7 +723,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">66</span>
+                    <span class="site-state-item-count">65</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
