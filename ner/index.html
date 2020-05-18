@@ -142,18 +142,18 @@
 
 
 
-  <meta name="description" content="暌违一年的更新">
+  <meta name="description" content="暌违一年的更新， 最近用到NER相关的算法，简单记录一下，主要是HMM和CRF。感觉概率图比较牛逼。">
 <meta name="keywords" content="NLP,NER,命名实体识别,BiLSTM,HMM,CRF">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NER">
 <meta property="og:url" content="https://samaelchen.github.io/ner/index.html">
 <meta property="og:site_name" content="碎碎念">
-<meta property="og:description" content="暌违一年的更新">
+<meta property="og:description" content="暌违一年的更新， 最近用到NER相关的算法，简单记录一下，主要是HMM和CRF。感觉概率图比较牛逼。">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2020-05-17T15:52:57.061Z">
+<meta property="og:updated_time" content="2020-05-18T15:04:23.714Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NER">
-<meta name="twitter:description" content="暌违一年的更新">
+<meta name="twitter:description" content="暌违一年的更新， 最近用到NER相关的算法，简单记录一下，主要是HMM和CRF。感觉概率图比较牛逼。">
 
 
 
@@ -425,7 +425,7 @@
                 
               
 
-              <time title="Created: 2020-05-17 00:00:00" itemprop="dateCreated datePublished" datetime="2020-05-17T00:00:00+08:00">2020-05-17</time>
+              <time title="Created: 2020-05-18 00:00:00" itemprop="dateCreated datePublished" datetime="2020-05-18T00:00:00+08:00">2020-05-18</time>
             
 
             
@@ -442,7 +442,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-05-17 23:52:57" itemprop="dateModified" datetime="2020-05-17T23:52:57+08:00">2020-05-17</time>
+                <time title="Modified: 2020-05-18 23:04:23" itemprop="dateModified" datetime="2020-05-18T23:04:23+08:00">2020-05-18</time>
               
             
           </span>
@@ -500,7 +500,53 @@
       
 
       
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>暌违一年的更新</p>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>暌违一年的更新， 最近用到NER相关的算法，简单记录一下，主要是HMM和CRF。感觉概率图比较牛逼。</p>
+<a id="more"></a>
+<h1 id="ner发展">NER发展</h1>
+<p>NER是NLP里面一个非常基础的任务，从NLP的处理流程上看，NER可以看做是词法分析中未登录词的一种。同时NER也是关系抽取、事件抽取、知识图谱、机器翻译、问答系统等诸多NLP任务的基础。一般而言NER主要是识别人们、地名、组织机构等，常见的NER算法大赛就是这样。实际上任何我们想要的特殊文本片段都可以认为是实体。比如价格、产品型号等。</p>
+<p>NER的发展基本上是四个阶段，最初是基于规则和字典的方法，依赖专家构建复杂的词库，通过分词器和正则表达式等方式抽取。第二阶段就是以HMM和CRF为代表的机器学习时代，第三阶段是CNN+CRF或者RNN+CRF的方式，第四阶段也就是现在基本上是半监督或者Attention等深度学习方法。</p>
+<h1 id="马尔科夫链">马尔科夫链</h1>
+<p>一般而言，我们假设<span class="math inline">\(X\)</span>是一个随机数据集合<span class="math inline">\(\{X_1, X_2, \ldots, X_t\}\)</span>，这些值源自状态集合<span class="math inline">\(S=\{s_1, \ldots, s_N\}\)</span>。一个马尔科夫链满足下面两个条件： <span class="math display">\[
+\begin{matrix}
+P(X_{t+1} = s_k|X_1,\ldots,X_t) = P(X_{t+1} = s_k|X_t) &amp; \text{Limited horizon} \\
+P(X_2=s_k|X_1=s_j) = P(X_{t+1} = s_k|X_t = s_j), \forall t,k,j &amp; \text{Time invariant}
+\end{matrix}
+\]</span> 一个马尔科夫链会有一个转移矩阵来表示从每一个状态转移到下一个状态的概率，同时有一个初始概率来表示第一个时刻每个状态的概率。假设我们有两个状态0和1，有一个转移矩阵： <span class="math display">\[
+\begin{array}
+{|c|c|c|} \hline \ &amp; 0 &amp; 1 \\
+\hline
+0 &amp; 0.3 &amp; 0.7 \\
+\hline
+1 &amp; 0.6 &amp; 0.4 \\
+\hline
+\end{array}
+\]</span> 初始概率<span class="math inline">\(P(S = 0)=0.2, P(S=1)=0.8\)</span>，那么对于序列1011，我们就可以很容易算出来概率是<span class="math inline">\(0.8 \times 0.6 \times 0.7 \times 0.4=0.1344\)</span></p>
+<h1 id="hmm">HMM</h1>
+<p>那么隐马尔可夫又是什么呢？上面的马尔科夫是一个可以直接观测到的状态转移序列。那么现在存在一种序列，表面上是我们可以观测到的随机序列，但是背后却有我们无法得知的隐藏序列来生成这一个序列。比如恋爱的经典笑话。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">男：你怎么了？</span><br><span class="line">女：没事。</span><br><span class="line">男：你真的没事？</span><br><span class="line">女：真的，你睡吧。</span><br><span class="line">男：你确定没事？</span><br><span class="line">女：真的。</span><br><span class="line">男：好吧，那我睡了。</span><br><span class="line">转头女的发了朋友圈，终究还是一个人扛下了所有。</span><br><span class="line">男：到底发生了什么。</span><br><span class="line">女：没事。</span><br><span class="line">男：你不说我没法睡觉。</span><br><span class="line">女：你睡你的。</span><br><span class="line">男：好吧。</span><br><span class="line">女的发了第二条朋友圈，果然还是没有人理解我。</span><br></pre></td></tr></table></figure></p>
+<p>于是，”没事-真的没事-真的-没事”这种序列背后隐藏了怎样的序列呢？马尔科夫链无法解决，所以需要HMM这样的模型来学习隐藏的状态序列。</p>
+<p>一个HMM有两个序列，一个是观测序列<span class="math inline">\(O\)</span>，一个是隐藏序列<span class="math inline">\(H\)</span>。HMM要满足以下假设： <span class="math display">\[
+\begin{cases}
+P(H_t=h_t|H_{1:t-1}=h_{1:t-1}, O_{1:t} = o_{1:t}) = P(H_t=h_t | H_{t-1} = h_{t-1}) &amp; \text{Markovinanity} \\
+P(O_t = o_t|H_{1:t} = h_{1:t}, O_{1:t-1}=o_{1:t-1}) = P(O_t=o_t|H_t=h_t) &amp; \text{Output independence} \\
+P(H_t=j|H_{t-1}=i) = P(H{t+s}=j|H_{t+s-1}=i), \forall i,j \in H &amp; \text{Stationarity}
+\end{cases}
+\]</span></p>
+<p>一个完整的HMM包含三个要素，transition matrix <span class="math inline">\(A\)</span>，emission matrix <span class="math inline">\(B\)</span>，还有初始状态分布概率<span class="math inline">\(\Pi\)</span>，可以将HMM表示为<span class="math inline">\(\lambda = (A, B, \Pi)\)</span>。</p>
+<p>那么HMM就有三个问题需要解决，一个是概率计算问题，也就是likelihood，第二个是参数学习问题，第三个是序列的解码问题。</p>
+<h2 id="hmm-likelihood">HMM likelihood</h2>
+<p>要计算一个HMM生成序列的概率，首先想到的就是暴力解法，穷举所有可能状态的组合，那么通过暴力运算就可以将所有的可能性算出来。但是暴力运算的问题在于计算复杂度过高，复杂度达到<span class="math inline">\(O(TN^T)\)</span>。所以一般解法有两种，一种是前向算法，另一种是后向算法。</p>
+<p>前向算法的过程很简单，首先初始化各个状态下在时间1时候观测状态为o_1的概率，<span class="math inline">\(\alpha(i) = \pi_i b_i(o_1)\)</span>，然后递归求解，<span class="math inline">\(\alpha_{t+1}(j) = \Big[ \sum\limits_{i=1}^N \alpha_t a_{ij} \Big] b_j(o_{t+1})\)</span>，最后到了<span class="math inline">\(T\)</span>时刻，<span class="math inline">\(P(O|\lambda) = \sum\limits_{i=1}^N \alpha_T(i)\)</span>。这样的话复杂度就降低到了<span class="math inline">\(O(TN^2)\)</span>的水平。因为每次只计算两个时刻之间的所有可能性。</p>
+<p>这里演示一个简单的前向算法计算过程，假设有红白两种颜色的球，分别有三个盒子。我们可以观测到的球的颜色，隐藏的是球来自哪个盒子。初始概率<span class="math inline">\(\Pi = (0.2, 0.4, 0.4)\)</span>，transition matrix <span class="math inline">\(A = \begin{bmatrix} 0.5 &amp; 0.2 &amp; 0.3 \\ 0.3 &amp; 0.5 &amp; 0.2 \\ 0.2 &amp; 0.3 &amp; 0.5 \end{bmatrix}\)</span>，emission matrix <span class="math inline">\(\begin{bmatrix}0.5 &amp; 0.5 \\ 0.4 &amp; 0.6 \\ 0.7 &amp; 0.3 \end{bmatrix}\)</span>，观测到的序列是<span class="math inline">\(O=\{红，白，红\}\)</span>，所以分步计算如下：</p>
+<p>第一步，初始化，<span class="math inline">\(\alpha_1(1) = \pi_1 b_1(o_1) = 0.2 \times 0.5 = 0.1, \ \alpha_1(2) = \pi_2 b_2(o_1) = 0.4 \times 0.4 = 0.16, \ \alpha_1(3) = \pi_3 b_3(o_1) = 0.4 \times 0.7 = 0.28\)</span>。</p>
+<p>第二步，递归。时刻2的观测状态是白球，所以时刻2来自盒子1的概率是<span class="math inline">\(\alpha_2(1) = \Big[\sum\limits_{i=1}^3 \alpha_1(i) a_{i1}\Big] b_2(o_2) = (0.1 \times 0.5 + 0.16 \times 0.3 + 0.28 \times 0.2) \times 0.5 = 0.077\)</span>，其他盒子类推，得到<span class="math inline">\(\alpha_2(2) = 0.1104, \ \alpha_2(3) = 0.0606\)</span>。重复第二步，<span class="math inline">\(\alpha_3(1) = 0.04187, \ \alpha_3(2) = 0.03551, \ \alpha_3(3) = 0.05284\)</span>。</p>
+<p>最后我们得到序列的概率<span class="math inline">\(P(O|\lambda) = \sum\limits_{i=1}^3 \alpha_3(i) = 0.13022\)</span>。</p>
+<p>那么后向算法与前向算法类似，但是计算起来相对比较反直觉一点。一样的初始化每个状态最后一个时刻的概率<span class="math inline">\(\beta_T(i) = 1, i=1, 2, \ldots, N\)</span>。接着根据<span class="math inline">\(t+1\)</span>时刻的后向概率，递归计算前一个时刻每个隐藏状态的后向概率。也就是<span class="math inline">\(\beta_t(i) = \sum\limits_{j=1}^N a_{ij}b_j(o_{t+1}) \beta_{t+1}(j), i=1,2,\ldots,N\)</span>。最后<span class="math inline">\(P(O|\lambda) = \sum\limits_{i=1}^N \pi_i b_i(o_1) \beta_1(i)\)</span>。</p>
+<p>一般来说用一个解法来算概率就好了，可以将这两种统一到一个公式上，也就是<span class="math inline">\(P(O|\lambda) = \sum\limits_{i=1}^N \sum\limits_{i=1}^N \alpha_{t}(i) a_{ij}b_j(o_{t+1}) \beta_{t+1}(j), t=1,2,\ldots,T-1\)</span>。</p>
+<h2 id="hmm-learning-problem">HMM learning problem</h2>
+<p>HMM的参数学习有两种一种是有监督学习，一种是无监督学习。</p>
+<p>有监督学习比较简单，因为HMM是生成模型，所以有监督学习直接根据标注的隐藏状态计算频率就可以了。也就是<span class="math inline">\(a_{ij} = \frac{A_{ij}}{\sum_{j=1}^N A_{ij}}, i=1,2,\ldots,N; j=1,2,\ldots,N\)</span>，<span class="math inline">\(b_i(k) = \frac{B_{ik}}{\sum_{k=1}^M B_{ik}}, i=1,2,\ldots,N;\)</span>，<span class="math inline">\(\pi_i = \frac{Count(h_i)}{\sum_{j=1}^N Count(h_j)}\)</span>。</p>
+<p>另一种是用EM算法做无监督学习。一般HMM用的是Baum-Welch算法。</p>
+<p>内容比想象的多啊，敲了一晚上公式还没弄完。未完待续……</p>
 
       
     </div>
@@ -630,8 +676,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -716,6 +771,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ner发展"><span class="nav-number">1.</span> <span class="nav-text">NER发展</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#马尔科夫链"><span class="nav-number">2.</span> <span class="nav-text">马尔科夫链</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hmm"><span class="nav-number">3.</span> <span class="nav-text">HMM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#hmm-likelihood"><span class="nav-number">3.1.</span> <span class="nav-text">HMM likelihood</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hmm-learning-problem"><span class="nav-number">3.2.</span> <span class="nav-text">HMM learning problem</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
