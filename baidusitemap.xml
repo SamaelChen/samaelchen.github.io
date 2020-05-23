@@ -2,9 +2,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://samaelchen.github.io/ner/</loc>
-    <lastmod>2020-05-18</lastmod>
+    <lastmod>2020-05-23</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/machine_learning_step13/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step15/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/economics_thoughts_notes5/</loc>
@@ -22,22 +22,25 @@
     <loc>https://samaelchen.github.io/tinyxgb/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/pytorch-pggan/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
     <loc>https://samaelchen.github.io/pytorch_text_generation/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/genetic_algorithm/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
+    <loc>https://samaelchen.github.io/pytorch_lstm_sentiment/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
     <loc>https://samaelchen.github.io/guabi/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
+    <loc>https://samaelchen.github.io/leetcode/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/linear_algebra_step1/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/leetcode/</loc>
+    <loc>https://samaelchen.github.io/linear_algebra_step11/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/linear_algebra_step10/</loc>
@@ -46,13 +49,13 @@
     <loc>https://samaelchen.github.io/linear_algebra_step12/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
+    <loc>https://samaelchen.github.io/linear_algebra_step5/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
     <loc>https://samaelchen.github.io/linear_algebra_step13/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/linear_algebra_step2/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
-    <loc>https://samaelchen.github.io/linear_algebra_step11/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/linear_algebra_step3/</loc>
@@ -64,25 +67,16 @@
     <loc>https://samaelchen.github.io/linear_algebra_step6/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/linear_algebra_step5/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
-    <loc>https://samaelchen.github.io/linear_algebra_step8/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
     <loc>https://samaelchen.github.io/linear_algebra_step7/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
+    <loc>https://samaelchen.github.io/linear_algebra_step9/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/linux_software/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/linux_usage_daily/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
-    <loc>https://samaelchen.github.io/linear_algebra_step9/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
-    <loc>https://samaelchen.github.io/machine_learning_hw02/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/machine_learning_step1/</loc>
@@ -94,28 +88,31 @@
     <loc>https://samaelchen.github.io/machine_learning_step10/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
+    <loc>https://samaelchen.github.io/machine_learning_step13/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
+    <loc>https://samaelchen.github.io/machine_learning_hw02/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
     <loc>https://samaelchen.github.io/machine_learning_step14/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/machine_learning_step12/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/pytorch_lstm_sentiment/</loc>
+    <loc>https://samaelchen.github.io/pytorch-pggan/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/machine_learning_step2/</loc>
+    <loc>https://samaelchen.github.io/linear_algebra_step8/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/machine_learning_step15/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step3/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/machine_learning_step18/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/machine_learning_step4/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
-    <loc>https://samaelchen.github.io/machine_learning_step3/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step2/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/machine_learning_step6/</loc>
@@ -124,19 +121,22 @@
     <loc>https://samaelchen.github.io/machine_learning_step9/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/pytorch_cloze/</loc>
+    <loc>https://samaelchen.github.io/pytorch-char-rnn/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/pytorch-char-rnn/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step4/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
+    <loc>https://samaelchen.github.io/pytorch_cloze/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/schedule/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/machine_learning_step8/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step7/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/machine_learning_step7/</loc>
+    <loc>https://samaelchen.github.io/machine_learning_step8/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/machine_learning_step5/</loc>
@@ -145,43 +145,40 @@
     <loc>https://samaelchen.github.io/economics_thoughts_notes3/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/machine_learning_step17/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
     <loc>https://samaelchen.github.io/machine_learning_hw01/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/machine_learning_step11/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
+    <loc>https://samaelchen.github.io/machine_learning_step17/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
     <loc>https://samaelchen.github.io/machine_learning_step16/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
-    <loc>https://samaelchen.github.io/deeplearning_sp1/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
-    <loc>https://samaelchen.github.io/economics_thoughts_notes2/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
-    <loc>https://samaelchen.github.io/deep_learning_step4/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
-    <loc>https://samaelchen.github.io/dbscan_and_optics/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
-    <loc>https://samaelchen.github.io/deep_learning_step2/</loc>
-    <lastmod>2020-05-17</lastmod>
-  </url>  <url>
-    <loc>https://samaelchen.github.io/economics_thoughts_notes1/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/depressed/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/deeplearning_mxnet_step1/</loc>
+    <loc>https://samaelchen.github.io/economics_thoughts_notes2/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/deep_learning_step6/</loc>
+    <loc>https://samaelchen.github.io/dbscan_and_optics/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
+    <loc>https://samaelchen.github.io/deep_learning_step4/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
+    <loc>https://samaelchen.github.io/LSTM-pytorch/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
+    <loc>https://samaelchen.github.io/economics_thoughts_notes1/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
+    <loc>https://samaelchen.github.io/deeplearning_sp1/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
+    <loc>https://samaelchen.github.io/deeplearning_mxnet_step1/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/deeplearning_set_up/</loc>
@@ -190,13 +187,16 @@
     <loc>https://samaelchen.github.io/deep_learning_step5/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
+    <loc>https://samaelchen.github.io/deep_learning_step6/</loc>
+    <lastmod>2020-05-17</lastmod>
+  </url>  <url>
     <loc>https://samaelchen.github.io/deep_learning_step3/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
     <loc>https://samaelchen.github.io/deep_learning_step1/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>  <url>
-    <loc>https://samaelchen.github.io/LSTM-pytorch/</loc>
+    <loc>https://samaelchen.github.io/deep_learning_step2/</loc>
     <lastmod>2020-05-17</lastmod>
   </url>
 </urlset>
