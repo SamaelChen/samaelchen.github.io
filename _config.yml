@@ -32,7 +32,10 @@ skip_render:
 new_post_name: :title.md # File name of new posts
 default_layout: post
 titlecase: false # Transform title into titlecase
-external_link: true # Open external links in new tab
+external_link:
+  enable: true # Open external links in new tab
+  field: site
+  exclude: ''
 filename_case: 0
 render_drafts: false
 post_asset_folder: false
@@ -73,7 +76,7 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: next-6
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
@@ -101,3 +104,9 @@ search:
   field: post
   format: html
   limit: 10000
+
+symbols_count_time:
+  symbols: true 
+  time: true 
+  total_symbols: true 
+  total_time: true
