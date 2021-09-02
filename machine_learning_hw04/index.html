@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"samaelchen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="严格来说不是课程的第四次作业，自己实现了一下全连接反向传播。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="台大李宏毅机器学习作业——反向传播">
+<meta property="og:url" content="https://samaelchen.github.io/machine_learning_hw04/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="严格来说不是课程的第四次作业，自己实现了一下全连接反向传播。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml029.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml030.png">
+<meta property="article:published_time" content="2018-02-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-31T16:15:25.579Z">
+<meta property="article:author" content="Samael Chen">
+<meta property="article:tag" content="机器学习,深度学习,PyTorch,MXNet,gluon,统计学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml029.png">
+
+<link rel="canonical" href="https://samaelchen.github.io/machine_learning_hw04/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>台大李宏毅机器学习作业——反向传播 | 碎碎念</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120854058-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-120854058-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a75b41f44b70e58f40edd582552291cf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="碎碎念" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://samaelchen.github.io/machine_learning_hw04/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+      <meta itemprop="name" content="Samael Chen">
+      <meta itemprop="description" content="活该没有性生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          台大李宏毅机器学习作业——反向传播
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-02-12 00:00:00" itemprop="dateCreated datePublished" datetime="2018-02-12T00:00:00+08:00">2018-02-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-01 00:15:25" itemprop="dateModified" datetime="2021-09-01T00:15:25+08:00">2021-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/StatisticalLearning/" itemprop="url" rel="index"><span itemprop="name">统计学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>3.8k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>3 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>严格来说不是课程的第四次作业，自己实现了一下全连接反向传播。 <span id="more"></span></p>
+<p>反向传播的原理在这一篇<a href="https://samaelchen.github.io/machine_learning_step6/">博客</a>里面其实就已经大概讲过了，如果我们用的是sigmoid function作为激活函数，我们其实可以将每一层的一个神经元看做是一次逻辑回归。这里也不做太多解释，直接上代码。原本是想用MXNet实现的，但是MXNet和PyTorch都有自动求导函数，这样直接调用不利于深刻理解反向传播的具体过程，因此这里用numpy自己实现了一下。</p>
+<p>首先定义自己的数据 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">dataset = np.array([[<span class="number">2.7810836</span>, <span class="number">2.550537003</span>, <span class="number">0</span>],</span><br><span class="line">                    [<span class="number">1.465489372</span>, <span class="number">2.362125076</span>, <span class="number">0</span>],</span><br><span class="line">                    [<span class="number">3.396561688</span>, <span class="number">4.400293529</span>, <span class="number">0</span>],</span><br><span class="line">                    [<span class="number">1.38807019</span>, <span class="number">1.850220317</span>, <span class="number">0</span>],</span><br><span class="line">                    [<span class="number">3.06407232</span>, <span class="number">3.005305973</span>, <span class="number">0</span>],</span><br><span class="line">                    [<span class="number">7.627531214</span>, <span class="number">2.759262235</span>, <span class="number">1</span>],</span><br><span class="line">                    [<span class="number">5.332441248</span>, <span class="number">2.088626775</span>, <span class="number">1</span>],</span><br><span class="line">                    [<span class="number">6.922596716</span>, <span class="number">1.77106367</span>, <span class="number">1</span>],</span><br><span class="line">                    [<span class="number">8.675418651</span>, -<span class="number">0.242068655</span>, <span class="number">1</span>],</span><br><span class="line">                    [<span class="number">7.673756466</span>, <span class="number">3.508563011</span>, <span class="number">1</span>]])</span><br></pre></td></tr></table></figure></p>
+<p>这个数据集有十个样本，前面两列是feature，最后一列是y。</p>
+<p>首先我们将一些零零散散的函数定义掉，比如说激活函数以及激活函数的导数，还有metric。这里使用了最经典的sigmoid作为激活函数，如果要用ReLu或者其他的都可以自己实现。 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sigmoid</span>(<span class="params">weights, inputs</span>):</span></span><br><span class="line">    z = np.dot(inputs, weights)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span> / (<span class="number">1</span> + np.exp(-z))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sigmoid_derivative</span>(<span class="params">weights, inputs</span>):</span></span><br><span class="line">    z = sigmoid(weights, inputs)</span><br><span class="line">    <span class="keyword">return</span> z * (<span class="number">1</span> - z)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">accuracy</span>(<span class="params">y, y_hat</span>):</span></span><br><span class="line">    count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(y)):</span><br><span class="line">        <span class="keyword">if</span> y[i] == y_hat[i]:</span><br><span class="line">            count += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> count / <span class="built_in">len</span>(y)</span><br></pre></td></tr></table></figure></p>
+<p>对于一个神经网络而言，实际上每一个隐藏层都是一组weight，因此我们定义一个函数来初始化隐藏层： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">initialize_layer</span>(<span class="params">num_features, num_hidden</span>):</span></span><br><span class="line">    weights = np.random.uniform(-<span class="number">0.1</span>, <span class="number">0.1</span>, num_features * num_hidden).reshape((num_features, num_hidden))</span><br><span class="line">    <span class="keyword">return</span> weights</span><br></pre></td></tr></table></figure></p>
+<p>这个函数是按照指定的输入特征数量和指定的隐藏节点数量生成一个weight matrix。这里我没有加入bias，当然要加入也很简单。</p>
+<p>然后我们知道，全连接，或者说神经网络其实都是两个步骤，第一步forward propagation，计算结果，第二部backward propagation将误差告诉给weight。所以我们先实现第一步的forward propagation。 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forwark_propagate</span>(<span class="params">network, inputs</span>):</span></span><br><span class="line">    outputs = []</span><br><span class="line">    input_data = [inputs]</span><br><span class="line">    outputs_derivative = []</span><br><span class="line">    next_inputs = inputs</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(network)):</span><br><span class="line">        output = sigmoid(network[i], next_inputs)</span><br><span class="line">        output_d = sigmoid_derivative(network[i], next_inputs)</span><br><span class="line">        outputs.append(output)</span><br><span class="line">        input_data.append(output)</span><br><span class="line">        outputs_derivative.append(output_d)</span><br><span class="line">        next_inputs = output.copy()</span><br><span class="line">    <span class="keyword">return</span> outputs, outputs_derivative, input_data[:<span class="built_in">len</span>(network)]</span><br></pre></td></tr></table></figure> 这里需要解释一下，我实现的比较绕，前馈的过程其实很简单，就是一个样本放进去，各种叉乘weight就好了，但是我们其实backward propagation需要用到很多中间过程的数据，回顾一下下面的过程：</p>
+<p><img data-src='https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml029.png'></p>
+<p><img data-src='https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml030.png'></p>
+<p>我们可以看到，如果我们要计算第<span class="math inline">\(i\)</span>层cost function对<span class="math inline">\(w\)</span>的导数，我们需要用到第<span class="math inline">\(i\)</span>层的输入以及激活函数的导数，第<span class="math inline">\(i+1\)</span>层的weight和cost function对下一层<span class="math inline">\(z\)</span>的导数。所以我将forward propagation过程中每一层的输入，每一层的输出，每一层activation derivative在输出的取值都保存下来。那实际上，上一层的输出就是下一层的输入。</p>
+<p>然后我们实现一下反馈，也就是最核心的部分： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">backward_propagate</span>(<span class="params">network, outputs, outputs_derivative, inputs, y_true</span>):</span></span><br><span class="line">    gradients = [<span class="number">1</span> <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(network))]</span><br><span class="line">    deltas = [<span class="number">1</span> <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(network))]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">reversed</span>(<span class="built_in">range</span>(<span class="built_in">len</span>(network))):</span><br><span class="line">        <span class="keyword">if</span> i == <span class="built_in">len</span>(network) - <span class="number">1</span>:</span><br><span class="line">            delta = -(y_true - outputs[i].flatten())</span><br><span class="line">            delta = delta.reshape(outputs[i].shape)</span><br><span class="line">            deltas[i] = delta</span><br><span class="line">            gradient = np.dot(inputs[i].T, delta)</span><br><span class="line">            gradients[i] = gradient</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            delta = outputs_derivative[i] * np.dot(deltas[i + <span class="number">1</span>], network[i + <span class="number">1</span>].T)</span><br><span class="line">            deltas[i] = delta</span><br><span class="line">            gradient = np.dot(inputs[i].T, delta)</span><br><span class="line">            gradients[i] = gradient</span><br><span class="line">    <span class="keyword">return</span> gradients</span><br></pre></td></tr></table></figure></p>
+<p>这里我写的也还是有点绕，因为最后一层输出层是比较特殊的层，我们如果将这里看做是一个逻辑回归，那么我们就可以用之前逻辑回归推的方法，直接算出这一层的权重，然后就会发现，原本后面那个<span class="math inline">\(\sigma&#39;(z)[w_3 \frac{\partial l}{\partial z&#39;} + w_4 \frac{\partial l}{\partial z&#39;&#39;}]\)</span>其实就是<span class="math inline">\(-(y_{true} - y_{predict})\)</span>，然后我们一样的，将每一层的导数存下来。这样我们就把核心的部分全部实现了。然后就是试一下能不能跑。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">network = []</span><br><span class="line"><span class="comment"># network.append(initialize_layer(2, 1))</span></span><br><span class="line">network.append(initialize_layer(<span class="number">2</span>, <span class="number">4</span>))</span><br><span class="line">network.append(initialize_layer(<span class="number">4</span>, <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">20</span>):</span><br><span class="line">    output, output_d, inputs = forwark_propagate(network, dataset[:, :<span class="number">2</span>])</span><br><span class="line">    gradients = backward_propagate(network, output, output_d, inputs, dataset[:, <span class="number">2</span>])</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(network)):</span><br><span class="line">        network[i] -= <span class="number">0.1</span> * gradients[i]</span><br><span class="line">    res = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> output[<span class="built_in">len</span>(network) - <span class="number">1</span>]:</span><br><span class="line">        <span class="keyword">if</span> i &lt; <span class="number">0.5</span>:</span><br><span class="line">            res.append(<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            res.append(<span class="number">1</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;Epoch %s, Accu %.2f%%&#x27;</span> %(<span class="built_in">str</span>(epoch), accuracy(dataset[:, <span class="number">2</span>], res)*<span class="number">100</span>))</span><br></pre></td></tr></table></figure>
+<p>结果如下</p>
+<pre><code>Epoch 0, Accu 50.00%
+Epoch 1, Accu 50.00%
+Epoch 2, Accu 70.00%
+Epoch 3, Accu 100.00%
+Epoch 4, Accu 100.00%
+Epoch 5, Accu 100.00%
+Epoch 6, Accu 100.00%
+Epoch 7, Accu 100.00%
+Epoch 8, Accu 100.00%
+Epoch 9, Accu 100.00%
+Epoch 10, Accu 100.00%
+Epoch 11, Accu 100.00%
+Epoch 12, Accu 100.00%
+Epoch 13, Accu 100.00%
+Epoch 14, Accu 100.00%
+Epoch 15, Accu 100.00%
+Epoch 16, Accu 100.00%
+Epoch 17, Accu 100.00%
+Epoch 18, Accu 100.00%
+Epoch 19, Accu 100.00%</code></pre>
+<p>当然，如果只有一层的话就是最普通的逻辑回归，效果也差不多。另外这样一个tiny fc可以试试看learning rate对结果的影响，效果非常明显。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/wechatpay.png" alt="Samael Chen WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/machine_learning_hw03/" rel="prev" title="台大李宏毅机器学习作业——CNN visualization">
+      <i class="fa fa-chevron-left"></i> 台大李宏毅机器学习作业——CNN visualization
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/deep_learning_step1/" rel="next" title="台大李宏毅深度学习——常见神经网络结构">
+      台大李宏毅深度学习——常见神经网络结构 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDg5NS83NDQ0"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Samael Chen"
+      src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Samael Chen</p>
+  <div class="site-description" itemprop="description">活该没有性生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:chc199310@gmail.com" title="E-Mail → mailto:chc199310@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamaelChen</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">217k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">3:18</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61310f3070234090" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

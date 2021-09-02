@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"samaelchen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="学习一下batch normalization和SELU，顺便看点深度学习的八卦。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="台大李宏毅深度学习——Batch normalization &amp; SELU">
+<meta property="og:url" content="https://samaelchen.github.io/deep_learning_step5/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="学习一下batch normalization和SELU，顺便看点深度学习的八卦。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.imgur.com/mb0vi91.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/04/5b8e3c359e425.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/04/5b8e3e03c9485.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/05/5b8f7f31490b4.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/05/5b8f861ddf832.png">
+<meta property="article:published_time" content="2018-09-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-31T16:15:25.577Z">
+<meta property="article:author" content="Samael Chen">
+<meta property="article:tag" content="机器学习,深度学习,PyTorch,MXNet,gluon,统计学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/mb0vi91.png">
+
+<link rel="canonical" href="https://samaelchen.github.io/deep_learning_step5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>台大李宏毅深度学习——Batch normalization & SELU | 碎碎念</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120854058-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-120854058-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a75b41f44b70e58f40edd582552291cf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="碎碎念" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://samaelchen.github.io/deep_learning_step5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+      <meta itemprop="name" content="Samael Chen">
+      <meta itemprop="description" content="活该没有性生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          台大李宏毅深度学习——Batch normalization & SELU
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-09-03 00:00:00" itemprop="dateCreated datePublished" datetime="2018-09-03T00:00:00+08:00">2018-09-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-01 00:15:25" itemprop="dateModified" datetime="2021-09-01T00:15:25+08:00">2021-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DeepLearning/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>3.2k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>3 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>学习一下batch normalization和SELU，顺便看点深度学习的八卦。</p>
+<span id="more"></span>
+<h1 id="bn">BN</h1>
+<p>Batch normalization是一个比较新的深度学习技巧，但是在深度学习的实作中有非常迅速成为中流砥柱。</p>
+<p>normalization是以前统计学习比较常用的一种方法，因为对于损失函数而言，<span class="math inline">\(L(y, \hat{y})\)</span>会受到输入数据的影响。这个其实是非常直观的，比如说一个数据有两个维度，一个维度都是1-10的范围内波动的，另一个维度是1000-10000之间波动的，那么如果<span class="math inline">\(y=x_1 + x_2\)</span>很明显后一个维度的数据对<span class="math inline">\(y\)</span>的影响非常大。</p>
+<p>那么在这种情况下，我们做梯度下降，在scale大的维度上梯度就比较大，但是在scale小的地方梯度就比较小。这个在我之前学<a href="‘https://samaelchen.github.io/machine_learning_step3/’">梯度下降的博客</a>里面也有。大概图形上看就是下面这样：</p>
+<p><img data-src='https://i.imgur.com/mb0vi91.png'></p>
+<p>那这样我们在不同维度上的梯度下降步长是不一样的。所以在统计学习或者传统的机器学习里面，为了加快收敛的速度，虽然用二阶导可以解决，但是一般用feature scaling就可以了。</p>
+<p>而batch normalization其实也是使用了这样的理念。一般而言，我们做normalization就是<span class="math inline">\(\frac{x-\mu}{\sigma}\)</span>，那batch normalization其实就是在每一个layer的input前做这么一下操作。</p>
+<p>那batch normalization和normalization的差别其实就在于batch这个地方。我们知道平时我们训练深度学习网络的时候避免炸内存，会将数据分批导进去训练，在这种情况下，我们其实是没有办法得到全局的<span class="math inline">\(\mu\)</span>和<span class="math inline">\(\sigma\)</span>的。所以事实上，batch normalization每一次算的都是一个batch的<span class="math inline">\(\mu \ \&amp; \ \sigma\)</span>。</p>
+那整个流程看上去就是下图这样的：
+<p align="center">
+<img data-src='https://i.loli.net/2018/09/04/5b8e3c359e425.png' width=70%>
+</p>
+<p>那实际上可以将这个过程看作是一个hidden layer来处理。</p>
+如果说觉得这样全部normalization到0，1这样的形式可能有些activation function效果不好，所以我们可以考虑一下再加一层linear layer来转换一下，那流程上就是：
+<p align="center">
+<img data-src='https://i.loli.net/2018/09/04/5b8e3e03c9485.png' width=70%>
+</p>
+<p>当然，如果好巧不巧，机器学着学着，刚好<span class="math inline">\(\beta\)</span>和<span class="math inline">\(\gamma\)</span>跟前面的一样，那么这轮的batch normalization就白做了。不过一般来说不会这么巧。</p>
+<p>那么在训练过程中，我们一般都是一个batch一个batch喂进去，但是test的时候，我们一般是一口气全部过模型一遍，那么我们并没有办法得到一个合适的<span class="math inline">\(\mu\)</span>和<span class="math inline">\(\sigma\)</span>。那么一种解决方法是计算一下全部training set的均值和标准差，另一种方法是，每次训练后，我们都保留最后一个batch的均值和标准差。</p>
+<p>BN的好处非常显而易见，一个是可以减少covariate shift。也就是说，以前为了避免每个layer的方差太大，我们会减小步长，但是用了BN以后就可以用大的步长加速训练。此外，对于sigmoid或者tanh这样的激活函数来说，可以有效减少深层网络的梯度爆炸或者消失的问题。另外BN的一个副产物是可以减少过拟合。</p>
+<h1 id="selu">SELU</h1>
+<p>ReLu是一种比较特殊的激活函数，本身是为了解决sigmoid在叠加多层后会出现梯度消失的问题。ReLu的函数其实非常简单，就是： <span class="math display">\[
+a =
+\begin{cases}
+0, &amp;\mbox{if }z&lt;0 \\
+z, &amp;\mbox{if }z&gt;0
+\end{cases}
+\]</span> 不过现在回过头看ReLu，其实某种程度上效果很像是dropout？！</p>
+<p>但是ReLu相对来说还是比较激进的，所以后来有各种各样的变种，比如说Leaky ReLu，就是： <span class="math display">\[
+a =
+\begin{cases}
+0.01z, &amp;\mbox{if }z&lt;0 \\
+z, &amp;\mbox{if }z&gt;0
+\end{cases}
+\]</span> 还有parametric ReLu： <span class="math display">\[
+a =
+\begin{cases}
+\alpha z, &amp;\mbox{if }z&lt;0 \\
+z, &amp;\mbox{if }z&gt;0
+\end{cases}
+\]</span></p>
+<p>再后来在竞赛中还有人提出了randomized relu，其实就是上面的parametric relu的<span class="math inline">\(\alpha\)</span>每次训练的时候都随机生成一个，而不是让机器去学习，然后test的时候再固定一个就可以了。据说效果还不错。</p>
+<p>但是这种形式的ReLu都是负无穷到正无穷的值域，于是又有人修正为ELU（exponential linear unit），函数是： <span class="math display">\[
+a =
+\begin{cases}
+\alpha(e^z - 1), &amp;\mbox{if }z&lt;0 \\
+z, &amp;\mbox{if }z&gt;0
+\end{cases}
+\]</span> 这样一来，ELU的值域就是<span class="math inline">\(\alpha\)</span>到正无穷。</p>
+<p>之后横空出世了一个SELU，其实就是ELU前面乘了一个参数<span class="math inline">\(\lambda\)</span>，函数表示为： <span class="math display">\[
+a =\lambda \begin{cases}
+\alpha(e^z - 1), &amp; \mbox{if }z&lt;0 \\
+z, &amp; \mbox{if }z&gt;0
+\end{cases}
+\]</span> 不过，这里的两个参数是有确定值的，而不是随便学习出来的。这里<span class="math inline">\(\alpha=1.6732632423543772848170429916717\)</span>，<span class="math inline">\(\lambda=1.0507009873554804934193349852946\)</span>。</p>
+<p>这两个非常神奇的数据说是可以推导出来的，有兴趣的同学可以去看一下原文93页的证明。看不下去的可以看一下作者放出来的<a target="_blank" rel="noopener" href="https://github.com/bioinf-jku/SNNs">源码</a>。</p>
+<p>那么为什么要定这样两个实数，其实目的是保证每次的layer吐出来的都是一个标志正态分布的数据。</p>
+<h1 id="花式调参">花式调参</h1>
+<p>最后是现在有的一些花式调参的方法。毕竟实作的时候基本上也就是调参了，菜如我这种也不可能提出什么突破性的方法。</p>
+<p>深度学习说白了也就是机器学习的一种，所以传统机器学习中的grid search这种非常暴力的方法当然也适用。不过为了加速搜索，一般会用random search的方法，通常也不会太差。</p>
+另外现在有一些非常非常骚气的方法，一种就是learn to learn。其实就是用一个RNN去学习另一个网络的所有参数。看上去就是下图的样子：
+<p align="center">
+<img data-src='https://i.loli.net/2018/09/05/5b8f7f31490b4.png' width=70%>
+</p>
+<p>还有一个很重要的调参方向其实就是learning rate，因为深度学习很多时候是一个非凸优化的问题，所以我们以为loss下不去了可能待在了saddle point，实际上也可能是在一个local minimum的山谷里来回震荡。这种时候只要降低lr就可以继续收敛了。所以很多时候我们在训练的过程中，每50个epoch或者100个epoch就缩小一下lr，很多时候loss会出现一次很明显的降低。</p>
+<p>最后是Google brain提出了一些非常神奇的激活函数，具体可以看看这篇<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1710.05941.pdf">论文</a>。</p>
+<h1 id="深度学习究竟有没有学到东西">深度学习究竟有没有学到东西</h1>
+这个其实是非常有意思的一个争论点。很多人质疑深度学习其实只是强行记忆了数据的特征，并没有学到潜在的规律。于是有人做了相关的研究，<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1706.05394.pdf">A Closer Look at Memorization in Deep Networks</a>这篇论文就是相关的研究，里面有一个很有意思的地方就是对label加noise。不论加了多少noise，模型都可以train到一个百分百正确的地方。但是test上的表现很自然会变得很差。过程如下图：
+<p align="center">
+<img data-src='https://i.loli.net/2018/09/05/5b8f861ddf832.png' width=70%>
+</p>
+<p>这个其实是非常风骚的一个操作，就是说故意给一些错误的信息让机器去学习。这个图里面的实线是train，虚线是test，我们可以看到其实一开始test是上升的，然后才下降。所以实际上一开始模型还是正常学到了一些正确的规律的。但是后面就被噪声带跑偏了。</p>
+<p>不过从某种程度上来说，传统的决策树不是更像是强行记住一些东西么。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/wechatpay.png" alt="Samael Chen WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/pytorch_cloze/" rel="prev" title="李宏毅深度学习作业——language model">
+      <i class="fa fa-chevron-left"></i> 李宏毅深度学习作业——language model
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/deep_learning_step6/" rel="next" title="台大李宏毅深度学习——seq2seq">
+      台大李宏毅深度学习——seq2seq <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDg5NS83NDQ0"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#bn"><span class="nav-number">1.</span> <span class="nav-text">BN</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#selu"><span class="nav-number">2.</span> <span class="nav-text">SELU</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%8A%B1%E5%BC%8F%E8%B0%83%E5%8F%82"><span class="nav-number">3.</span> <span class="nav-text">花式调参</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%A9%B6%E7%AB%9F%E6%9C%89%E6%B2%A1%E6%9C%89%E5%AD%A6%E5%88%B0%E4%B8%9C%E8%A5%BF"><span class="nav-number">4.</span> <span class="nav-text">深度学习究竟有没有学到东西</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Samael Chen"
+      src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Samael Chen</p>
+  <div class="site-description" itemprop="description">活该没有性生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:chc199310@gmail.com" title="E-Mail → mailto:chc199310@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamaelChen</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">217k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">3:18</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61310f3070234090" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

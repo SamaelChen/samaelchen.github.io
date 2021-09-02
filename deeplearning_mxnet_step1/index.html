@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"samaelchen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="基于CNN的中文验证码识别">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CNN中文验证码识别">
+<meta property="og:url" content="https://samaelchen.github.io/deeplearning_mxnet_step1/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="基于CNN的中文验证码识别">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-04-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-31T16:15:25.577Z">
+<meta property="article:author" content="Samael Chen">
+<meta property="article:tag" content="机器学习,深度学习,PyTorch,MXNet,gluon,统计学习">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://samaelchen.github.io/deeplearning_mxnet_step1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>CNN中文验证码识别 | 碎碎念</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120854058-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-120854058-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a75b41f44b70e58f40edd582552291cf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="碎碎念" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://samaelchen.github.io/deeplearning_mxnet_step1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+      <meta itemprop="name" content="Samael Chen">
+      <meta itemprop="description" content="活该没有性生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CNN中文验证码识别
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-04-13 00:00:00" itemprop="dateCreated datePublished" datetime="2017-04-13T00:00:00+08:00">2017-04-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-01 00:15:25" itemprop="dateModified" datetime="2021-09-01T00:15:25+08:00">2021-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MXNet/" itemprop="url" rel="index"><span itemprop="name">MXNet</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>5.5k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>5 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>基于CNN的中文验证码识别</p>
+<span id="more"></span>
+<p>出于对深度学习的实践目的，选择了CNN这一古老的工具以及OCR这个古老的问题。之前用AdaBoost，通过二值化，字符分割，再进行字符识别。准确率么是惨不忍睹，不过练练手还是可以的。</p>
+<p>传统方法上最难的是除噪和分割，尤其是碰到字符粘连，干扰线等等。</p>
+<p>深度学习的一个好处就是可以做end-to-end的学习。参考项亮大神的<a target="_blank" rel="noopener" href="http://blog.xlvector.net/2016-05/mxnet-ocr-cnn/">博客</a> <sup id="fnref:1"><a href="#fn:1" rel="footnote"><span class="hint--top hint--error hint--medium hint--rounded hint--bounce" aria-label="端到端的OCR：基于CNN的实现 http://blog.csdn.net/acdreamers/article/details/24883305
+">[1]</span></a></sup>，深度学习解决OCR问题有两种解决思路：</p>
+<blockquote>
+<ol type="1">
+<li>把OCR的问题当做一个多标签学习的问题。4个数字组成的验证码就相当于有4个标签的图片识别问题（这里的标签还是有序的），用CNN来解决。</li>
+<li>把OCR的问题当做一个语音识别的问题，语音识别是把连续的音频转化为文本，验证码识别就是把连续的图片转化为文本，用CNN+LSTM+CTC来解决。</li>
+</ol>
+</blockquote>
+<p>作为深度学习门外汉，这里就先做CNN的版本。刚好项亮大神用的是MXNet，而我对MXNet又有蜜汁好感，就在其基础上做了一些修改，变成自己的版本。</p>
+<p>首先需要搞定数据。深度学习对数据量的饥渴是很可怕的，我的目标是尽可能模拟新浪的验证码: <img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/weibocn2.png width=350></p>
+<p>为了方便生成数据，其实我还是对图片做了二值化，转化之后的图片是这样的： <img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/weibocn2_wb.png></p>
+<p>通过这样处理，我在生成数据的时候就不需要模拟背景色。另外新浪很友好没加干扰线，所以这一步也省了。</p>
+<p>参考另一篇Python生成中文验证码的<a target="_blank" rel="noopener" href="http://blog.csdn.net/acdreamers/article/details/24883305">博客</a><sup id="fnref:2"><a href="#fn:2" rel="footnote"><span class="hint--top hint--error hint--medium hint--rounded hint--bounce" aria-label="PIL模块与随机生成中文验证码 http://blog.csdn.net/acdreamers/article/details/24883305
+">[2]</span></a></sup>，这里做一些简单的修改。为什么不用项亮大神的代码，是因为不知道为毛我cv2就是没法用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RandomChar</span>():</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;用于随机生成汉字&quot;&quot;&quot;</span></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">Unicode</span>():</span></span><br><span class="line">        val = random.randint(<span class="number">0x4E00</span>, <span class="number">0x9FBF</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">chr</span>(val)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">GB2312</span>():</span></span><br><span class="line">        <span class="comment"># head = random.randint(0xB0, 0xD7)</span></span><br><span class="line">        <span class="comment"># body = random.randint(0xA1, 0xFE)</span></span><br><span class="line">        head = <span class="number">0xB0</span></span><br><span class="line">        body = random.randint(<span class="number">0xA1</span>, <span class="number">0xAA</span>)</span><br><span class="line">        val = (head &lt;&lt; <span class="number">8</span>) | body</span><br><span class="line">        <span class="built_in">str</span> = <span class="string">&quot;%x&quot;</span> % val</span><br><span class="line">        <span class="built_in">str</span> = codecs.decode(<span class="built_in">str</span>, <span class="string">&#x27;hex&#x27;</span>)</span><br><span class="line">        <span class="built_in">str</span> = <span class="built_in">str</span>.decode(<span class="string">&#x27;gb2312&#x27;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">str</span>, val</span><br></pre></td></tr></table></figure>
+<p>首先是随机生成汉字。汉字字数其实非常多，尤其是Unicode编码的，所以这里我选择了GB2312的一级汉字，一共会有3755个。为了模型跑得快一点，这里放了前10个汉字，编码从B0A1到B0AA。</p>
+<p>然后是生成验证码图片：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ImageChar</span>():</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, fontColor=(<span class="params"><span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span></span>),</span></span></span><br><span class="line"><span class="params"><span class="function">                 size=(<span class="params"><span class="number">100</span>, <span class="number">20</span></span>),</span></span></span><br><span class="line"><span class="params"><span class="function">                 fontPath=<span class="string">&#x27;ukai.ttc&#x27;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 bgColor=(<span class="params"><span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span></span>),</span></span></span><br><span class="line"><span class="params"><span class="function">                 fontSize=<span class="number">20</span></span>):</span></span><br><span class="line">        self.size = size</span><br><span class="line">        self.fontPath = fontPath</span><br><span class="line">        self.bgColor = bgColor</span><br><span class="line">        self.fontSize = fontSize</span><br><span class="line">        self.fontColor = fontColor</span><br><span class="line">        self.font = ImageFont.truetype(self.fontPath, self.fontSize)</span><br><span class="line">        self.image = Image.new(<span class="string">&#x27;RGB&#x27;</span>, size, bgColor)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># def rotate(self):</span></span><br><span class="line">    <span class="comment">#     self.image = self.image.rotate(10, expand=0)</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">drawText</span>(<span class="params">self, pos, txt, fill</span>):</span></span><br><span class="line">        draw = ImageDraw.Draw(self.image)</span><br><span class="line">        draw.text(pos, txt, font=self.font, fill=fill)</span><br><span class="line">        <span class="keyword">del</span> draw</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">drawTextV2</span>(<span class="params">self, pos, txt, fill</span>):</span></span><br><span class="line">        image = Image.new(<span class="string">&#x27;RGB&#x27;</span>, (<span class="number">20</span>, <span class="number">20</span>), (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>))</span><br><span class="line">        draw = ImageDraw.Draw(image)</span><br><span class="line">        draw.text((<span class="number">0</span>, -<span class="number">3</span>), txt, font=self.font, fill=fill)</span><br><span class="line">        w = image.rotate(random.randint(-<span class="number">10</span>, <span class="number">10</span>), expand=<span class="number">1</span>)</span><br><span class="line">        self.image.paste(w, box=pos)</span><br><span class="line">        <span class="keyword">del</span> draw</span><br><span class="line"></span><br><span class="line">    <span class="comment"># def randRGB(self):</span></span><br><span class="line">    <span class="comment">#     return (random.randint(0, 255),</span></span><br><span class="line">    <span class="comment">#             random.randint(0, 255),</span></span><br><span class="line">    <span class="comment">#             random.randint(0, 255))</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">randPoint</span>(<span class="params">self, num</span>):</span></span><br><span class="line">        (width, height) = self.size</span><br><span class="line">        draw = ImageDraw.Draw(self.image)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, num):</span><br><span class="line">            draw.point([random.randint(<span class="number">0</span>, width),</span><br><span class="line">                        random.randint(<span class="number">0</span>, height)], (<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>))</span><br><span class="line">        <span class="comment"># return (random.randint(0, width), random.randint(0, height)</span></span><br><span class="line">        <span class="keyword">del</span> draw</span><br><span class="line"></span><br><span class="line">    <span class="comment"># def randLine(self, num):</span></span><br><span class="line">    <span class="comment">#     draw = ImageDraw.Draw(self.image)</span></span><br><span class="line">    <span class="comment">#     for i in range(0, num):</span></span><br><span class="line">    <span class="comment">#         draw.line([self.randPoint(), self.randPoint()], self.randRGB())</span></span><br><span class="line">    <span class="comment">#     del draw</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">randChinese</span>(<span class="params">self, num</span>):</span></span><br><span class="line">        gap = <span class="number">5</span></span><br><span class="line">        start = <span class="number">0</span></span><br><span class="line">        label = []</span><br><span class="line">        <span class="keyword">while</span> <span class="built_in">len</span>(label) &lt; num:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                char, val = RandomChar().GB2312()</span><br><span class="line">            <span class="keyword">except</span> UnicodeDecodeError:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            x = start + self.fontSize * \</span><br><span class="line">                <span class="built_in">len</span>(label) + random.randint(<span class="number">0</span>, gap) + gap * <span class="built_in">len</span>(label)</span><br><span class="line">            self.drawTextV2((x, random.randint(-<span class="number">3</span>, <span class="number">2</span>)),</span><br><span class="line">                            char, (<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>))</span><br><span class="line">            <span class="comment"># self.image.rotate(180)</span></span><br><span class="line">            <span class="comment"># self.rotate()</span></span><br><span class="line">            label.append(s.index(val))</span><br><span class="line">        self.randPoint(<span class="number">18</span>)</span><br><span class="line">        <span class="keyword">return</span> label</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">save</span>(<span class="params">self, path</span>):</span></span><br><span class="line">        self.image.save(path)</span><br></pre></td></tr></table></figure>
+<p>原来代码里面的旋转其实并没有真正生效，因此修改成了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">drawTextV2</span>(<span class="params">self, pos, txt, fill</span>):</span></span><br><span class="line">    image = Image.new(<span class="string">&#x27;RGB&#x27;</span>, (<span class="number">20</span>, <span class="number">20</span>), (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>))</span><br><span class="line">    draw = ImageDraw.Draw(image)</span><br><span class="line">    draw.text((<span class="number">0</span>, -<span class="number">3</span>), txt, font=self.font, fill=fill)</span><br><span class="line">    w = image.rotate(random.randint(-<span class="number">10</span>, <span class="number">10</span>), expand=<span class="number">1</span>)</span><br><span class="line">    self.image.paste(w, box=pos)</span><br><span class="line">    <span class="keyword">del</span> draw</span><br></pre></td></tr></table></figure>
+<p>这里要注意的是，原来博客里实现的是RGB的三通道，但是二值化后单通道就可以了，所以后面再压回单通道就好了。另外因为旋转后会有黑边，所以我改成了生成黑底白字。实现后生成的图像是这样婶的： <img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/generation1.png></p>
+<p>再用255减一下就可以了： <img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/generation2.png></p>
+<p>乍一看还是有点像的。</p>
+<p>接下来就是根据MXNet的规则开始搭建网络。首先需要定义Data Iterator，防止爆内存。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OCRIter</span>(<span class="params">mx.io.DataIter</span>):</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, count, batch_size, num_label</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(OCRIter, self).__init__()</span><br><span class="line">        <span class="comment"># self.ic = ImageChar()</span></span><br><span class="line"></span><br><span class="line">        self.batch_size = batch_size</span><br><span class="line">        self.count = count</span><br><span class="line">        self.num_label = num_label</span><br><span class="line">        self.provide_data = [(<span class="string">&#x27;data&#x27;</span>, (batch_size, <span class="number">1</span>, <span class="number">100</span>, <span class="number">20</span>))]</span><br><span class="line">        self.provide_label = [(<span class="string">&#x27;softmax_label&#x27;</span>, (self.batch_size, num_label))]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">int</span>(self.count / self.batch_size)):</span><br><span class="line">            data = []</span><br><span class="line">            label = []</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(self.batch_size):</span><br><span class="line">                ic = ImageChar()</span><br><span class="line">                num = ic.randChinese(self.num_label)</span><br><span class="line">                <span class="comment"># ic.save(str(k) + str(i) + &#x27;.jpg&#x27;)</span></span><br><span class="line">                tmp = np.array(ic.image.convert(<span class="string">&quot;L&quot;</span>))</span><br><span class="line">                tmp = <span class="number">255</span> - tmp</span><br><span class="line">                tmp = tmp.reshape(<span class="number">1</span>, <span class="number">100</span>, <span class="number">20</span>)</span><br><span class="line">                data.append(tmp)</span><br><span class="line">                label.append(np.array(num))</span><br><span class="line">            data_all = [mx.nd.array(data)]</span><br><span class="line">            label_all = [mx.nd.array(label)]</span><br><span class="line">            data_names = [<span class="string">&#x27;data&#x27;</span>]</span><br><span class="line">            label_names = [<span class="string">&#x27;softmax_label&#x27;</span>]</span><br><span class="line"></span><br><span class="line">            data_batch = OCRBatch(data_names, data_all, label_names, label_all)</span><br><span class="line">            <span class="keyword">yield</span> data_batch</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">reset</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<p>这里一定要注意： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">self.provide_data = [(<span class="string">&#x27;data&#x27;</span>, (batch_size, <span class="number">1</span>, <span class="number">100</span>, <span class="number">20</span>))]</span><br><span class="line">self.provide_label = [(<span class="string">&#x27;softmax_label&#x27;</span>, (self.batch_size, num_label))]</span><br></pre></td></tr></table></figure> 这两段必须要有。MXNet做图像需要的是4D-matrix，分别是(batch size, channel, width, length)。因为这里我是单通道，因此channel只用了1，如果是RGB三通道，那就是3。</p>
+<p>然后这里定义了一个简单的卷积网络： <img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/network.png></p>
+<p>三个Full Connect层用来做三个汉字的识别，然后Concat回去。这有就能同时学习三个汉字。</p>
+<p>接下去就是让机器开始训练。训练过程中也有一些比较尴尬的情况发生。我用的是GTX 1080，CUDA 8.0，cuDNN 5的配置，训练的过程中发生了一件非常离奇的准确率跳崖事件。在learning rate为0.001的时候，一开始看着还正常，但是中间发生了从82%掉到40%的情况，好在后面又爬起来了。 <img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log1.png> 但是后面突然掉到了0，接着就再也爬不起来了。我原以为是偶然，掐掉重跑，又发生了这个事情。而且发生的更早。 <img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log2.png> 我又怀疑是learning rate设大了，于是改为0.0005，好吧，这已经小的有点逆天了。 <img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log4.png> 一切看起来都很好。而且准确率比0.001还高了一点。中间也会发生跳崖，但是都爬起来了。意外很快发生，下一个epoch快结束的时候又自杀了。 <img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log3.png></p>
+<p>由于之前的epoch都在10以内，最后下了狠心干脆一样的参数跑100个epoch看是不是真的自杀完活不过来了。开了后台跑，结果自杀现象又消失了。中间有一次跳崖，但爬起来了。 <img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log5.png> 大概十来个Epoch后基本上就刷到了90%以上，后面不但没有再自杀，甚至出现了100%的情况。 <img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log8.png> 哪怕到了最后也一切安好。 <img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log6.png> 完整的log可以看<a target="_blank" rel="noopener" href="https://github.com/SamaelChen/hexo-practice-code/blob/master/mxnet/ex03/nohup.out">这个</a>。</p>
+<p>那么问题来了，自杀到底是Epoch不够还是learning rate太大？</p>
+<hr />
+<p>2017-04-25更新： 我做了一个282字的识别，learning rate设定为0.0005的情况下，在32个epoch时候跳崖自杀，39个epoch爬回来，40个epoch又自杀，从此一蹶不振。于是被我提前掐死了。但是当我将lr改到0.0001，到了168个epoch，已经到了97%了。所以目测跳崖自杀是lr太大了。</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/log7.png></p>
+<p>不过这种防止自杀的手段是有明显短板的，那就是lr太小收敛很慢。如果跟我一样仅有一块1080卡，然后像我多放几个filter和hidden，速度就是上图，呵呵哒了。</p>
+<div id="footnotes">
+<hr>
+<div id="footnotelist">
+<ol style="list-style: none; padding-left: 0; margin-left: 40px">
+<li id="fn:1">
+<span style="display: inline-block; vertical-align: top; padding-right: 10px; margin-left: -40px">1.</span><span style="display: inline-block; vertical-align: top; margin-left: 10px;">端到端的OCR：基于CNN的实现 http://blog.csdn.net/acdreamers/article/details/24883305<a href="#fnref:1" rev="footnote"> ↩︎</a></span>
+</li>
+<li id="fn:2">
+<span style="display: inline-block; vertical-align: top; padding-right: 10px; margin-left: -40px">2.</span><span style="display: inline-block; vertical-align: top; margin-left: 10px;">PIL模块与随机生成中文验证码 http://blog.csdn.net/acdreamers/article/details/24883305<a href="#fnref:2" rev="footnote"> ↩︎</a></span>
+</li>
+</ol>
+</div>
+</div>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/wechatpay.png" alt="Samael Chen WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/genetic_algorithm/" rel="prev" title="遗传算法">
+      <i class="fa fa-chevron-left"></i> 遗传算法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/machine_learning_step1/" rel="next" title="台大李宏毅机器学习——回归">
+      台大李宏毅机器学习——回归 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDg5NS83NDQ0"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Samael Chen"
+      src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Samael Chen</p>
+  <div class="site-description" itemprop="description">活该没有性生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:chc199310@gmail.com" title="E-Mail → mailto:chc199310@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamaelChen</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">217k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">3:18</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61310f3070234090" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

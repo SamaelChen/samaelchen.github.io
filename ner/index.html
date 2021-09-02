@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"samaelchen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="暌违一年的更新， 最近用到NER相关的算法，简单记录一下，主要是HMM和CRF。感觉概率图比较牛逼。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NER">
+<meta property="og:url" content="https://samaelchen.github.io/ner/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="暌违一年的更新， 最近用到NER相关的算法，简单记录一下，主要是HMM和CRF。感觉概率图比较牛逼。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2020/05/23/WfS2vaEUcRpnm4C.jpg">
+<meta property="og:image" content="https://i.loli.net/2020/05/23/VxkRP2KrJlM4zh9.jpg">
+<meta property="og:image" content="https://i.loli.net/2020/05/23/7iokSZULbumlg59.jpg">
+<meta property="og:image" content="https://i.loli.net/2020/05/23/Y5G1fDkOIwVndKL.jpg">
+<meta property="og:image" content="https://i.loli.net/2020/05/23/SgO9lj6z4MywUcG.jpg">
+<meta property="og:image" content="https://i.loli.net/2020/05/23/TQK1ZizLWtjERp7.jpg">
+<meta property="og:image" content="https://i.loli.net/2020/05/23/cRfSJDgZGHm7oCT.jpg">
+<meta property="og:image" content="https://i.loli.net/2020/05/23/DfpUkGuExnHA9av.png">
+<meta property="article:published_time" content="2020-05-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-31T16:15:25.581Z">
+<meta property="article:author" content="Samael Chen">
+<meta property="article:tag" content="机器学习,深度学习,PyTorch,MXNet,gluon,统计学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/05/23/WfS2vaEUcRpnm4C.jpg">
+
+<link rel="canonical" href="https://samaelchen.github.io/ner/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>NER | 碎碎念</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120854058-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-120854058-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a75b41f44b70e58f40edd582552291cf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="碎碎念" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://samaelchen.github.io/ner/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+      <meta itemprop="name" content="Samael Chen">
+      <meta itemprop="description" content="活该没有性生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          NER
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-18 00:00:00" itemprop="dateCreated datePublished" datetime="2020-05-18T00:00:00+08:00">2020-05-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-01 00:15:25" itemprop="dateModified" datetime="2021-09-01T00:15:25+08:00">2021-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DeepLearning/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>10k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>9 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>暌违一年的更新， 最近用到NER相关的算法，简单记录一下，主要是HMM和CRF。感觉概率图比较牛逼。</p>
+<span id="more"></span>
+<h1 id="ner发展">NER发展</h1>
+<p>NER是NLP里面一个非常基础的任务，从NLP的处理流程上看，NER可以看做是词法分析中未登录词的一种。同时NER也是关系抽取、事件抽取、知识图谱、机器翻译、问答系统等诸多NLP任务的基础。一般而言NER主要是识别人们、地名、组织机构等，常见的NER算法大赛就是这样。实际上任何我们想要的特殊文本片段都可以认为是实体。比如价格、产品型号等。</p>
+<p>NER的发展基本上是四个阶段，最初是基于规则和字典的方法，依赖专家构建复杂的词库，通过分词器和正则表达式等方式抽取。第二阶段就是以HMM和CRF为代表的机器学习时代，第三阶段是CNN+CRF或者RNN+CRF的方式，第四阶段也就是现在基本上是半监督或者Attention等深度学习方法。</p>
+<h1 id="马尔科夫链">马尔科夫链</h1>
+<p>一般而言，我们假设<span class="math inline">\(X\)</span>是一个随机数据集合<span class="math inline">\(\{X_1, X_2, \ldots, X_t\}\)</span>，这些值源自状态集合<span class="math inline">\(S=\{s_1, \ldots, s_N\}\)</span>。一个马尔科夫链满足下面两个条件： <span class="math display">\[
+\begin{matrix}
+P(X_{t+1} = s_k|X_1,\ldots,X_t) = P(X_{t+1} = s_k|X_t) &amp; \text{Limited horizon} \\
+P(X_2=s_k|X_1=s_j) = P(X_{t+1} = s_k|X_t = s_j), \forall t,k,j &amp; \text{Time invariant}
+\end{matrix}
+\]</span> 一个马尔科夫链会有一个转移矩阵来表示从每一个状态转移到下一个状态的概率，同时有一个初始概率来表示第一个时刻每个状态的概率。假设我们有两个状态0和1，有一个转移矩阵： <span class="math display">\[
+\begin{array}
+{|c|c|c|} \hline \ &amp; 0 &amp; 1 \\
+\hline
+0 &amp; 0.3 &amp; 0.7 \\
+\hline
+1 &amp; 0.6 &amp; 0.4 \\
+\hline
+\end{array}
+\]</span> 初始概率<span class="math inline">\(P(S = 0)=0.2, P(S=1)=0.8\)</span>，那么对于序列1011，我们就可以很容易算出来概率是<span class="math inline">\(0.8 \times 0.6 \times 0.7 \times 0.4=0.1344\)</span></p>
+<h1 id="hmm">HMM</h1>
+<p>那么隐马尔可夫又是什么呢？上面的马尔科夫是一个可以直接观测到的状态转移序列。那么现在存在一种序列，表面上是我们可以观测到的随机序列，但是背后却有我们无法得知的隐藏序列来生成这一个序列。比如恋爱的经典笑话。 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">男：你怎么了？</span><br><span class="line">女：没事。</span><br><span class="line">男：你真的没事？</span><br><span class="line">女：真的，你睡吧。</span><br><span class="line">男：你确定没事？</span><br><span class="line">女：真的。</span><br><span class="line">男：好吧，那我睡了。</span><br><span class="line">转头女的发了朋友圈，终究还是一个人扛下了所有。</span><br><span class="line">男：到底发生了什么。</span><br><span class="line">女：没事。</span><br><span class="line">男：你不说我没法睡觉。</span><br><span class="line">女：你睡你的。</span><br><span class="line">男：好吧。</span><br><span class="line">女的发了第二条朋友圈，果然还是没有人理解我。</span><br></pre></td></tr></table></figure> 于是，”没事-真的没事-真的-没事”这种序列背后隐藏了怎样的序列呢？马尔科夫链无法解决，所以需要HMM这样的模型来学习隐藏的状态序列。</p>
+<p>一个HMM有两个序列，一个是观测序列<span class="math inline">\(O\)</span>，一个是隐藏序列<span class="math inline">\(H\)</span>。HMM要满足以下假设： <span class="math display">\[
+\begin{cases}
+P(H_t=h_t|H_{1:t-1}=h_{1:t-1}, O_{1:t} = o_{1:t}) = P(H_t=h_t | H_{t-1} = h_{t-1}) &amp; \text{Markovinanity} \\
+P(O_t = o_t|H_{1:t} = h_{1:t}, O_{1:t-1}=o_{1:t-1}) = P(O_t=o_t|H_t=h_t) &amp; \text{Output independence} \\
+P(H_t=j|H_{t-1}=i) = P(H{t+s}=j|H_{t+s-1}=i), \forall i,j \in H &amp; \text{Stationarity}
+\end{cases}
+\]</span></p>
+<p>一个完整的HMM包含三个要素，transition matrix <span class="math inline">\(A\)</span>，emission matrix <span class="math inline">\(B\)</span>，还有初始状态分布概率<span class="math inline">\(\Pi\)</span>，可以将HMM表示为<span class="math inline">\(\lambda = (A, B, \Pi)\)</span>。</p>
+<p>那么HMM就有三个问题需要解决，一个是概率计算问题，也就是likelihood，第二个是参数学习问题，第三个是序列的解码问题。</p>
+<h2 id="hmm-likelihood">HMM likelihood</h2>
+<p>要计算一个HMM生成序列的概率，首先想到的就是暴力解法，穷举所有可能状态的组合，那么通过暴力运算就可以将所有的可能性算出来。但是暴力运算的问题在于计算复杂度过高，复杂度达到<span class="math inline">\(O(TN^T)\)</span>。所以一般解法有两种，一种是前向算法，另一种是后向算法。</p>
+<p>前向算法的过程很简单，首先初始化各个状态下在时间1时候观测状态为o_1的概率，<span class="math inline">\(\alpha(i) = \pi_i b_i(o_1)\)</span>，然后递归求解，<span class="math inline">\(\alpha_{t+1}(j) = \Big[ \sum\limits_{i=1}^N \alpha_t a_{ij} \Big] b_j(o_{t+1})\)</span>，最后到了<span class="math inline">\(T\)</span>时刻，<span class="math inline">\(P(O|\lambda) = \sum\limits_{i=1}^N \alpha_T(i)\)</span>。这样的话复杂度就降低到了<span class="math inline">\(O(TN^2)\)</span>的水平。因为每次只计算两个时刻之间的所有可能性。</p>
+<p>这里演示一个简单的前向算法计算过程，假设有红白两种颜色的球，分别有三个盒子。我们可以观测到的球的颜色，隐藏的是球来自哪个盒子。初始概率<span class="math inline">\(\Pi = (0.2, 0.4, 0.4)\)</span>，transition matrix <span class="math inline">\(A = \begin{bmatrix} 0.5 &amp; 0.2 &amp; 0.3 \\ 0.3 &amp; 0.5 &amp; 0.2 \\ 0.2 &amp; 0.3 &amp; 0.5 \end{bmatrix}\)</span>，emission matrix <span class="math inline">\(\begin{bmatrix}0.5 &amp; 0.5 \\ 0.4 &amp; 0.6 \\ 0.7 &amp; 0.3 \end{bmatrix}\)</span>，观测到的序列是<span class="math inline">\(O=\{红，白，红\}\)</span>，所以分步计算如下：</p>
+<p>第一步，初始化。 <span class="math display">\[\alpha_1(1) = \pi_1 b_1(o_1) = 0.2 \times 0.5 = 0.1, \ \alpha_1(2) = \pi_2 b_2(o_1) = 0.4 \times 0.4 = 0.16, \ \alpha_1(3) = \pi_3 b_3(o_1) = 0.4 \times 0.7 = 0.28\]</span></p>
+<p>第二步，递归。时刻2的观测状态是白球，所以时刻2来自盒子1的概率是<span class="math display">\[\alpha_2(1) = \Big[\sum\limits_{i=1}^3 \alpha_1(i) a_{i1}\Big] b_2(o_2) = (0.1 \times 0.5 + 0.16 \times 0.3 + 0.28 \times 0.2) \times 0.5 = 0.077\]</span>其他盒子类推，得到<span class="math display">\[\alpha_2(2) = 0.1104, \ \alpha_2(3) = 0.0606\]</span> 重复第二步，<span class="math display">\[\alpha_3(1) = 0.04187, \ \alpha_3(2) = 0.03551, \ \alpha_3(3) = 0.05284\]</span></p>
+<p>最后我们得到序列的概率<span class="math inline">\(P(O|\lambda) = \sum\limits_{i=1}^3 \alpha_3(i) = 0.13022\)</span>。</p>
+<p>那么后向算法与前向算法类似，但是计算起来相对比较反直觉一点。一样的初始化每个状态最后一个时刻的概率<span class="math inline">\(\beta_T(i) = 1, i=1, 2, \ldots, N\)</span>。接着根据<span class="math inline">\(t+1\)</span>时刻的后向概率，递归计算前一个时刻每个隐藏状态的后向概率。也就是<span class="math inline">\(\beta_t(i) = \sum\limits_{j=1}^N a_{ij}b_j(o_{t+1}) \beta_{t+1}(j), i=1,2,\ldots,N\)</span>。最后<span class="math inline">\(P(O|\lambda) = \sum\limits_{i=1}^N \pi_i b_i(o_1) \beta_1(i)\)</span>。</p>
+<p>一般来说用一个解法来算概率就好了，可以将这两种统一到一个公式上，也就是<span class="math inline">\(P(O|\lambda) = \sum\limits_{i=1}^N \sum\limits_{i=1}^N \alpha_{t}(i) a_{ij}b_j(o_{t+1}) \beta_{t+1}(j), t=1,2,\ldots,T-1\)</span>。</p>
+<h2 id="hmm-learning-problem">HMM learning problem</h2>
+<p>HMM的参数学习有两种一种是有监督学习，一种是无监督学习。</p>
+<p>有监督学习比较简单，因为HMM是生成模型，所以有监督学习直接根据标注的隐藏状态计算频率就可以了。也就是<span class="math inline">\(a_{ij} = \frac{A_{ij}}{\sum_{j=1}^N A_{ij}}, i=1,2,\ldots,N; j=1,2,\ldots,N\)</span>，<span class="math inline">\(b_i(k) = \frac{B_{ik}}{\sum_{k=1}^M B_{ik}}, i=1,2,\ldots,N;\)</span>，<span class="math inline">\(\pi_i = \frac{Count(h_i)}{\sum_{j=1}^N Count(h_j)}\)</span>。</p>
+<p>另一种是用EM算法做无监督学习。一般HMM用的是Baum-Welch算法。</p>
+<p>EM算法就包括了两个步骤，一个是E，一个是M。我们假设有一个数据集合是<span class="math inline">\(\{O_1, O_2, \ldots, O_S\}\)</span>，<span class="math inline">\(O_i = o_{i_1}, o_{i_2}, \ldots, o_{i_T}\)</span>，<span class="math inline">\(H_i = h_{i_1}, h_{i_2}, \ldots, h_{i_T}\)</span>，为了方便区分，下面用上标来表示隐藏状态的index。<span class="math inline">\(O=\{o^1, o^2, \ldots, o^M\}\)</span>，<span class="math inline">\(H=\{h^1, h^2, \ldots, h^N\}\)</span>。那么E步就是计算<span class="math display">\[Q(\lambda, \bar{\lambda}) = \sum\limits_{H} P(H|O,\bar{\lambda}) \log P(O,H|\bar{\lambda})\]</span> M步就是找到一个<span class="math inline">\(\bar{\lambda}\)</span>使得上面的期望最大，也就是 <span class="math display">\[
+\bar{\lambda} = \arg \max_{\lambda} \sum\limits_H P(H|O,\bar{\lambda})\log P(O,H|\lambda)
+\]</span></p>
+<p>那么<span class="math inline">\(Q\)</span>函数可以改写成： <span class="math display">\[
+\sum\limits_{H} P(H|O,\bar{\lambda}) \log P(O,H|\bar{\lambda}) = \sum\limits_{H} \frac{P(H,O|\bar{\lambda})}{P(O|\bar{\lambda})} \log P(O,H|\lambda)
+\]</span> 因为P(O|{})是常数，所以上面等价于 <span class="math display">\[
+\sum\limits_{H} P(H,O|\bar{\lambda}) \log P(O,H|\bar{\lambda})
+\]</span> 因为<span class="math inline">\(P(O,H|\lambda) = \pi_{h_1}b_{h_1}(o_1)a_{h_1h_2}b_{h_2}(o_2) \cdots a_{h_{T-1}h_T}b_{h_T}(o_T)\)</span>，所以最后将公式可以替换为： <span class="math display">\[
+Q(\lambda, \bar{\lambda}) = \sum\limits_{H}P(O,H|\bar{\lambda}) \log \pi_{h_1} + \sum\limits_{H}(\sum\limits_{t=1}^{T-1} \log a_{h_t h_{t+1}})P(O,H|\bar{\lambda}) + \sum\limits_{H}(\sum\limits_{t=1}^T \log b_{h_1}(o_t))P(O,H|\bar{\lambda})
+\]</span></p>
+<p>那么分步求偏导，我们对第一个部分求偏导， <span class="math display">\[
+\sum\limits_{H} \log \pi_{h_1} P(O,H| \bar{\lambda}) = \sum\limits_{i=1}^N \log \pi^{i} P(O, h_1 = h^i | \bar{\lambda})
+\]</span> 由于<span class="math inline">\(\sum_{i=1}^N \pi^i = 1\)</span>，所以这是受限制的求解极值问题，用拉格朗日乘子法构建拉格朗日函数如下： <span class="math display">\[
+\sum\limits_{i=1}^N \log \pi^i P(O,h_1 = h^i | \bar{\lambda}) + \gamma(\sum\limits_{i=1}^N \pi^i - 1)
+\]</span> 接着求导： <span class="math display">\[
+\frac{\partial}{\partial\pi^i}[\sum\limits_{i=1}^N\log\pi^i P(O,h_1=h^i|\bar{\lambda})+\gamma(\sum\limits_{i=1}^N\pi^i-1)]=P(O,h_1=h^i|\bar{\lambda})+\gamma\pi^i
+\]</span> 让上式等0，且因为有N个，全部求和就可以得到<span class="math inline">\(\gamma\)</span>值也就是<span class="math inline">\(\gamma=-P(O|\bar{\lambda})\)</span>。</p>
+<p>所以<span class="math inline">\(\pi^i = \frac{P(O,h_1 = h^i|\bar{\lambda})}{P(O|\bar{\lambda})}\)</span>。</p>
+<p>然后按照一样的方法求第二部分： <span class="math display">\[
+\sum\limits_{H}(\sum\limits_{t=1}^{T-1}\log a_{h_th_{t+1}})P(O,H|\bar{\lambda})=\sum\limits_{i=1}^N\sum\limits_{j=1}^N\sum\limits_{t=1}^{T-1}\log a_{ij}P(O,h_t=h^i,h_{t+1}=h^j|\bar{\lambda}),\sum\limits_{j=1}^N a_{ij}=1
+\]</span></p>
+<p>我们设定拉格朗日函数为 <span class="math display">\[
+L=\sum\limits_{i=1}^N\sum\limits_{j=1}^N\sum\limits_{t=1}^{T-1}\log a_{ij}P(O,h_t=h^i,h_{t+1}=h^j|\bar{\lambda})+\sum\limits_{i=1}^N\gamma_i(\sum\limits_{j=1}^N a_{ij}-1)
+\]</span></p>
+<p>然后一样求偏导 <span class="math display">\[
+\frac{\partial L}{\partial a_{ij}}=\sum\limits_{t=1}^{T-1}P(O,h_t=h^i,h_{t+1}=h^j|\bar{\lambda})+a_{ij}\sum\limits_{i=1}^N\gamma_i=0
+\]</span></p>
+<p>同样通过求和得到<span class="math inline">\(\sum\limits_{i=1}^N\gamma_i = -\sum\limits_{j=1}^N\sum\limits_{t=1}^{T-1}P(O,h_t=h^i,h_{t+1}=h^j|\bar{\lambda})\)</span></p>
+<p>最后得到 <span class="math display">\[
+a_{ij}=\frac{\sum\limits_{t=1}^{T-1}P(O,h_t=h^i,h_{t+1}=h^j|\bar{\lambda})}{\sum\limits_{j=1}^N\sum\limits_{t=1}^{T-1}P(O,h_t=h^i,h_{t+1}=h^j|\bar{\lambda})}=\frac{\sum\limits_{t=1}^{T-1}P(O,h_t=h^i,h_{t+1}=h^j|\bar{\lambda})}{\sum\limits_{t=1}^{T-1}P(O,h_t=h^i|\bar{\lambda})}
+\]</span></p>
+<p>现在求最后一部分 <span class="math display">\[
+\sum\limits_{H}(\sum\limits_{t=1}^{T}\log b_{h_t}(o_t)) P(O,H|\bar{\lambda})=\sum\limits_{i=1}^N \sum\limits_{k=1}^M \sum\limits_{t=1}^T \log b_{ik}P(O,h_t=h^i,o_t=o^k|\bar{\lambda}),\sum\limits_{k=1}^M b_{ik}=1
+\]</span></p>
+<p>构造拉格朗日函数 <span class="math display">\[
+L=\sum\limits_{i=1}^N \sum\limits_{k=1}^M \sum\limits_{t=1}^T \log b_{ik}P(O,h_t=h^i,o_t=o^k|\bar{\lambda})+\sum\limits_{i=1}^N \gamma_i(\sum\limits_{k=1}^Mb_{jk}-1)
+\]</span></p>
+<p>求偏导 <span class="math display">\[
+\frac{\partial L}{\partial b_{ik}}=\sum\limits_{t=1}^T P(O,h_t=h^i,o_t=o^k|\bar{\lambda})+b_{ik}\sum\limits_{i=1}^N\gamma_i=0
+\]</span></p>
+<p>求和得到<span class="math inline">\(\sum\limits_{i=1}^N\gamma_i = -\sum\limits_{k=1}^M\sum\limits_{t=1}^T P(O,h_t=h^i,o_t=o^k|\bar{\lambda})\)</span></p>
+<p>最后可以得到 <span class="math display">\[
+b_{ik}=\frac{\sum\limits_{t=1}^T P(O,h_t=h^i,o_t=o^k|\bar{\lambda})}{\sum\limits_{k=1}^M\sum\limits_{t=1}^T P(O,h_t=h^i,o_t=o^k|\bar{\lambda})}=\frac{\sum\limits_{t=1}^T P(O,h_t=h^i,o_t=o^k|\bar{\lambda})}{\sum\limits_{t=1}^T P(O,h_t=h^i|\bar{\lambda})}
+\]</span></p>
+<p>按照之前的向前先后算法，计算<span class="math inline">\(t\)</span>时刻处于隐藏状态<span class="math inline">\(h^i\)</span>的概率为<span class="math inline">\(\gamma\)</span>，而<span class="math inline">\(\xi\)</span>表示<span class="math inline">\(t\)</span>时刻从<span class="math inline">\(h^i\)</span>转移到<span class="math inline">\(h^j\)</span>的概率。 <span class="math display">\[
+P(O,h_t=h^i|\lambda)=\gamma_t(i)=\frac{\alpha_t(i)\beta_t(i)}{\sum_{j=1}^N\alpha_t(j)\beta_t(j)}
+\]</span></p>
+<p><span class="math display">\[
+P(O,h_t=h^i,h_{t+1}=h^j|\lambda)=\xi_t(i,j)=\frac{\alpha_t(i)a_{ij}b_j(o_{t+1})\beta_{t+1}(j)}{\sum\limits_{i=1}^N\sum\limits_{j=1}^N\alpha_t(i)a_{ij}b_j(o_{t+1})\beta_{t+1}(j)}
+\]</span></p>
+<p>将上面的两个式子带入之前的偏导结果里面，就得到我们想要的参数了。</p>
+<h2 id="hmm-decoding-problem">HMM decoding problem</h2>
+<p>最后就是HMM的解码问题，一般来说解码都是用viterbi算法来完成。实践上就是每一步都取最大的可能性，然后记下上一个时刻是哪一个隐藏状态有最大的可能性转移到当前状态。</p>
+<p>过程就是</p>
+<p>1、<span class="math inline">\(\delta_1(i) = \pi_i b_i(o_1), i = 1,2,\ldots, N \\ \psi_1(i) = 0, i = 1, 2, \ldots, N\)</span></p>
+<p>2、<span class="math inline">\(\delta_t(i) = \max\limits_{1 \leqslant j \leqslant N}[\delta_{t-1}(j) \alpha_{ji}] b_i(o_t) \\ \psi_t(i) = \arg \max\limits_{1 \leqslant j \leqslant N}[\delta_{t-1}(j)\alpha_{ji}]\)</span></p>
+<p>3、<span class="math inline">\(P = \max\limits_{1 \leqslant j \leqslant N} \delta_T(i) \\ i_T = \arg\max\limits_{1 \leqslant j \leqslant N}[\delta_T(i)]\)</span></p>
+<h1 id="crf">CRF</h1>
+<p>CRF与HMM要解决的问题是类似的，都是要从观测序列中推测出隐藏序列。与HMM不同，CRF是一个典型的有监督学习算法。同样的CRF有一个transition matrix和一个emission matrix。</p>
+<p>CRF要优化的loss函数就是一个序列生成的最大概率。 <span class="math display">\[
+P(y|x) = \frac{1}{Z(x)} \exp \Big(\sum\limits_{i,k} \lambda_k t_k(y_{i-1},y_i, x,i) +\sum\limits_{i,l}\mu_ls_l(y_i, x,i)\Big) \\
+Z(x) =\sum\limits_{y} \exp \Big(\sum\limits_{i,k} \lambda_k t_k(y_{i-1},y_i, x,i) +\sum\limits_{i,l}\mu_ls_l(y_i, x,i)\Big)
+\]</span></p>
+<p>CRF的序列概率计算方式与HMM类似，也是前向-后向算法。这里举一个简单的例子来说明，假设有三个单词，两个隐藏状态。那么emission matrix和transition matrix如下： <span class="math display">\[
+\begin{array}
+{|c|c|c|} \hline \ &amp; l_1 &amp; l_2 \\
+\hline
+w_0 &amp; x_{01} &amp; x_{02} \\
+\hline
+w_1 &amp; x_{11} &amp; x_{12} \\
+\hline
+w_2 &amp; x_{21} &amp; x_{22} \\
+\hline
+\end{array}
+\]</span></p>
+<p><span class="math display">\[
+\begin{array}
+{|c|c|c|} \hline \ &amp; l_1 &amp; l_2 \\
+\hline
+l_1 &amp; t_{11} &amp; t_{12} \\
+\hline
+l_2 &amp; t_{21} &amp; t_{22} \\
+\hline
+\end{array}
+\]</span></p>
+<p>现在一步一步来前向传播运算序列概率，目标是算出<span class="math inline">\(log(e^{S_1} + e^{S_2} + \ldots + e^{S_n})\)</span>。</p>
+<p>首先第一步，第一个词是<span class="math inline">\(w_0\)</span>，我们有两个变量，<span class="math inline">\(obs = [x_{01}, x_{02}]\)</span>, <span class="math inline">\(previous = None\)</span>，所以<span class="math inline">\(\text{total_score} = \log(e^{x_{01}} + e^{x_{02}})\)</span>。</p>
+<p>第二步从<span class="math inline">\(w_0 \to w_1\)</span>，<span class="math inline">\(obs = [x_{11}, x_{12}]\)</span>，<span class="math inline">\(previous = [x_{01}, x_{02}]\)</span>，接下来为了计算方便，我们对obs和previous做一个broadcast，得到下面的结果： <span class="math display">\[
+previous =
+\begin{bmatrix}
+x_{01} &amp; x_{01} \\
+x_{02} &amp; x_{02}
+\end{bmatrix}
+\]</span></p>
+<p><span class="math display">\[
+obs = \begin{bmatrix}
+x_{11} &amp; x_{12} \\
+x_{11} &amp; x_{12}
+\end{bmatrix}
+\]</span></p>
+<p><span class="math display">\[
+score = previous + obs + transition = \begin{bmatrix}
+x_{01} + x_{11} + t_{11} &amp; x_{01} + x_{12} + t_{12} \\
+x_{02} + x_{11} + t_{21} &amp; x_{02} + x_{22} + t_{22}
+\end{bmatrix}
+\]</span></p>
+<p>然后更新previous，得到 <span class="math display">\[previous = [\log(e^{x_{01} + x_{11} + t_{11}} + e^{x_{02} + x_{11} + t_{21}}), \log(e^{x_{01} + x_{12} + t_{12}} + e^{x_{02} + x_{22} + t_{22}})]\]</span></p>
+<p>然后反复迭代得到所有的结果。</p>
+<p>这里有个文章里面的图示非常明显：</p>
+<p><img data-src='https://i.loli.net/2020/05/23/WfS2vaEUcRpnm4C.jpg'></p>
+<p>这样可以完成全部可能路径的概率计算。</p>
+<p>接下来就是跟HMM一样的解码问题，同样采用维特比算法就可以解开隐藏序列。如下图： <img data-src="https://i.loli.net/2020/05/23/VxkRP2KrJlM4zh9.jpg" alt="viterbi1" /> <img data-src="https://i.loli.net/2020/05/23/7iokSZULbumlg59.jpg" alt="viterbi2" /> <img data-src="https://i.loli.net/2020/05/23/Y5G1fDkOIwVndKL.jpg" alt="viterbi3" /> <img data-src="https://i.loli.net/2020/05/23/SgO9lj6z4MywUcG.jpg" alt="viterbi4" /></p>
+<p>这样就完成了CRF的全过程。至于CRF的参数学习过程，只要用梯度下降去学习那个极大似然函数就可以了。</p>
+<h1 id="bilstmcrf">BiLSTM+CRF</h1>
+实际上对于命名实体识别任务而言，每一个词后面用BIOES标注，那么是不是直接就可以用LSTM来分类了。实际上也是可以的，用BiLSTM来做如下图：
+<p align="center">
+<img data-src='https://i.loli.net/2020/05/23/TQK1ZizLWtjERp7.jpg'>
+</p>
+<p>但是纯粹用LSTM来做的话会有一个问题，就是可能输出的分类是不合理的，比如下图：</p>
+<p align="center">
+<img data-src='https://i.loli.net/2020/05/23/cRfSJDgZGHm7oCT.jpg'>
+</p>
+<p>那么这种时候，如果在上层补上CRF的转移矩阵来做限制，就可以得到合理的结果。</p>
+<p align="center">
+<img data-src='https://i.loli.net/2020/05/23/DfpUkGuExnHA9av.png'>
+</p>
+<p>总体而言，我习惯把BiLSTM看做是CRF的改良版，用BiLSTM来替代CRF的emission score学习过程，实现比CRF更好的效果。</p>
+<p>具体的代码可以直接看PyTorch的官方教程，不过里面的是单个记录的训练，大规模训练比较慢，我这里改了一版基于batch训练的可以参考。<a target="_blank" rel="noopener" href="https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/NER/NER-101.ipynb">notebook地址</a>。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/wechatpay.png" alt="Samael Chen WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/dbscan_and_optics/" rel="prev" title="DBSCAN & OPTICS">
+      <i class="fa fa-chevron-left"></i> DBSCAN & OPTICS
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDg5NS83NDQ0"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ner%E5%8F%91%E5%B1%95"><span class="nav-number">1.</span> <span class="nav-text">NER发展</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E9%93%BE"><span class="nav-number">2.</span> <span class="nav-text">马尔科夫链</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hmm"><span class="nav-number">3.</span> <span class="nav-text">HMM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#hmm-likelihood"><span class="nav-number">3.1.</span> <span class="nav-text">HMM likelihood</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hmm-learning-problem"><span class="nav-number">3.2.</span> <span class="nav-text">HMM learning problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hmm-decoding-problem"><span class="nav-number">3.3.</span> <span class="nav-text">HMM decoding problem</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#crf"><span class="nav-number">4.</span> <span class="nav-text">CRF</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#bilstmcrf"><span class="nav-number">5.</span> <span class="nav-text">BiLSTM+CRF</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Samael Chen"
+      src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Samael Chen</p>
+  <div class="site-description" itemprop="description">活该没有性生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:chc199310@gmail.com" title="E-Mail → mailto:chc199310@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamaelChen</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">217k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">3:18</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61310f3070234090" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"samaelchen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="机器学习课程的课程作业。嗯，突然发现一直上理论没有实践，机器学习这样一门实践科学怎么能不实践。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="台大李宏毅机器学习作业——梯度下降">
+<meta property="og:url" content="https://samaelchen.github.io/machine_learning_hw01/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="机器学习课程的课程作业。嗯，突然发现一直上理论没有实践，机器学习这样一门实践科学怎么能不实践。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-10-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-31T16:15:25.579Z">
+<meta property="article:author" content="Samael Chen">
+<meta property="article:tag" content="机器学习,深度学习,PyTorch,MXNet,gluon,统计学习">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://samaelchen.github.io/machine_learning_hw01/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>台大李宏毅机器学习作业——梯度下降 | 碎碎念</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120854058-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-120854058-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a75b41f44b70e58f40edd582552291cf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="碎碎念" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://samaelchen.github.io/machine_learning_hw01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+      <meta itemprop="name" content="Samael Chen">
+      <meta itemprop="description" content="活该没有性生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          台大李宏毅机器学习作业——梯度下降
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-10-11 00:00:00" itemprop="dateCreated datePublished" datetime="2017-10-11T00:00:00+08:00">2017-10-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-01 00:15:25" itemprop="dateModified" datetime="2021-09-01T00:15:25+08:00">2021-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/StatisticalLearning/" itemprop="url" rel="index"><span itemprop="name">统计学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>4.1k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>4 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>机器学习课程的课程作业。嗯，突然发现一直上理论没有实践，机器学习这样一门实践科学怎么能不实践。</p>
+<span id="more"></span>
+<p>课程第一次作业在<a target="_blank" rel="noopener" href="https://docs.google.com/presentation/d/1L1LwpKm5DxhHndiyyiZ3wJA2mKOJTQ2heKo45Me5yVg/edit#slide=id.g1ebd1c9f8d_0_0">这里</a></p>
+<p>课程用的是kaggle玩的一个数据，预测PM2.5，不过因为不是班上的学生，所以我没法提交，就不用这个数据了。可以用kaggle上面的练手数据来搞。这里我就用kaggle上面的Pokemon这个数据来练手。反正就是搞着玩的。</p>
+<p>课程的要求是自己用梯度下降实现一个线性回归，不能用现成的框架，比如Python必备的sklearn，当然同理也不能用MXNet或者TF这样的重武器了。</p>
+<p>用梯度下降来实现的话，其实有一个很简单的，重点就是先实现损失函数和梯度下降。秉持写代码就是先写糙活，再做优化的原则，先开始写一个最直觉的函数。</p>
+<p>首先我们先算一下梯度下降的公式。我们用最简单的MSE作为损失函数。那么公式上就是<span class="math inline">\(MSE = \frac{1}{N} \sum_i(\hat{y}_i - y_i)^2 = \frac{1}{N} \sum_i (\sum_j w_j \cdot x_{i,j} - y_i)^2\)</span>。</p>
+<p>那么我们做梯度下降的时候就是求<span class="math inline">\(\frac{\partial L}{\partial w}\)</span>。出于简单理解考虑，假设我们现在只有一个<span class="math inline">\(w\)</span>，因为多个<span class="math inline">\(w\)</span>的话我们假设每个feature是相互独立的，求偏导的时候跟单个求导数没啥差别。那我们现在假设只有一个<span class="math inline">\(w\)</span>，那么我们现在可以发现一个样本进来的时候，误差是<span class="math inline">\((w \cdot x - y)^2\)</span>，那么我们的梯度就是<span class="math inline">\(2(w \cdot x -y) x\)</span>，那我们可以发现，其实<span class="math inline">\(w \cdot x - y\)</span>就是残差，所以这样一来，我们要实现SGD就很简单了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sgd</span>(<span class="params">X, y_true, w, eta=<span class="number">0.1</span>, epoch=<span class="number">10</span></span>):</span></span><br><span class="line">    rounds = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> rounds &lt; epoch:</span><br><span class="line">        sum_error = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(X)):</span><br><span class="line">            error = <span class="built_in">sum</span>(X.iloc[i, :] * w) - y_true[i]</span><br><span class="line">            <span class="comment"># 根据梯度更新每个参数</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(X.shape[<span class="number">1</span>]):</span><br><span class="line">                w[j] -= (<span class="number">1</span> / X.shape[<span class="number">0</span>]) * eta * error * X.iloc[i, j]</span><br><span class="line">            sum_error += error ** <span class="number">2</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;epoch: &#x27;</span> + <span class="built_in">str</span>(rounds) + <span class="string">&#x27;  weight: &#x27;</span> + <span class="built_in">str</span>(w) + <span class="string">&#x27;  total error: &#x27;</span> + <span class="built_in">str</span>(sum_error))</span><br><span class="line">        rounds += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span>(w)</span><br></pre></td></tr></table></figure>
+<p>这个地方我在梯度的位置加了一个<span class="math inline">\(\frac{1}{N}\)</span>的系数，就是为了让learning rate设置的时候稍微大一点而已，调整参数的时候稍微简单一点点。不过原始SGD调learning rate就很麻烦。</p>
+<p>Pokemon的数据长这样：</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml087.png></p>
+<p>这个数据里面Total等于后面所有属性的和。所以我们可以做这么一个简单的function来试试看我们的梯度下降能不能找出来。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> scipy <span class="keyword">as</span> sp</span><br><span class="line"></span><br><span class="line">data = pd.read_csv(<span class="string">&#x27;Pokemon.csv&#x27;</span>)</span><br><span class="line"></span><br><span class="line">X = data.loc[:<span class="number">560</span>, [<span class="string">&#x27;Total&#x27;</span>, <span class="string">&#x27;HP&#x27;</span>, <span class="string">&#x27;Defense&#x27;</span>, <span class="string">&#x27;Sp. Atk&#x27;</span>, <span class="string">&#x27;Sp. Def&#x27;</span>, <span class="string">&#x27;Speed&#x27;</span>]]</span><br><span class="line">y = np.array(data.loc[:<span class="number">560</span>, <span class="string">&#x27;Attack&#x27;</span>])</span><br><span class="line"></span><br><span class="line">X[<span class="string">&#x27;constant&#x27;</span>] = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sgd</span>(<span class="params">X, y_true, w, eta=<span class="number">0.1</span>, epoch=<span class="number">10</span></span>):</span></span><br><span class="line">    rounds = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> rounds &lt; epoch:</span><br><span class="line">        sum_error = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(X)):</span><br><span class="line">            error = <span class="built_in">sum</span>(X.iloc[i, :] * w) - y_true[i]</span><br><span class="line">            sum_error += error ** <span class="number">2</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(X.shape[<span class="number">1</span>]):</span><br><span class="line">                w[j] -= (<span class="number">1</span> / X.shape[<span class="number">0</span>]) * eta * error * X.iloc[i, j]</span><br><span class="line">        rounds += <span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;epoch: &#x27;</span> + <span class="built_in">str</span>(rounds) + <span class="string">&#x27;  weight: &#x27;</span> + <span class="built_in">str</span>(w) + <span class="string">&#x27;   error: &#x27;</span> + <span class="built_in">str</span>(sum_error))</span><br><span class="line">    <span class="keyword">return</span>(w)</span><br><span class="line"></span><br><span class="line">w = np.random.rand(X.shape[<span class="number">1</span>])</span><br><span class="line"><span class="built_in">print</span>(w)</span><br><span class="line">sgd(X, y, w, <span class="number">0.0001</span>, <span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
+<p>这里我在最后加了一个常数进来，就是一般书上的bias，参数是<span class="math inline">\(w_0\)</span>。如果顺利的话，我们应该看到的是<span class="math inline">\(w = [1, -1, -1, -1, -1, -1, 0]\)</span>或者是这附近的权重向量。</p>
+<p>训练1000轮之后的效果是：</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml088.png></p>
+<p>可以看到最后的weight其实还是挺接近正确答案的，只是常数项没有被消掉。那我们试试看训练5000轮的效果。</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml089.png></p>
+<p>这一次看上去比上一次的好很多。那么是不是真的越多就一定越好呢？回顾了一下自己的代码，发现这里有一个问题，我的<span class="math inline">\(w\)</span>是随机initialize的，那很可能这个也有影响。所以重新做个实验。我们把随机初始化改成初始全部为0，分别跑1000次和5000次，看看是什么效果。（PS：这里提醒一下，因为numpy恶心的一点，所以我们要用float的类型而不能用int，也就是0要表示为0.。否则的话weight会一直保持在0。）</p>
+<p>1000个epoch的效果：</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml090.png></p>
+<p>5000个epoch的效果：</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml091.png></p>
+<p>我们可以看到的是，其实5000轮没比1000轮好出多少。但是相比之前在0-1之间随机初始化的要好出不少，1000轮的结果就比上一次5000轮的好。这也是为什么很多时候机器学习的权重初始化会设计在0附近，或者干脆全部设计为0。</p>
+<p>但是这里有个问题，明明简单线性回归的损失函数是有一个最优解的，而且只有一个最优解，那为什么我们就到不了呢？其实也很好理解，因为快到碗底的时候速度会非常非常的慢，这里的梯度我们类比为速度，那么分解到水平方向的速度就很小。所以这就会有一个非常尴尬的事情，就是说实践上，别说是全局最优了，我们连局部最优都到不了。如果损失函数再复杂一点，我们连saddle point都到不了。那如果我们把步长设得很大呢？如果这样，我们很可能一步跨到对面山上，然后就收敛不了了。</p>
+<p>那现在如果我们做个regularization会怎么样呢？我们这里实现一个<span class="math inline">\(L_2\)</span>，那么其实我们这里的梯度下降就变成了<span class="math inline">\(\frac{2}{N}(w \cdot x -y) x + 2 \lambda w\)</span>，那么我们可以把梯度下降改一下。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sgd</span>(<span class="params">X, y_true, w, eta=<span class="number">0.1</span>, epoch=<span class="number">10</span>, penalty=<span class="number">0.1</span></span>):</span></span><br><span class="line">    rounds = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> rounds &lt; epoch:</span><br><span class="line">        sum_error = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(X)):</span><br><span class="line">            error = <span class="built_in">sum</span>(X.iloc[i, :] * w) - y_true[i]</span><br><span class="line">            sum_error += error ** <span class="number">2</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(X.shape[<span class="number">1</span>]):</span><br><span class="line">                w[j] -= (<span class="number">1</span> / X.shape[<span class="number">0</span>]) * eta * error * X.iloc[i, j] + penalty * w[j]</span><br><span class="line">        rounds += <span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;epoch: &#x27;</span> + <span class="built_in">str</span>(rounds) + <span class="string">&#x27;  weight: &#x27;</span> + <span class="built_in">str</span>(w) + <span class="string">&#x27;   error: &#x27;</span> + <span class="built_in">str</span>(sum_error))</span><br><span class="line">    <span class="keyword">return</span>(w)</span><br></pre></td></tr></table></figure>
+<p>那这里要注意一点，就是说如果我们的penalty设的太大，模型会趋向于保守，换句话说就是权重的更新会比较小，收敛起来会非常非常非常慢。上面的梯度下降里面我们把常数项也做了regularization，那weight初始化全是0，迭代1000轮的效果如下：</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml092.png></p>
+<p>可以看到的是，这边的weight收敛非常慢。现在我们再试一下不对常数项做regularization会怎么样：</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml093.png></p>
+<p>可以看到的是，其实常数项这边加不加regularization对其他的参数影响是不太大的。所以本质上我们没有必要去对bias做regularization。</p>
+<p>既然SGD都实现了，我们干脆把adagrad也实现一下。adagrad其实很容易做，就是在learning rate那里做动作，加上一个系数。所以我们的梯度下降就可以写作：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">adagrad</span>(<span class="params">X, y_true, w, eta=<span class="number">0.1</span>, epoch=<span class="number">10</span></span>):</span></span><br><span class="line">    rounds = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> rounds &lt; epoch:</span><br><span class="line">        sum_error = <span class="number">0</span></span><br><span class="line">        grad = np.array([<span class="number">0.</span>, <span class="number">0.</span>, <span class="number">0.</span>, <span class="number">0.</span>, <span class="number">0.</span>, <span class="number">0.</span>, <span class="number">0.</span>])</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(X)):</span><br><span class="line">            error = <span class="built_in">sum</span>(X.iloc[i, :] * w) - y_true[i]</span><br><span class="line">            sum_error += error ** <span class="number">2</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(X.shape[<span class="number">1</span>]):</span><br><span class="line">                grad[j] += (error * X.iloc[i, j]) ** <span class="number">2</span></span><br><span class="line">                w[j] -= (<span class="number">1</span> / X.shape[<span class="number">0</span>]) * (eta / np.sqrt(grad[j])) * error * X.iloc[i, j]</span><br><span class="line">        rounds += <span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;epoch: &#x27;</span> + <span class="built_in">str</span>(rounds) + <span class="string">&#x27;  weight: &#x27;</span> + <span class="built_in">str</span>(w) + <span class="string">&#x27;   error: &#x27;</span> + <span class="built_in">str</span>(sum_error))</span><br><span class="line">    <span class="keyword">return</span>(w)</span><br></pre></td></tr></table></figure>
+<p>利用adagrad，我们可以一开始就把eta设大一点，我这里设到10，然后迭代100轮就得到了：</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml094.png></p>
+<p>使用adagrad这样的算法好处就是learning rate比较好调，一开始给一个大一点的，然后迭代次数多一点就好了。原始SGD其实learning rate不是那么好调的。</p>
+<p>框架有了，其实后面要试增加样本量，去掉常数项啥的就很方便了。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/wechatpay.png" alt="Samael Chen WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/machine_learning_step15/" rel="prev" title="台大李宏毅机器学习-迁移学习">
+      <i class="fa fa-chevron-left"></i> 台大李宏毅机器学习-迁移学习
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/machine_learning_step16/" rel="next" title="台大李宏毅机器学习——RNN">
+      台大李宏毅机器学习——RNN <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDg5NS83NDQ0"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Samael Chen"
+      src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Samael Chen</p>
+  <div class="site-description" itemprop="description">活该没有性生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:chc199310@gmail.com" title="E-Mail → mailto:chc199310@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamaelChen</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">217k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">3:18</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61310f3070234090" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

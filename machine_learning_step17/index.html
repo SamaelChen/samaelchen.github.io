@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"samaelchen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="集成算法基本上现在已经成为机器学习的标准套路，单一模型的几乎已经销声匿迹。集成算法有两大分类，一类是bagging，一类是boosting。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="台大李宏毅机器学习——集成算法">
+<meta property="og:url" content="https://samaelchen.github.io/machine_learning_step17/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="集成算法基本上现在已经成为机器学习的标准套路，单一模型的几乎已经销声匿迹。集成算法有两大分类，一类是bagging，一类是boosting。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-10-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-31T16:15:25.580Z">
+<meta property="article:author" content="Samael Chen">
+<meta property="article:tag" content="机器学习,深度学习,PyTorch,MXNet,gluon,统计学习">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://samaelchen.github.io/machine_learning_step17/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>台大李宏毅机器学习——集成算法 | 碎碎念</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120854058-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-120854058-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a75b41f44b70e58f40edd582552291cf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="碎碎念" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://samaelchen.github.io/machine_learning_step17/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+      <meta itemprop="name" content="Samael Chen">
+      <meta itemprop="description" content="活该没有性生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          台大李宏毅机器学习——集成算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-10-27 00:00:00" itemprop="dateCreated datePublished" datetime="2017-10-27T00:00:00+08:00">2017-10-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-01 00:15:25" itemprop="dateModified" datetime="2021-09-01T00:15:25+08:00">2021-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/StatisticalLearning/" itemprop="url" rel="index"><span itemprop="name">统计学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>5.7k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>5 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>集成算法基本上现在已经成为机器学习的标准套路，单一模型的几乎已经销声匿迹。集成算法有两大分类，一类是bagging，一类是boosting。</p>
+<span id="more"></span>
+<h1 id="bagging">bagging</h1>
+<p>bagging是一种比较简单的集成策略，做法就是原来有<span class="math inline">\(N\)</span>个sample，现在sample出<span class="math inline">\(N&#39;\)</span>个sample，重复这样的动作多次，就可以得到很多个模型，然后如果是regression就做average，如果是classification就做voting。所以这样的策略是非常非常简单的。那这么做的目的其实是为了降低复杂模型的variance。这个可以回过头看之前的内容。所以bagging并不会解决overfitting，也不会起到什么加强模型预测能力的效果。只能说，用bagging的方法，模型会比较平滑。</p>
+<p>那什么模型非常复杂容易overfitting呢？其实决策树是最容易overfitting的算法，NN反而没有那么容易overfitting，只是说NN建的模型多，variance比较大一点而已。</p>
+<p>这边有个<a target="_blank" rel="noopener" href="http://speech.ee.ntu.edu.tw/~tlkagk/courses/MLDS_2015_2/theano/miku">实验数据</a>，这个数据是miku的一个黑白图，如果正确分类就可以画出miku。</p>
+<p>如果我们用一个单一模型，我们得到的是：</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml122.png></p>
+<p>当树深度一点点增加到20层的时候，就可以完美画出miku。</p>
+<p>那如果用bagging，也就是random forest的方法，我们得到的是：</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml123.png></p>
+<p>我们可以跟上面的结果做一个对比，可以发现，单一的树画出来的miku没有那么平滑。用random forest画出来的结果相对比较平滑。</p>
+<h1 id="boosting">boosting</h1>
+<p>boosting是比bagging要强大的一种策略，bagging只是平滑复杂函数，而boosting是将大量的弱分类器集成为一个强分类器。adaboost是boosting算法里面的典型。</p>
+<p>adaboosting的策略是，首先建一个分类器<span class="math inline">\(f_1(x)\)</span>，然后根据<span class="math inline">\(f_1(x)\)</span>的分类结果，错误分类的样本权重变大，正确分类的样本权重调低，调整到正确率差不多50%，然后这样re-weighted的结果拿来训练第二个分类器<span class="math inline">\(f_2(x)\)</span>。这样一直重复多次，将这些弱分类器都combine起来就是最终的强分类器。这里要跟bagging对比一下，boosting是没有resample数据的，只是改变了weight。那么现在的大杀器xgboost和lightgbm其实都是站着前人的基础上，继承了boosting和bagging的特性，也可以在boosting的时候做bagging的事情。</p>
+<p>下图是我们做boosting的一个示意：</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml124.png></p>
+<p>我们一开始所有样本的weight都是一致的，训练了一个分类器，错误率<span class="math inline">\(\varepsilon_1 = 0.25\)</span>，我们重新修改weight，把错误分类的weight改到<span class="math inline">\(\sqrt{3}\)</span>，正确分类的修改到<span class="math inline">\(\frac{1}{\sqrt{3}}\)</span>，我们就可以把错误率调到<span class="math inline">\(\varepsilon_1&#39; = 0.5\)</span>。然后我们用这个新的weight来训练第二个模型，如此循环往复。</p>
+<p>数学上来看这件事情是这样的，原本我们的loss function是<span class="math inline">\(\frac{\delta(f_1(x) \ne \hat{y}^n)}{n}\)</span>，加权的loss function是<span class="math inline">\(\frac{\sum_n u_n^1 \delta(f_1(x_n) \ne y_n)}{\sum_n u_n}\)</span>。这里做了一个归一化，因为所有的weight加起来未必等于1。然后要做的事情就是调整<span class="math inline">\(u_i^1\)</span>使得<span class="math inline">\(u_i^2\)</span>能让<span class="math inline">\(f_1\)</span>失效。不断的迭代其实就是把<span class="math inline">\(u_i^{t-1}\)</span>调整到<span class="math inline">\(u_i^{t}\)</span>，使得上一个模型失效。那实际上就是当<span class="math inline">\(t\)</span>轮模型进行预测，分类正确，weight除以<span class="math inline">\(d^t\)</span>，分类错误weight乘以<span class="math inline">\(d^t\)</span>。</p>
+<p>那么每一步的<span class="math inline">\(d\)</span>应该是多少呢？因为我们要保证这个数可以让函数的误分类率刚好被调整到0.5左右。我们可以推导一下，其实非常简单。首先科普一下<span class="math inline">\(\delta\)</span>函数，这里的<span class="math inline">\(\delta (f(x), y)\)</span>表示的是，当<span class="math inline">\(f(x) = y\)</span>时为0，不等为1。所以我们可以知道<span class="math inline">\(\varepsilon_1到\varepsilon_2\)</span>的过程中，分类正确的<span class="math inline">\(u_i\)</span>全变成<span class="math inline">\(u_i^1 / d^1\)</span>，错误的变成<span class="math inline">\(u_i^1 \times d^1\)</span>。所以原来的结果是： <span class="math display">\[
+\varepsilon_1 = \frac{\sum_n u_n^1 \delta(f_1(x_n) \ne y_n)}{\sum_n u_n^1}
+\]</span> 现在的结果是： <span class="math display">\[
+\varepsilon_2 = \frac{\sum_n u_n^2 \delta(f_2(x_n) \ne y_n)}{\sum_n u_n^2}
+\]</span> 那么其中的<span class="math inline">\(\sum_n u_n^2 = \sum_{f(x) = y} u_n^1 / d^1 + \sum_{f(x) \ne y} u_n^1 \times d^1\)</span>。而分子部分就等于<span class="math inline">\(\sum_{f(x) \ne y} u_n^1 \times d^1\)</span>。现在我们要<span class="math inline">\(\varepsilon_2 = 0.5\)</span>，可以知道，就是让<span class="math inline">\(\sum_{f(x) \ne y} u_n^1 \times d^1 = \sum_{f(x) = y} u_n^1 / d^1\)</span>。因为<span class="math inline">\(d^1\)</span>是常数，可以提取出来，然后<span class="math inline">\(\sum_{f(x) = y} u_n^1 = \sum_n u^1_n (1-\varepsilon_1)，\sum_{f(x) \ne y} u_n^1 = \sum_n u^1_n \varepsilon_1\)</span>。刚好<span class="math inline">\(\sum_n u^1_n\)</span>又是常数，再消掉，我们可以轻松得到<span class="math inline">\(d^1 = \sqrt{\frac{1-\varepsilon_1}{\varepsilon_1}}\)</span>。这里我们需要做乘法和除法，虽然对程序而言问题不大，但是公式上不是那么好看。我们可以将这个系数改成<span class="math inline">\(a^t = \ln(d^t)\)</span>这样一来，我们就可以把公式改成 <span class="math display">\[
+u^{t+1}_n = u^t \times \exp(-a^t) \text{ if } f(x) = y \\
+u^{t+1}_n = u^t \times \exp(a^t) \text{ if } f(x) \ne y
+\]</span> 然后我们又发现，如果我们做二分类的问题，我们可以将<span class="math inline">\(y\)</span>的取值改为<span class="math inline">\(\pm 1\)</span>，这样一来，我们上面的公式就可以化简到一个非常舒服的样子： <span class="math display">\[
+u^{t+1}_n = u^t \times \exp(- y f_t(x) a^t)
+\]</span></p>
+<p>那么adaboost基本上的工作原理就是这样。那么最后我们得到的分类函数就是之前所有弱分类器的集成版： <span class="math display">\[
+H(x) = \text{sign}(\sum^T_t a^t f_t(x))
+\]</span></p>
+<p>现在的问题就是，adaboost为什么可以收敛呢？我们知道adaboost的error rate函数是 <span class="math display">\[
+\frac{1}{N} \sum_n \delta(H(x_n) \ne y_n)
+\]</span> 我们定义一个函数<span class="math inline">\(g(x) = \sum_{t=1}^T a^t f_t(x)\)</span>，那上面的式子实际上就是 <span class="math display">\[
+\frac{1}{N} \sum_n \delta(y_n \times g(x_n) &lt; 0)
+\]</span> 然后这里我们定一个exponential loss function，就是<span class="math inline">\(\exp(-y_n \times g(x_n))\)</span>。这里很直觉的，错误率函数是小于等于这个，所以我们可以得到： <span class="math display">\[
+\frac{1}{N} \sum_n \delta(y_n \times g(x_n) &lt; 0) \le \frac{1}{N} \sum_n(\exp(-y_n \times g(x_n)))
+\]</span> 实际上这个upper-bound是非常宽松的一个限制，只要让这个upper-bound收敛，那么我们的错误率就一定会收敛。</p>
+<p>怎么做到呢？我们回过头看之前的数据，在更新<span class="math inline">\(u^t\)</span>的时候，我们用到了<span class="math inline">\(\exp(-y_n f_t(x_n))\)</span>，而<span class="math inline">\(g(x)\)</span>是<span class="math inline">\(f(x)\)</span>的最终加权平均的集成版，所以我们尝试将所有的<span class="math inline">\(u\)</span>加起来会怎么样？所有的<span class="math inline">\(u\)</span>加起来我们用<span class="math inline">\(Z\)</span>表示，因为<span class="math inline">\(u_1 = 1\)</span>，<span class="math inline">\(u_{t+1} = u_t \exp(-y f_t(x) a_t)\)</span>，这是一个等比数列，所以 <span class="math display">\[
+u_{T+1} = \prod_{t=1}^T \exp(-y f_t(x) a_t)
+\]</span> 所以 <span class="math display">\[
+\begin{align}
+Z_{T+1} &amp;= \sum_n \prod_{t=1}^T \exp(-y_n f_t(x_n) a_t) \\
+&amp;= \sum_n \exp (-y_n \sum_{t=1}^T(f_t(x_n) a_t))
+\end{align}
+\]</span> 然后我们发现，尾巴部分的其实就是<span class="math inline">\(g(x)\)</span>。于是我们就把上面的upper-bound跟<span class="math inline">\(Z\)</span>统一了起来，得到： <span class="math display">\[
+\frac{1}{N} \sum_n \delta(y_n \times g(x_n) &lt; 0) \le \frac{1}{N} \sum_n(\exp(-y_n \times g(x_n))) = \frac{1}{N} Z_{T+1}
+\]</span> 然后要证明的就是<span class="math inline">\(Z_{T+1}\)</span>会越来越小。</p>
+<p>因为 <span class="math display">\[
+\begin{align}
+Z_{t+1} &amp;= Z_{t} \varepsilon_t \exp(a_t) + Z_{t} (1 - \varepsilon_t) \exp(-a_t) \\ &amp;= Z_{t} \varepsilon_t \sqrt{\frac{1-\varepsilon_t}{\varepsilon_t}} + Z_{t} (1 - \varepsilon_t) \sqrt{\frac{\varepsilon_t}{1 - \varepsilon_t}} \\ &amp;= 2 \times Z_{t} \times \sqrt{\varepsilon_t(1-\varepsilon_t)}。
+\end{align}
+\]</span> 所以我们可以 得到<span class="math inline">\(Z_{T} = N \prod_{t=1}^T 2 \sqrt{\varepsilon_t(1-\varepsilon_t)}\)</span>。因为<span class="math inline">\(\varepsilon\)</span>只有刚好取到0.5的时候才会等于1，否则会一路收敛，越来越小。</p>
+<p>然后我们可以看到gradient boosting这种方法。事实上，gradient boosting优化的方向不再是对样本，而是直接作用于function。如果我们现在接受一个function其实就是一个weight的vector，那么其实我们就是可以对function求偏导的。我们从梯度下降的角度来看这个问题，那么我们在做的事情就是 <span class="math display">\[
+g_t(x) = g_{t-1}(x) - \eta \frac{\partial L}{\partial g(x)} |_{g(x) = g_{t-1}(x)}
+\]</span> 但是换个角度，从boosting的角度来看，我们其实boosting的过程是每一次找一个<span class="math inline">\(f_t(x)\)</span>和<span class="math inline">\(a_t\)</span>，使得最终的模型<span class="math inline">\(g_t(x)\)</span>更好。这个过程就是： <span class="math display">\[
+g_t(x) = g_{t-1}(x) + a_t f_t(x)
+\]</span> 考虑到跟上梯度的过程，我们可以知道，其实我们希望梯度的方向跟我们boosting优化的方向最好能够是一样的。如果这里我们的loss function选择的是exponential loss，那么loss function就是<span class="math inline">\(\sum_n \exp(-y_n g(x_n))\)</span>， 梯度就是<span class="math inline">\(\sum_n \exp(-y_n g(x_n))(-y_n)\)</span>，刚好跟梯度前面的负号抵消掉。在这种情况下，如果要让二者的方向一样，我们可以用这样的公式来表示： <span class="math display">\[
+\sum_n \exp(-y_n g_{t-1}(x_n)) y_n f_t(x)
+\]</span> 当这个公式越大，表示二者的方向越一致。在adaboost中，<span class="math inline">\(\sum_n \exp(-y_n g_{t-1}(x_n))\)</span>这个刚好就是我们在<span class="math inline">\(t\)</span>轮得到的样本权重。</p>
+<p>回到损失函数这里，我们的损失函数是： <span class="math display">\[
+\begin{align}
+L(g) &amp;= \sum_n \exp(-y_n g_t(x_n)) \\
+&amp;= \sum_n \exp(-y_n (g_{t-1}(x_n) + a_t f_t(x_n))) \\
+&amp;= \sum_n \exp(-y_n g_{t-1}(x_n)) \exp(-y_n a_t f_t(x_n)) \\
+&amp;= \sum_{f_t(x) \ne y} \exp(-y_n g_{t-1}(x_n)) \exp(a_t) + \sum_{f_t(x) = y} \exp(-y_n g_{t-1}(x_n)) \exp(-a_t)
+\end{align}
+\]</span> 我们希望得到的是<span class="math inline">\(\frac{\partial L}{\partial a_t} = 0\)</span>，因为 <span class="math display">\[
+\begin{align}
+L &amp;= \sum_n \exp(-y_n g_t(x_n)) \\
+&amp;= Z_{t+1} \\
+&amp;= Z_t \varepsilon_t \exp(a_t) + Z_t (1-\varepsilon_t) \exp(-a_t)
+\end{align}
+\]</span> 前面的系数<span class="math inline">\(Z_t\)</span>跟<span class="math inline">\(a_t\)</span>没关系直接消掉，然后求导数我们得到的就是： <span class="math display">\[
+\frac{\partial L}{\partial a_t} = \varepsilon_t \exp(a_t) - (1-\varepsilon_t) \exp(-a_t) = 0
+\]</span> 这样我们就可以求出来<span class="math inline">\(a_t = \ln \sqrt{\frac{1-\varepsilon_t}{\varepsilon_t}}\)</span>刚好就是adaboost。</p>
+<p>实际上gradient boosting是可以改变loss function的，adaboost就是一个特殊的gradient boosting。台大另一个老师，林轩田的课程里面是有更general的介绍。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/wechatpay.png" alt="Samael Chen WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/machine_learning_step16/" rel="prev" title="台大李宏毅机器学习——RNN">
+      <i class="fa fa-chevron-left"></i> 台大李宏毅机器学习——RNN
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/machine_learning_step18/" rel="next" title="台大李宏毅机器学习——SVM">
+      台大李宏毅机器学习——SVM <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDg5NS83NDQ0"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#bagging"><span class="nav-number">1.</span> <span class="nav-text">bagging</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#boosting"><span class="nav-number">2.</span> <span class="nav-text">boosting</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Samael Chen"
+      src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Samael Chen</p>
+  <div class="site-description" itemprop="description">活该没有性生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:chc199310@gmail.com" title="E-Mail → mailto:chc199310@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamaelChen</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">217k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">3:18</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61310f3070234090" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

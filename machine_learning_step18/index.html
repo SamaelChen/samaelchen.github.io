@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"samaelchen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="机器学习的算法太多了，但是很多算法之间的差异实际上不大。SVM是曾经风靡一时，一度虐杀神经网络的算法，不过DL出现以后，没落了不少啊。真是三十年河东三十年河西。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="台大李宏毅机器学习——SVM">
+<meta property="og:url" content="https://samaelchen.github.io/machine_learning_step18/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="机器学习的算法太多了，但是很多算法之间的差异实际上不大。SVM是曾经风靡一时，一度虐杀神经网络的算法，不过DL出现以后，没落了不少啊。真是三十年河东三十年河西。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-10-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-31T16:15:25.580Z">
+<meta property="article:author" content="Samael Chen">
+<meta property="article:tag" content="机器学习,深度学习,PyTorch,MXNet,gluon,统计学习">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://samaelchen.github.io/machine_learning_step18/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>台大李宏毅机器学习——SVM | 碎碎念</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120854058-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-120854058-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a75b41f44b70e58f40edd582552291cf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="碎碎念" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://samaelchen.github.io/machine_learning_step18/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+      <meta itemprop="name" content="Samael Chen">
+      <meta itemprop="description" content="活该没有性生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          台大李宏毅机器学习——SVM
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-11-01 00:00:00" itemprop="dateCreated datePublished" datetime="2017-11-01T00:00:00+08:00">2017-11-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-01 00:15:25" itemprop="dateModified" datetime="2021-09-01T00:15:25+08:00">2021-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/StatisticalLearning/" itemprop="url" rel="index"><span itemprop="name">统计学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>4k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>4 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>机器学习的算法太多了，但是很多算法之间的差异实际上不大。SVM是曾经风靡一时，一度虐杀神经网络的算法，不过DL出现以后，没落了不少啊。真是三十年河东三十年河西。</p>
+<span id="more"></span>
+<p>这里简单学习一下SVM。SVM跟其他的机器学习算法的差别在于，第一，loss function不一样，第二，有一个kernel function。其中的kernel function是大杀器。</p>
+<p>现在我们假想我们要学的是一个二分类的问题，我们回顾一下几种损失函数。最开始的时候，我们学的是平方误差，也就是MSE，在二分类问题上，我们想要达到的效果就是当<span class="math inline">\(y=1\)</span>的时候，<span class="math inline">\(f(x)\)</span>越接近1越好，同理，<span class="math inline">\(y=-1\)</span>的时候，<span class="math inline">\(f(x)\)</span>越接近-1越好。那么基于square error，我们可以得到： <span class="math display">\[
+\begin{cases}
+(f(x) - 1)^2 &amp; \mbox{if } y = 1 \\
+(f(x) + 1)^2 &amp; \mbox{if } y = -1
+\end{cases}
+\]</span> 那其实上面两个式子可以统一成<span class="math inline">\((yf(x) - 1)^2\)</span>。</p>
+<p>那逻辑回归的loss function是cross entropy，那实际上也可以写作是<span class="math inline">\(\ln(1+\exp(-yf(x)))\)</span>。之前的adaboost的loss function我们也可以用exponential loss来表示，也就是<span class="math inline">\(\exp(-yf(x))\)</span>，那么我们将这几种loss function跟最简单的<span class="math inline">\(\delta(f(x) \ne y)\)</span>对比一下：</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml125.png></p>
+<p>那我们回过头看一下，如果是用<span class="math inline">\(\delta\)</span>函数，那么我们根本就没有办法求梯度。而如果我们用square loss，我们可以发现，左右两边的loss都很大，但是实际上，当<span class="math inline">\(f(x)\)</span>跟<span class="math inline">\(y\)</span>的方向一致，两个乘积非常大，本质上loss应该趋近于0才对，所以square loss不是非常合适。那另外的logistics loss跟exponential loss，都可以做到越远越好。另外这里需要注意一下，为了让logistics loss能够成为<span class="math inline">\(\delta\)</span>函数的upper bound，我们会将原来的公式除以<span class="math inline">\(\ln 2\)</span>。</p>
+<p>那么SVM呢？SVM用的是hinge loss，hinge loss表示为：<span class="math inline">\(\max(0, 1-yf(x))\)</span>。那hinge loss的一个好处就是，当<span class="math inline">\(f(x)\)</span>跟<span class="math inline">\(y\)</span>一致，就可以了，那么hinge loss的好处就是，hinge loss对异常值比较不敏感，差不多就好了，而cross entropy跟exponential loss都会拼命去拟合异常值。</p>
+<p>那linear SVM实际上就是logistics regression把loss function换成hinge loss。所以假设也是： <span class="math display">\[
+f(x) = \sum_i w_i x_i + b
+\]</span> 而loss function就是： <span class="math display">\[
+L(f) = \sum_n(l(f(x_n), y_n)) + \lambda \|w_i\|_2
+\]</span> 那么，实际上，如果我们神经元用了一个linear SVM，一样也是可以做deep learning的。所以，嗯，别整天BB自己在做DL，好好学基础再BB。</p>
+<p>那么SVM的loss function不是处处可微分的，有没有可能做梯度下降呢。实际上，DL中的ReLU函数都可以，所以SVM实际上也是可以做的。那求导的过程是这样的： <span class="math display">\[
+\frac{\partial l(f(x_n), y_n)}{\partial wi} = \frac{\partial l(f(x_n), y_n)}{\partial f(x_n)} \frac{\partial f(x_n)}{\partial w_i}
+\]</span> 那其实<span class="math inline">\(\frac{\partial f(x_n)}{\partial w_i}\)</span>就是<span class="math inline">\(x_n^i\)</span>。</p>
+<p>那<span class="math inline">\(\frac{\partial l(f(x_n), y_n)}{\partial f(x_n)}\)</span>怎么计算呢，这是一个分段函数，所以分段求导： <span class="math display">\[
+\frac{\partial \max(0, 1 - y_n f(x_n))}{\partial f(x_n)} =
+\begin{cases}
+-y_n &amp; \mbox{if } y_n f(x_n) &lt; 1 \\
+0 &amp; \mbox{if } y_n f(x_n) \ge 1
+\end{cases}
+\]</span> 所以实际上linear SVM的梯度就是： <span class="math display">\[
+\frac{\partial L(f)}{\partial w_i} = \sum_n -\delta(y_n f(x_n) &lt; 1) y_n x_n^i
+\]</span></p>
+<p>现在我们回过头看一下，因为用梯度下降，所以我们可以用一个linear combination来表示<span class="math inline">\(w\)</span>，也就是表示为：<span class="math inline">\(w^* = \sum_n \alpha_n^* x_n\)</span>。那实际上可以这样表示是因为： <span class="math display">\[
+w_i^t = w_i^{t-1} - \eta \sum_n -\delta(y_n f(x_n) &lt; 1) y_n x_n^i
+\]</span> 这个式子如果将<span class="math inline">\(w\)</span>串成一个vector来看，那么就是 <span class="math display">\[
+w^t = w^{t-1} - \eta \sum_n -\delta(y_n f(x_n) &lt; 1) y_n x_n
+\]</span> 那实际上这个迭代到最后，<span class="math inline">\(w\)</span>就是<span class="math inline">\(x\)</span>的一个linear combination。这样一来，我们就可以把<span class="math inline">\(w\)</span>直接表示为<span class="math inline">\(w = \boldsymbol{X \alpha}\)</span>。那我们因为用的是hinge loss，所以正确分类的sample就不会再提供梯度，所以<span class="math inline">\(\boldsymbol{\alpha}\)</span>是一个sparse的向量，这个向量我们就叫做support vector。这里要注意一点，如果没有做特殊说明，所有的vector这里都是表示列向量，所以这边的<span class="math inline">\(\boldsymbol{X}\)</span>的行表示feature，列表示sample。</p>
+<p>现在因为我们的模型是linear的，所以<span class="math inline">\(f(x) = w^{\top} x = \boldsymbol{\alpha}^{\top} \boldsymbol{X}^{\top} x = \sum_n \alpha_n K(x_n, x)\)</span>，这样我们就把kernel function带出来了。</p>
+<p>kernel function的好处就是，非常方便快速可以做到feature transform。比如说，我们的kernel用的是polynomial，那么我们就是将<span class="math inline">\(x\)</span>投影到<span class="math inline">\(\phi(x)\)</span>。比如说我们要做的一个polynomial是将<span class="math inline">\(\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}\)</span>变成<span class="math inline">\(\begin{bmatrix} x_1^2 \\ \sqrt{2} x_1 x_2 \\ x_2^2 \end{bmatrix}\)</span>，那么不用kernel function的话，我们需要先做feature transform，把所有的feature变成这样，然后计算。现在因为有了kernel function，所以我们要做的事情就很简单，我们只要做<span class="math inline">\(\phi(x)\)</span>跟对应的<span class="math inline">\(\phi(z)\)</span>的inner product就可以了。也就是： <span class="math display">\[
+\begin{align}
+K(x, z) &amp;= \phi(x) \cdot \phi(z) = \begin{bmatrix} x_1^2 \\ \sqrt{2} x_1 x_2 \\ x_2^2 \end{bmatrix} \cdot \begin{bmatrix} z_1^2 \\ \sqrt{2} z_1 z_2 \\ z_2^2 \end{bmatrix} \\
+&amp;= x_1^2 z_1^2 + 2 x_1 x_2 z_1 z_2 + x_2^2 z_2^2 \\
+&amp;= (x_1 z_1 + x_2 z_2)^2 \\
+&amp;= (x \cdot z)^2
+\end{align}
+\]</span> 所以有了这个kernel function，我们就可以很快速做到feature transform。那上面这个变化就是做了一个二阶的多项式变化。</p>
+<p>那如果我们用的是radial的kernel，实际上我们就做到了无穷多阶的polynomial。怎么说呢？radial的kernel做的事情是<span class="math inline">\(K(x, z) = \exp(-\frac{1}{2} \|x - z\|_2)\)</span>，我们化简一下这个公式： <span class="math display">\[
+\begin{align}
+K(x, z) &amp;= \exp(-\frac{1}{2} \|x - z\|_2) \\
+&amp;= \exp(-\frac{1}{2} \|x\|_2 -\frac{1}{2} \|z\|_2 + x \cdot z) \\
+&amp;= \exp(-\frac{1}{2} \|x\|_2) \exp(-\frac{1}{2} \|z\|_2) \exp(x \cdot z) \\
+&amp;= C_x C_z \exp(x \cdot z)
+\end{align}
+\]</span> 现在开始表演了，我们得到<span class="math inline">\(\exp(x \cdot z)\)</span>，根据泰勒展开，我们得到的是<span class="math inline">\(\sum_0^{\infty} \frac{(x \cdot z)^i}{i!}\)</span>，这就是一个无穷多维的多项式了，也就意味着，我们将原来的feature映射到了无穷多维的空间中去，而不需要提前做feature transform。不过这里的问题就是，因为维度太高了，一来运算慢，二来很可能过拟合。</p>
+<p>最后介绍一个很常见的kernel，就是sigmoid kernel。sigmoid kernel的公式是<span class="math inline">\(K(x, z) = tanh(x \cdot z)\)</span>，那在实作的时候，其实我们的公式是这样的<span class="math inline">\(K(x_n, x)\)</span>，所以我们可以将这个过程看作是一个单层的神经网络，结构如下：</p>
+<p><img data-src=https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/blog/ml126.png></p>
+<p>也就是说将每个<span class="math inline">\(x\)</span>的各个维度的值当做为weight，所以有多少样本就有多少neuron。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/wechatpay.png" alt="Samael Chen WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/machine_learning_step17/" rel="prev" title="台大李宏毅机器学习——集成算法">
+      <i class="fa fa-chevron-left"></i> 台大李宏毅机器学习——集成算法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/machine_learning_hw02/" rel="next" title="台大李宏毅机器学习作业——分类算法">
+      台大李宏毅机器学习作业——分类算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDg5NS83NDQ0"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Samael Chen"
+      src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Samael Chen</p>
+  <div class="site-description" itemprop="description">活该没有性生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:chc199310@gmail.com" title="E-Mail → mailto:chc199310@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamaelChen</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">217k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">3:18</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61310f3070234090" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"samaelchen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="我如期来更新啦！！！聚类算法是很常用的一种算法，不过最常见的就是KMeans了，虽然很多人都会用，不过讲道理，如果是调用现成机器学习库里面的KMeans的话，我敢保证90%的人答不上来具体的是什么算法。相信我，库里的KMeans跟教科书讲的那个随机取初始点的KMeans不是一个算法哟～ 因为KMeans依赖K，但是我怎么知道K要用多少呢？另外，KMeans受限于算法本身，对于球状的数据效果较好，但">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DBSCAN &amp; OPTICS">
+<meta property="og:url" content="https://samaelchen.github.io/dbscan_and_optics/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="我如期来更新啦！！！聚类算法是很常用的一种算法，不过最常见的就是KMeans了，虽然很多人都会用，不过讲道理，如果是调用现成机器学习库里面的KMeans的话，我敢保证90%的人答不上来具体的是什么算法。相信我，库里的KMeans跟教科书讲的那个随机取初始点的KMeans不是一个算法哟～ 因为KMeans依赖K，但是我怎么知道K要用多少呢？另外，KMeans受限于算法本身，对于球状的数据效果较好，但">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/DBSCAN-Illustration.svg/1280px-DBSCAN-Illustration.svg.png">
+<meta property="og:image" content="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/blog/optics_001.png">
+<meta property="og:image" content="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/blog/optics_002.jpg">
+<meta property="og:image" content="https://nbviewer.jupyter.org/github/scikit-learn-contrib/hdbscan/blob/master/notebooks/distance4.svg">
+<meta property="og:image" content="https://hdbscan.readthedocs.io/en/latest/_images/how_hdbscan_works_12_1.png">
+<meta property="og:image" content="https://hdbscan.readthedocs.io/en/latest/_images/how_hdbscan_works_15_1.png">
+<meta property="article:published_time" content="2019-05-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-31T16:15:25.576Z">
+<meta property="article:author" content="Samael Chen">
+<meta property="article:tag" content="机器学习,深度学习,PyTorch,MXNet,gluon,统计学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/DBSCAN-Illustration.svg/1280px-DBSCAN-Illustration.svg.png">
+
+<link rel="canonical" href="https://samaelchen.github.io/dbscan_and_optics/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>DBSCAN & OPTICS | 碎碎念</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120854058-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-120854058-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a75b41f44b70e58f40edd582552291cf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="碎碎念" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://samaelchen.github.io/dbscan_and_optics/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+      <meta itemprop="name" content="Samael Chen">
+      <meta itemprop="description" content="活该没有性生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DBSCAN & OPTICS
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-05-02 00:00:00" itemprop="dateCreated datePublished" datetime="2019-05-02T00:00:00+08:00">2019-05-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-01 00:15:25" itemprop="dateModified" datetime="2021-09-01T00:15:25+08:00">2021-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/StatisticalLearning/" itemprop="url" rel="index"><span itemprop="name">统计学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>7.6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>7 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>我如期来更新啦！！！聚类算法是很常用的一种算法，不过最常见的就是KMeans了，虽然很多人都会用，不过讲道理，如果是调用现成机器学习库里面的KMeans的话，我敢保证90%的人答不上来具体的是什么算法。相信我，库里的KMeans跟教科书讲的那个随机取初始点的KMeans不是一个算法哟～</p>
+<p>因为KMeans依赖K，但是我怎么知道K要用多少呢？另外，KMeans受限于算法本身，对于球状的数据效果较好，但是不规则形状的就不行了。这种情况下，相对而言，基于密度的聚类算法就比较好用了。sklearn里面现在是放了一个DBSCAN，下一版会更新OPTICS。刚好最近都用了，这里把DBSCAN跟OPTICS算法复现一遍。</p>
+<span id="more"></span>
+<h1 id="dbscan">DBSCAN</h1>
+<p>DBSCAN算法的原始论文是96年的这篇<a target="_blank" rel="noopener" href="https://www.aaai.org/Papers/KDD/1996/KDD96-037.pdf">《A Density-Based Algorithm for Discovering Clusters in Large Spatial Database with Noise》</a>。</p>
+<p>DBSCAN是一种基于密度的聚类算法，也就是说，密度高的区域自动聚成一类。这样一来，我们就避免了人为去设定群组数量的问题，算法可以自动发现群组数量。另外用这种方法，如果一个sample不在高密度区域，就有可能被判定为异常值，那么也可以拿来作为异常值检验的方法。</p>
+<p>DBSCAN的思路非常简单，有两个参数，一个是<span class="math inline">\(\varepsilon\)</span>，另一个是minimum points。这里首先定义DBSCAN的几个核心概念，一个是<span class="math inline">\(\varepsilon\)</span>-neighborhood，另一个是core object，还有就是reachable。</p>
+<p>首先是<span class="math inline">\(\varepsilon\)</span>-neighborhood。DBSCAN开始的时候会随机选取一个初始点，然后按照<span class="math inline">\(\varepsilon\)</span>的距离寻找临近点，这些点的集合叫做<span class="math inline">\(\varepsilon\)</span>-neighborhood。参数里面的minimum points就是限定这个点的集合的。minimum points限定了这个集合最小需要包含多少样本点，<span class="math inline">\(\varepsilon\)</span>则是限定了要用多大的范围去框定这些样本点。这里有个小细节要注意，那就是，算neighborhood的时候，中心点自己是算进来的。</p>
+<p>那么这样圈完一波neighborhood后，我们会将符合样本数量大于等于minpts的中心点叫做core object。而core object跟这些neighbor就是reachable的。</p>
+<p>然后为了让算法运作起来，只要neighborhood这个集合里面有点，我们就不断重复这样圈地的动作，然后把中心点从集合中拿掉，直到neighborhood为空。</p>
+<p>那我们很自然就会想到，一定会圈到一些点，它们不是core object，但是也在集合里面。这些点我们叫做border，也就是说，这些点是这个类的边界了。那么我们就很自然会想到，也有一些点压根不在neighborhood里面，也不是core的点，这些点就是noise。那既然样本点多了两个状态，reachable的情况也就变得多了，如果是直接可以在neighborhood里面找到的，我们叫做directly-reachable；如果通过neighborhood一层层找，最后找到的，我们叫density-reachable。</p>
+<p>可以看图说话：</p>
+<p align="center">
+<img data-src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/DBSCAN-Illustration.svg/1280px-DBSCAN-Illustration.svg.png' width=50%>
+</p>
+<p>这个图里面，A是core，B、C是border，N是noise。A跟B、C都是density-reachable。但是有没有发现，B是没法返回去找到A的。所以这种reachable是有方向的。</p>
+<p>如果对SNA有点了解的朋友就知道，就是一度人脉和N度人脉，但是是一个有向图。</p>
+<p>那么算法思路理清了，代码就好写了，这里我就用最常用的欧氏距离了。有人可能会想，如果还是欧氏距离，那跟KMeans还有什么分别，都是画圈圈嘛！请回想一个微积分，只要圈画的够小，就能做出各种形状来。下面是核心部分的代码，详细的可以去看我的<a target="_blank" rel="noopener" href="https://github.com/SamaelChen/hexo-practice-code/blob/master/fun/DBSCAN.ipynb">notebook</a>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_euclidean_dist</span>(<span class="params">p, q</span>):</span></span><br><span class="line">    <span class="keyword">return</span> np.sqrt(np.power(p - q, <span class="number">2</span>).<span class="built_in">sum</span>())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_eps_reachable</span>(<span class="params">p, q, eps</span>):</span></span><br><span class="line">    <span class="keyword">return</span> _euclidean_dist(p, q) &lt; eps</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_eps_neighborhood</span>(<span class="params">data, point_id, eps</span>):</span></span><br><span class="line">    neighborhood = []</span><br><span class="line">    point = data[point_id]</span><br><span class="line">    <span class="keyword">for</span> q <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(data)):</span><br><span class="line">        <span class="keyword">if</span> _eps_reachable(point, data[q], eps):</span><br><span class="line">            neighborhood.append(q)</span><br><span class="line">    <span class="keyword">return</span> neighborhood</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_is_core_object</span>(<span class="params">neighborhood, minpts</span>):</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(neighborhood) &gt;= minpts:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dbscan</span>(<span class="params">data, eps, minpts</span>):</span></span><br><span class="line">    class_id = <span class="number">0</span></span><br><span class="line">    class_label = np.full(<span class="built_in">len</span>(data), -<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">for</span> p_id <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(data)):</span><br><span class="line">        <span class="keyword">if</span> class_label[p_id] == -<span class="number">1</span>:</span><br><span class="line">            neighborhood = _eps_neighborhood(data, p_id, eps)</span><br><span class="line">        <span class="keyword">if</span> _is_core_object(neighborhood, minpts):</span><br><span class="line">            class_label[neighborhood] = class_id</span><br><span class="line">            neighborhood.remove(p_id)</span><br><span class="line">            <span class="keyword">while</span> <span class="built_in">len</span>(neighborhood) &gt; <span class="number">0</span>:</span><br><span class="line">                current_p = neighborhood[<span class="number">0</span>]</span><br><span class="line">                current_neighborhood = _eps_neighborhood(data, current_p, eps)</span><br><span class="line">                <span class="keyword">for</span> n <span class="keyword">in</span> current_neighborhood:</span><br><span class="line">                    <span class="keyword">if</span> class_label[n] == -<span class="number">1</span>:</span><br><span class="line">                        class_label[n] = class_id</span><br><span class="line">                        neighborhood.append(n)</span><br><span class="line">                neighborhood = neighborhood[<span class="number">1</span>:]</span><br><span class="line">            class_id += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> class_label</span><br></pre></td></tr></table></figure>
+<h1 id="optics">OPTICS</h1>
+<p>那么DBSCAN本身是一个非常牛逼的算法，它解决了我们找K的问题，这样在海量群组的时候，我们不用像KMeans一样去到处尝试K的大小。但是DBSCAN有个问题，那就是这个算法只能检测一个密度。换句话说，如果现在存在一个数据集有两个类，一个类是方差小的，一个类是方差大的。且这两个群组离得不算太远。如果我们为了照顾方差大的群组将eps设得很大，minpts设得很小，那么可能把两个类聚在一起。反过来，我们就可能找不到方差大的类。</p>
+<p>那么问题来了，有没有办法量化这个距离呢？三年后，同一组作者在DBSCAN的基础上进化出了<a target="_blank" rel="noopener" href="http://www.dbs.ifi.lmu.de/Publikationen/Papers/OPTICS.pdf">OPTICS算法</a>。</p>
+<p>既然是DBSCAN的进化版，所以很多概念上都是互通的，只是OPTICS算法多了几个概念，一个是core-distance，一个是reachability-distance。</p>
+<p>我们知道，DBSCAN是不断跑马圈地的一个过程，但是我们很直观想就知道，有些密度大的地方，可能不需要<span class="math inline">\(\varepsilon\)</span>那么大的范围就可以圈到minpts个样本，所以在OPTICS算法里面，我们将满足minpts这么多样本点的<span class="math inline">\(\varepsilon&#39;\)</span>叫做core-distance。而reachability-distance就是中心点与临近点的距离，但是，如果临近点落在<span class="math inline">\(\varepsilon&#39;\)</span>内，reachability-distance就用core-distance来替代。如下图：</p>
+<p align="center">
+<img data-src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/blog/optics_001.png' width=50%>
+</p>
+<p>那么用OPTICS的时候我们就需要定义两个列表，一个是seeds，一个是ordered result。seeds就是我们每一轮迭代时候的候选列表，而ordered result就是最终的结果。</p>
+<p>具体的过程是这样的。我们先找到一个点，然后一样跑马圈地，接着计算reachability-distance，然后放到seeds里面从小到大排序。每次取第一个seed出来继续圈地，把被取出来的点以及这个点的reachability distance存在ordered result里面。接着就跟DBSCAN一样，不断重复，直到neighborhood为空。这样做的好处就是，我们可以量化评估每个群的密度大小。效果如下图：</p>
+<p align="center">
+<img data-src='https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/blog/optics_002.jpg' width=50%>
+</p>
+<p>那么我们又会想到，有些seeds里面的点可能随着核心点的移动，reachability distance会不断变小。因为A的core distance里可能是B，而C不在A的core distance里面，但是C在B的core distance里面。如果第一个处理的点是A，第二个处理的点是B，那C其实还是很核心的一个点。那这种时候我们就要跟一它开始的reachability distance做比较，如果新的reachability distance比原来的小，就把原来的值替换掉。</p>
+<p>那么废话不多说，上代码，很多地方跟DBSCAN是可以复用的，我就放了一些OPTICS的核心部分，老规矩，详细见<a target="_blank" rel="noopener" href="https://github.com/SamaelChen/hexo-practice-code/blob/master/fun/OPTICS.ipynb">notebook</a>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_eps_neighborhood</span>(<span class="params">data, point_id, eps</span>):</span></span><br><span class="line">    neighborhood = []</span><br><span class="line">    rdist = []</span><br><span class="line">    point = data[point_id]</span><br><span class="line">    <span class="keyword">for</span> q <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(data)):</span><br><span class="line">        dist = _euclidean_dist(point, data[q])</span><br><span class="line">        <span class="keyword">if</span> dist &lt; eps:</span><br><span class="line">            neighborhood.append((q, dist))</span><br><span class="line">    neighborhood = np.array(neighborhood, dtype=[(<span class="string">&#x27;id&#x27;</span>, <span class="string">&#x27;i&#x27;</span>), (<span class="string">&#x27;dist&#x27;</span>, <span class="string">&#x27;f&#x27;</span>)])</span><br><span class="line">    neighborhood = np.delete(neighborhood, np.where(neighborhood[<span class="string">&#x27;id&#x27;</span>] == point_id))</span><br><span class="line">    <span class="keyword">return</span> neighborhood</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_update_order_seeds</span>(<span class="params">neighborhood, minpts, reach_dists, processed, seeds</span>):</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> _is_core_object(neighborhood, minpts):</span><br><span class="line">        <span class="keyword">return</span> seeds</span><br><span class="line">    core_dist = np.sort(neighborhood[<span class="string">&#x27;dist&#x27;</span>])[minpts - <span class="number">2</span>]</span><br><span class="line">    <span class="keyword">for</span> obj <span class="keyword">in</span> neighborhood[<span class="string">&#x27;id&#x27;</span>]:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> processed[obj]:</span><br><span class="line">            obj_dist = neighborhood[neighborhood[<span class="string">&#x27;id&#x27;</span>] == obj][<span class="string">&#x27;dist&#x27;</span>][<span class="number">0</span>]</span><br><span class="line">            newRdist = <span class="built_in">max</span>(core_dist, obj_dist)</span><br><span class="line">            <span class="keyword">if</span> np.isnan(reach_dists[obj]):</span><br><span class="line">                reach_dists[obj] = newRdist</span><br><span class="line">                seeds[obj] = newRdist</span><br><span class="line">            <span class="keyword">elif</span> newRdist &lt; reach_dists[obj]:</span><br><span class="line">                reach_dists[obj] = newRdist</span><br><span class="line">                seeds[obj] = newRdist</span><br><span class="line">    <span class="keyword">return</span> seeds</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">optics</span>(<span class="params">data, eps, minpts</span>):</span></span><br><span class="line">    processed = np.array([<span class="literal">False</span>] * <span class="built_in">len</span>(data))</span><br><span class="line">    core_dists = np.full(<span class="built_in">len</span>(data), np.nan)</span><br><span class="line">    reach_dists = np.full(<span class="built_in">len</span>(data), np.nan)</span><br><span class="line">    ordered_res = []</span><br><span class="line">    seeds = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> p_id <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(data)):</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> processed[p_id]:</span><br><span class="line">            ordered_res.append(p_id)</span><br><span class="line">            processed[p_id] = <span class="literal">True</span></span><br><span class="line">            neighbors = _eps_neighborhood(data, p_id, eps)</span><br><span class="line">            <span class="keyword">if</span> _is_core_object(neighbors, minpts):</span><br><span class="line">                core_dists[p_id] = np.sort(neighbors[<span class="string">&#x27;dist&#x27;</span>])[minpts - <span class="number">2</span>]</span><br><span class="line">            seeds = _update_order_seeds(neighbors, minpts, reach_dists, processed, seeds)</span><br><span class="line">            <span class="keyword">while</span> <span class="built_in">len</span>(seeds) &gt; <span class="number">0</span>:</span><br><span class="line">                nextId = <span class="built_in">sorted</span>(seeds.items(), key=operator.itemgetter(<span class="number">1</span>))[<span class="number">0</span>][<span class="number">0</span>]</span><br><span class="line">                <span class="keyword">del</span> seeds[nextId]</span><br><span class="line">                processed[nextId] = <span class="literal">True</span></span><br><span class="line">                ordered_res.append(nextId)</span><br><span class="line">                newNeighbors = _eps_neighborhood(data, nextId, eps)</span><br><span class="line">                <span class="keyword">if</span> _is_core_object(newNeighbors, minpts):</span><br><span class="line">                    core_dists[nextId] = np.sort(newNeighbors[<span class="string">&#x27;dist&#x27;</span>])[minpts - <span class="number">2</span>]</span><br><span class="line">                    seeds = _update_order_seeds(newNeighbors, minpts, reach_dists, processed, seeds)</span><br><span class="line">    <span class="comment"># 这里只是我的一个操作，强迫症看不惯有个nan存在。</span></span><br><span class="line">    reach_dists[ordered_res[<span class="number">0</span>]] = core_dists[ordered_res[<span class="number">0</span>]]</span><br><span class="line">    <span class="keyword">return</span> ordered_res, reach_dists, core_dists</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cluster_optics_dbscan</span>(<span class="params">data, eps_reachable, eps, minpts</span>):</span></span><br><span class="line">    orders, reach_dists, core_dists = optics(data, eps, minpts)</span><br><span class="line">    n_samples = <span class="built_in">len</span>(data)</span><br><span class="line">    labels = np.zeros(n_samples, dtype=<span class="built_in">int</span>)</span><br><span class="line">    far_reach = reach_dists &gt; eps_reachable</span><br><span class="line">    near_core = core_dists &lt;= eps_reachable</span><br><span class="line">    labels[orders] = np.cumsum(far_reach[orders] &amp; near_core[orders])</span><br><span class="line">    labels[far_reach &amp; ~near_core] = -<span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> labels, orders, reach_dists, core_dists</span><br></pre></td></tr></table></figure>
+<p>OPTICS的优点就是，不管是什么形状的密度，基本上都可以把这个凹槽给跑出来，但是问题就是最后的这个抽取群组小算法。目前我还没找到一个比较好的方法来自动抽取，如果是按照论文里面的分层抽取，我试过会抽的太细，如果是按照论文里面的DBSCAN来抽，就是我实现的这个，不过是一刀切的方式，太复杂的样本效果就不好了。目前还在探索用其他平滑方法来替代，有突破再来更新。</p>
+<p>试了两种平滑方式，最后的做法是，先用一维高斯平滑，然后用max filter抹掉因为高斯平滑最大值向左漂的问题。</p>
+<h1 id="hdbscan">HDBSCAN</h1>
+<p>然后又发现了一个新的聚类算法，类似OPTICS算法，叫<a target="_blank" rel="noopener" href="https://link.springer.com/chapter/10.1007/978-3-642-37456-2_14">HDBSCAN</a>，顾名思义，就是H就是hierarchical。事实上就是OPTICS算法的一个改进版本。</p>
+<p>与OPTICS类似，HDBSCAN一样要算core distance和reachability distance。这个算法跟OPTICS是一样的。但是reachability distance的公式是：<span class="math inline">\(d_{\text{reach}-k}(a, b) = \max\{\text{core}_k(a), \text{core}_k(b), d(a, b)\}\)</span>，这里的<span class="math inline">\(d(a, b)\)</span>是两个点用距离公式算的距离。如下图所示：</p>
+<p align="center">
+<img data-src='https://nbviewer.jupyter.org/github/scikit-learn-contrib/hdbscan/blob/master/notebooks/distance4.svg' width=50%>
+</p>
+<p>蓝绿两点直接的reachability distance就是绿点的core distance，红绿两点的就是红绿两点的距离。</p>
+<p>那么这样一来，就可以得到每个点之间的reachability distance。然后就可以用这个距离作为权重来绘制一个带权重的连接图。<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1506.06422v2.pdf">Beyond Hartigan Consistency</a>这篇论文认为，无论是那种概率密度分布，这种相互距离可以更好的表示单链接聚类的层次结构。</p>
+<p>然后可以用<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">Prim算法</a>构建最小生成树，然后转化为层次结构，就类似层次聚类了。这个可以参考一下基于最小生成树的层次聚类。然后通过设定最小簇大小，对这个树进行剪枝。也就从下面的第一个图变成第二个图：</p>
+<p align="center">
+<img data-src='https://hdbscan.readthedocs.io/en/latest/_images/how_hdbscan_works_12_1.png' width=50%>
+</p>
+<p align="center">
+<img data-src='https://hdbscan.readthedocs.io/en/latest/_images/how_hdbscan_works_15_1.png' width=50%>
+</p>
+<p>之后就是抽取簇。上面剪枝后的树其实已经有了结果，但是我们希望抽的簇可以自动抽取，且是稳定的。因此我们需要一种度量方式来衡量簇的稳定性。我们定义一个值<span class="math inline">\(f(x) = \lambda = \frac{1}{\text{distance}_{\text{core}}}\)</span>。这里的distance就是一个点。所以用<span class="math inline">\(\lambda_{\text{birth}}\)</span>和<span class="math inline">\(\lambda_{\text{death}}\)</span>分别表示簇生成和簇分裂时候的<span class="math inline">\(\lambda\)</span>大小，也就是<span class="math inline">\(\lambda_{\text{min}}C_i\)</span>和<span class="math inline">\(\lambda_{\text{max}}C_i\)</span>，那么簇的稳定性就是<span class="math inline">\(S = \sum_{p \in \text{cluster}} (\lambda_p - \lambda_{\text{birth}})\)</span>，<span class="math inline">\(\lambda_p = \lambda_{\text{max}}(x, C) = \min(f(x), \lambda_{\text{max}}C)\)</span>每轮优化的方向就是让这个稳定性最大，同时满足最小簇大小。</p>
+<p>那么HDBSCAN跟DBSCAN比的话，DBSCAN实际上就是上面剪枝前的hierarchical tree切一刀，而HDBSCAN会自适应地去寻找合适的划分。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/wechatpay.png" alt="Samael Chen WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/schedule/" rel="prev" title="未来一段时间更新计划">
+      <i class="fa fa-chevron-left"></i> 未来一段时间更新计划
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/ner/" rel="next" title="NER">
+      NER <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDg5NS83NDQ0"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#dbscan"><span class="nav-number">1.</span> <span class="nav-text">DBSCAN</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#optics"><span class="nav-number">2.</span> <span class="nav-text">OPTICS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hdbscan"><span class="nav-number">3.</span> <span class="nav-text">HDBSCAN</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Samael Chen"
+      src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Samael Chen</p>
+  <div class="site-description" itemprop="description">活该没有性生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:chc199310@gmail.com" title="E-Mail → mailto:chc199310@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamaelChen</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">217k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">3:18</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61310f3070234090" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

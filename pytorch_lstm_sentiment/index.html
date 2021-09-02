@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"samaelchen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="2018.08.16更新一个textCNN。 尝试使用LSTM做情感分析，这个gluon有非常详细的例子，可以直接参考gluon的官方教程。这里尝试使用PyTorch复现一个。数据用的是IMDB的数据http:&#x2F;&#x2F;ai.stanford.edu&#x2F;~amaas&#x2F;data&#x2F;sentiment&#x2F;aclImdb_v1.tar.gz">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyTorch实现LSTM情感分析">
+<meta property="og:url" content="https://samaelchen.github.io/pytorch_lstm_sentiment/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="2018.08.16更新一个textCNN。 尝试使用LSTM做情感分析，这个gluon有非常详细的例子，可以直接参考gluon的官方教程。这里尝试使用PyTorch复现一个。数据用的是IMDB的数据http:&#x2F;&#x2F;ai.stanford.edu&#x2F;~amaas&#x2F;data&#x2F;sentiment&#x2F;aclImdb_v1.tar.gz">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-08-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-31T16:15:25.581Z">
+<meta property="article:author" content="Samael Chen">
+<meta property="article:tag" content="机器学习,深度学习,PyTorch,MXNet,gluon,统计学习">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://samaelchen.github.io/pytorch_lstm_sentiment/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>PyTorch实现LSTM情感分析 | 碎碎念</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120854058-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-120854058-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a75b41f44b70e58f40edd582552291cf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="碎碎念" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://samaelchen.github.io/pytorch_lstm_sentiment/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+      <meta itemprop="name" content="Samael Chen">
+      <meta itemprop="description" content="活该没有性生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PyTorch实现LSTM情感分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-08-15 00:00:00" itemprop="dateCreated datePublished" datetime="2018-08-15T00:00:00+08:00">2018-08-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-01 00:15:25" itemprop="dateModified" datetime="2021-09-01T00:15:25+08:00">2021-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PyTorch/" itemprop="url" rel="index"><span itemprop="name">PyTorch</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>7.8k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>7 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>2018.08.16更新一个textCNN。</p>
+<p>尝试使用LSTM做情感分析，这个gluon有非常详细的例子，可以直接参考gluon的<a target="_blank" rel="noopener" href="http://zh.gluon.ai/chapter_natural-language-processing/sentiment-analysis.html">官方教程</a>。这里尝试使用PyTorch复现一个。数据用的是IMDB的数据<a target="_blank" rel="noopener" href="http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz">http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz</a></p>
+<span id="more"></span>
+<p>首先我们导入相关的package：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"><span class="keyword">import</span> torch.utils.data.dataloader <span class="keyword">as</span> dataloader</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"><span class="keyword">import</span> torch.autograd <span class="keyword">as</span> autograd</span><br><span class="line"><span class="keyword">import</span> torchtext.vocab <span class="keyword">as</span> torchvocab</span><br><span class="line"><span class="keyword">from</span> torch.autograd <span class="keyword">import</span> Variable</span><br><span class="line"><span class="keyword">import</span> tqdm</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> string</span><br><span class="line"><span class="keyword">import</span> gensim</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> snowballstemmer</span><br><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter</span><br><span class="line"><span class="keyword">from</span> nltk.corpus <span class="keyword">import</span> stopwords</span><br><span class="line"><span class="keyword">from</span> itertools <span class="keyword">import</span> chain</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> accuracy_score</span><br></pre></td></tr></table></figure>
+<p>然后我们定义读数的函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">readIMDB</span>(<span class="params">path, seg=<span class="string">&#x27;train&#x27;</span></span>):</span></span><br><span class="line">    pos_or_neg = [<span class="string">&#x27;pos&#x27;</span>, <span class="string">&#x27;neg&#x27;</span>]</span><br><span class="line">    data = []</span><br><span class="line">    <span class="keyword">for</span> label <span class="keyword">in</span> pos_or_neg:</span><br><span class="line">        files = os.listdir(os.path.join(path, seg, label))</span><br><span class="line">        <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">            <span class="keyword">with</span> <span class="built_in">open</span>(os.path.join(path, seg, label, file), <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf8&#x27;</span>) <span class="keyword">as</span> rf:</span><br><span class="line">                review = rf.read().replace(<span class="string">&#x27;\n&#x27;</span>, <span class="string">&#x27;&#x27;</span>)</span><br><span class="line">                <span class="keyword">if</span> label == <span class="string">&#x27;pos&#x27;</span>:</span><br><span class="line">                    data.append([review, <span class="number">1</span>])</span><br><span class="line">                <span class="keyword">elif</span> label == <span class="string">&#x27;neg&#x27;</span>:</span><br><span class="line">                    data.append([review, <span class="number">0</span>])</span><br><span class="line">    <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line">train_data = readIMDB(<span class="string">&#x27;aclImdb&#x27;</span>)</span><br><span class="line">test_data = readIMDB(<span class="string">&#x27;aclImdb&#x27;</span>, <span class="string">&#x27;test&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>接着是分词，这里只做非常简单的分词，也就是按照空格分词。当然按照一些传统的清洗方式效果会更好。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tokenizer</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> [tok.lower() <span class="keyword">for</span> tok <span class="keyword">in</span> text.split(<span class="string">&#x27; &#x27;</span>)]</span><br><span class="line"></span><br><span class="line">train_tokenized = []</span><br><span class="line">test_tokenized = []</span><br><span class="line"><span class="keyword">for</span> review, score <span class="keyword">in</span> train_data:</span><br><span class="line">    train_tokenized.append(tokenizer(review))</span><br><span class="line"><span class="keyword">for</span> review, score <span class="keyword">in</span> test_data:</span><br><span class="line">    test_tokenized.append(tokenizer(review))</span><br><span class="line"></span><br><span class="line">vocab = <span class="built_in">set</span>(chain(*train_tokenized))</span><br><span class="line">vocab_size = <span class="built_in">len</span>(vocab)</span><br></pre></td></tr></table></figure>
+<p>因为这个数据集非常小，所以如果我们用这个数据集做word embedding有可能过拟合，而且模型没有通用性，所以我们传入一个已经学好的word embedding。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">wvmodelwvmodel = gensim.models.KeyedVectors.load_word2vec_format(<span class="string">&#x27;test_word.txt&#x27;</span>,</span><br><span class="line">                                                          binary=<span class="literal">False</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>这里的“test_word.txt”是我将glove的词向量转换后的结果，当时测试gensim的这个功能瞎起的名字，用的是glove的6B，100维的预训练数据。</p>
+<p>然后一样要定义一个word to index的词典：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">word_to_idxword_to  = &#123;word: i+<span class="number">1</span> <span class="keyword">for</span> i, word <span class="keyword">in</span> <span class="built_in">enumerate</span>(vocab)&#125;</span><br><span class="line">word_to_idx[<span class="string">&#x27;&lt;unk&gt;&#x27;</span>] = <span class="number">0</span></span><br><span class="line">idx_to_word = &#123;i+<span class="number">1</span>: word <span class="keyword">for</span> i, word <span class="keyword">in</span> <span class="built_in">enumerate</span>(vocab)&#125;</span><br><span class="line">idx_to_word[<span class="number">0</span>] = <span class="string">&#x27;&lt;unk&gt;&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>定义的目的是为了将预训练的weight跟我们的词库拼上。另外我们定义了一个unknown的词，也就是说没有出现在训练集里的词，我们都叫做unknown，词向量就定义为0。</p>
+<p>然后就是编码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode_samples</span>(<span class="params">tokenized_samples, vocab</span>):</span></span><br><span class="line">    features = []</span><br><span class="line">    <span class="keyword">for</span> sample <span class="keyword">in</span> tokenized_samples:</span><br><span class="line">        feature = []</span><br><span class="line">        <span class="keyword">for</span> token <span class="keyword">in</span> sample:</span><br><span class="line">            <span class="keyword">if</span> token <span class="keyword">in</span> word_to_idx:</span><br><span class="line">                feature.append(word_to_idx[token])</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                feature.append(<span class="number">0</span>)</span><br><span class="line">        features.append(feature)</span><br><span class="line">    <span class="keyword">return</span> features</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">pad_samples</span>(<span class="params">features, maxlen=<span class="number">500</span>, PAD=<span class="number">0</span></span>):</span></span><br><span class="line">    padded_features = []</span><br><span class="line">    <span class="keyword">for</span> feature <span class="keyword">in</span> features:</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(feature) &gt;= maxlen:</span><br><span class="line">            padded_feature = feature[:maxlen]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            padded_feature = feature</span><br><span class="line">            <span class="keyword">while</span>(<span class="built_in">len</span>(padded_feature) &lt; maxlen):</span><br><span class="line">                padded_feature.append(PAD)</span><br><span class="line">        padded_features.append(padded_feature)</span><br><span class="line">    <span class="keyword">return</span> padded_features</span><br></pre></td></tr></table></figure>
+<p>我们这里为了解决评论长度不一致的问题，将所有的评论都取500个词，超过的就取前500个，不足的补0。</p>
+<p>整理一下训练数据：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">train_features = torch.tensor(pad_samples(encode_samples(train_tokenized, vocab)))</span><br><span class="line">train_labels = torch.tensor([score <span class="keyword">for</span> _, score <span class="keyword">in</span> train_data])</span><br><span class="line">test_features = torch.tensor(pad_samples(encode_samples(test_tokenized, vocab)))</span><br><span class="line">test_labels = torch.tensor([score <span class="keyword">for</span> _, score <span class="keyword">in</span> test_data])</span><br></pre></td></tr></table></figure>
+<p>然后就是定义网络：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SentimentNet</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, vocab_size, embed_size, num_hiddens, num_layers,</span></span></span><br><span class="line"><span class="params"><span class="function">                 bidirectional, weight, labels, use_gpu, **kwargs</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(SentimentNet, self).__init__(**kwargs)</span><br><span class="line">        self.num_hiddens = num_hiddens</span><br><span class="line">        self.num_layers = num_layers</span><br><span class="line">        self.use_gpu = use_gpu</span><br><span class="line">        self.bidirectional = bidirectional</span><br><span class="line">        self.embedding = nn.Embedding.from_pretrained(weight)</span><br><span class="line">        self.embedding.weight.requires_grad = <span class="literal">False</span></span><br><span class="line">        self.encoder = nn.LSTM(input_size=embed_size, hidden_size=self.num_hiddens,</span><br><span class="line">                               num_layers=num_layers, bidirectional=self.bidirectional,</span><br><span class="line">                               dropout=<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">if</span> self.bidirectional:</span><br><span class="line">            self.decoder = nn.Linear(num_hiddens * <span class="number">4</span>, labels)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.decoder = nn.Linear(num_hiddens * <span class="number">2</span>, labels)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, inputs</span>):</span></span><br><span class="line">        embeddings = self.embedding(inputs)</span><br><span class="line">        states, hidden = self.encoder(embeddings.permute([<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>]))</span><br><span class="line">        encoding = torch.cat([states[<span class="number">0</span>], states[-<span class="number">1</span>]], dim=<span class="number">1</span>)</span><br><span class="line">        outputs = self.decoder(encoding)</span><br><span class="line">        <span class="keyword">return</span> outputs</span><br></pre></td></tr></table></figure>
+<p>那这里需要注意几个点，第一，LSTM可以不initialize hidden，如果不initialize的话，那么PyTorch会默认初始为0。</p>
+<p>另外就是LSTM这里传进去的数据格式是[seq_len, batch_size, embedded_size]。而我们传进去的数据是[batch_size, seq_len]的样子，那经过embedding之后的结果是[batch_size, seq_len, embedded_size]。所以我们这里要将第二个维度和第一个维度做个调换。而LSTM这边output的dimension和inputs是一致的，如果这里我们不做维度的调换，可以将LSTM的batch_first参数设置为True。然后我们要拿到每个batch的初始状态和最后状态还是一样要去做一个第一第二维度的调换。这里非常的绕，我在这里卡了好久(=<span class="citation" data-cites="__">@__</span>@=)</p>
+<p>第三就是我这里用了最初始的状态和最后的状态拼起来作为分类的输入。</p>
+<p>另外有一点吐槽的就是，MXNet的dense层比较强大啊，不用定义输入的维度，只要定义输出的维度就可以了，操作比较骚啊。</p>
+<p>然后我们把weight导进来：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">weight = torch.zeros(vocab_size+<span class="number">1</span>, embed_size)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(wvmodel.index2word)):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        index = word_to_idx[wvmodel.index2word[i]]</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    weight[index, :] = torch.from_numpy(wvmodel.get_vector(</span><br><span class="line">        idx_to_word[word_to_idx[wvmodel.index2word[i]]]))</span><br></pre></td></tr></table></figure>
+<p>这里我们将不在glove里面的词全部填为0，后面想了一下，其实也可以试试这些全部随机试试。</p>
+<p>接着定义参数就可以训练了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">num_epochs = <span class="number">5</span></span><br><span class="line">embed_size = <span class="number">100</span></span><br><span class="line">num_hiddens = <span class="number">100</span></span><br><span class="line">num_layers = <span class="number">2</span></span><br><span class="line">bidirectional = <span class="literal">True</span></span><br><span class="line">batch_size = <span class="number">64</span></span><br><span class="line">labels = <span class="number">2</span></span><br><span class="line">lr = <span class="number">0.8</span></span><br><span class="line">device = torch.device(<span class="string">&#x27;cuda:0&#x27;</span>)</span><br><span class="line">use_gpu = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">net = SentimentNet(vocab_size=(vocab_size+<span class="number">1</span>), embed_size=embed_size,</span><br><span class="line">                   num_hiddens=num_hiddens, num_layers=num_layers,</span><br><span class="line">                   bidirectional=bidirectional, weight=weight,</span><br><span class="line">                   labels=labels, use_gpu=use_gpu)</span><br><span class="line">net.to(device)</span><br><span class="line">loss_function = nn.CrossEntropyLoss()</span><br><span class="line">optimizer = optim.SGD(net.parameters(), lr=lr)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">train_set = torch.utils.data.TensorDataset(train_features, train_labels)</span><br><span class="line">test_set = torch.utils.data.TensorDataset(test_features, test_labels)</span><br><span class="line"></span><br><span class="line">train_iter = torch.utils.data.DataLoader(train_set, batch_size=batch_size,</span><br><span class="line">                                         shuffle=<span class="literal">True</span>)</span><br><span class="line">test_iter = torch.utils.data.DataLoader(test_set, batch_size=batch_size,</span><br><span class="line">                                        shuffle=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+<p>这个位置需要注意的是，我们在train加了一个shuffle，如果不加shuffle的话，模型会学到奇奇怪怪的地方去。</p>
+<p>最后训练一下就好了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(num_epochs):</span><br><span class="line">    start = time.time()</span><br><span class="line">    train_loss, test_losses = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">    train_acc, test_acc = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">    n, m = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> feature, label <span class="keyword">in</span> train_iter:</span><br><span class="line">        n += <span class="number">1</span></span><br><span class="line">        net.zero_grad()</span><br><span class="line">        feature = Variable(feature.cuda())</span><br><span class="line">        label = Variable(label.cuda())</span><br><span class="line">        score = net(feature)</span><br><span class="line">        loss = loss_function(score, label)</span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line">        train_acc += accuracy_score(torch.argmax(score.cpu().data,</span><br><span class="line">                                                 dim=<span class="number">1</span>), label.cpu())</span><br><span class="line">        train_loss += loss</span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="keyword">for</span> test_feature, test_label <span class="keyword">in</span> test_iter:</span><br><span class="line">            m += <span class="number">1</span></span><br><span class="line">            test_feature = test_feature.cuda()</span><br><span class="line">            test_label = test_label.cuda()</span><br><span class="line">            test_score = net(test_feature)</span><br><span class="line">            test_loss = loss_function(test_score, test_label)</span><br><span class="line">            test_acc += accuracy_score(torch.argmax(test_score.cpu().data,</span><br><span class="line">                                                    dim=<span class="number">1</span>), test_label.cpu())</span><br><span class="line">            test_losses += test_loss</span><br><span class="line">    end = time.time()</span><br><span class="line">    runtime = end - start</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;epoch: %d, train loss: %.4f, train acc: %.2f, test loss: %.4f, test acc: %.2f, time: %.2f&#x27;</span> %</span><br><span class="line">          (epoch, train_loss.data / n, train_acc / n, test_losses.data / m, test_acc / m, runtime))</span><br></pre></td></tr></table></figure>
+<p>也可以直接看我的<a target="_blank" rel="noopener" href="https://github.com/SamaelChen/hexo-practice-code/blob/master/pytorch/langage%20model/lstm-sentiment.ipynb">notebook</a></p>
+<p>后面试试textCNN，感觉也挺骚气的。</p>
+<hr />
+<p>2018.08.16 更新一个textCNN的玩法。</p>
+<p>CNN太熟了，很容易搞，其实只要把网络改一下，其他的动都不用动：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">textCNN</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, vocab_size, embed_size, seq_len, labels, weight, **kwargs</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(textCNN, self).__init__(**kwargs)</span><br><span class="line">        self.labels = labels</span><br><span class="line">        self.embedding = nn.Embedding.from_pretrained(weight)</span><br><span class="line">        self.embedding.weight.requires_grad = <span class="literal">False</span></span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">1</span>, <span class="number">1</span>, (<span class="number">3</span>, embed_size))</span><br><span class="line">        self.conv2 = nn.Conv2d(<span class="number">1</span>, <span class="number">1</span>, (<span class="number">4</span>, embed_size))</span><br><span class="line">        self.conv3 = nn.Conv2d(<span class="number">1</span>, <span class="number">1</span>, (<span class="number">5</span>, embed_size))</span><br><span class="line">        self.pool1 = nn.MaxPool2d((seq_len - <span class="number">3</span> + <span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">        self.pool2 = nn.MaxPool2d((seq_len - <span class="number">4</span> + <span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">        self.pool3 = nn.MaxPool2d((seq_len - <span class="number">5</span> + <span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">        self.linear = nn.Linear(<span class="number">3</span>, labels)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, inputs</span>):</span></span><br><span class="line">        inputs = self.embedding(inputs).view(inputs.shape[<span class="number">0</span>], <span class="number">1</span>, inputs.shape[<span class="number">1</span>], -<span class="number">1</span>)</span><br><span class="line">        x1 = F.relu(self.conv1(inputs))</span><br><span class="line">        x2 = F.relu(self.conv2(inputs))</span><br><span class="line">        x3 = F.relu(self.conv3(inputs))</span><br><span class="line"></span><br><span class="line">        x1 = self.pool1(x1)</span><br><span class="line">        x2 = self.pool2(x2)</span><br><span class="line">        x3 = self.pool3(x3)</span><br><span class="line"></span><br><span class="line">        x = torch.cat((x1, x2, x3), -<span class="number">1</span>)</span><br><span class="line">        x = x.view(inputs.shape[<span class="number">0</span>], <span class="number">1</span>, -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">        x = self.linear(x)</span><br><span class="line">        x = x.view(-<span class="number">1</span>, self.labels)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span>(x)</span><br></pre></td></tr></table></figure>
+<p>这里的网络设计很简单，就是用三个filter去扫一遍文章，filter的尺寸其实就是我们一次看多少个词。这样扫完以后是三个向量，然后pooling一下得到三个实数。把这三个实数拼成一个向量，然后用fc分类一下就结束了。</p>
+<p>然后初始化网络：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">net = textCNN(vocab_size=(vocab_size+<span class="number">1</span>), embed_size=embed_size,</span><br><span class="line">              seq_len=<span class="number">500</span>, labels=labels, weight=weight)</span><br></pre></td></tr></table></figure>
+<p>其他的都没改，就可以直接跑了。速度上CNN比LSTM的参数少，速度快很多，不过只跑几轮的话效果差一点。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/wechatpay.png" alt="Samael Chen WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/word2vec_pytorch/" rel="prev" title="word2vec的PyTorch实现">
+      <i class="fa fa-chevron-left"></i> word2vec的PyTorch实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/pytorch_cloze/" rel="next" title="李宏毅深度学习作业——language model">
+      李宏毅深度学习作业——language model <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDg5NS83NDQ0"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Samael Chen"
+      src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Samael Chen</p>
+  <div class="site-description" itemprop="description">活该没有性生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:chc199310@gmail.com" title="E-Mail → mailto:chc199310@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamaelChen</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">217k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">3:18</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61310f3070234090" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

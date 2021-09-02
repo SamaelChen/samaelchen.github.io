@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"samaelchen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="“亚当·斯密在政治经济学的历史中占据如此中心的位置，以至于这个谨慎的水手不愿在这样广阔的海洋上开始着手航行。”——亚历山大·格雷">
+<meta property="og:type" content="article">
+<meta property="og:title" content="经济思想史读书笔记——亚当·斯密">
+<meta property="og:url" content="https://samaelchen.github.io/economics_thoughts_notes4/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="“亚当·斯密在政治经济学的历史中占据如此中心的位置，以至于这个谨慎的水手不愿在这样广阔的海洋上开始着手航行。”——亚历山大·格雷">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-07-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-31T16:15:25.578Z">
+<meta property="article:author" content="Samael Chen">
+<meta property="article:tag" content="机器学习,深度学习,PyTorch,MXNet,gluon,统计学习">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://samaelchen.github.io/economics_thoughts_notes4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>经济思想史读书笔记——亚当·斯密 | 碎碎念</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120854058-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-120854058-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a75b41f44b70e58f40edd582552291cf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="碎碎念" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://samaelchen.github.io/economics_thoughts_notes4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+      <meta itemprop="name" content="Samael Chen">
+      <meta itemprop="description" content="活该没有性生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          经济思想史读书笔记——亚当·斯密
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-07-18 00:00:00" itemprop="dateCreated datePublished" datetime="2018-07-18T00:00:00+08:00">2018-07-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-01 00:15:25" itemprop="dateModified" datetime="2021-09-01T00:15:25+08:00">2021-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ReadingNotes/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>8.2k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>7 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>“亚当·斯密在政治经济学的历史中占据如此中心的位置，以至于这个谨慎的水手不愿在这样广阔的海洋上开始着手航行。”——亚历山大·格雷</p>
+<span id="more"></span>
+<p>亚当·斯密是经济思想史上一个非常重要的人物，他的著作是经济思想发展中的一道分水岭。</p>
+<h1 id="博学多才的经济学家">博学多才的经济学家</h1>
+<p>斯密的思想涉及到很多领域，包括经济、政治还有哲学。在斯密所处的时代，从事研究的知识精英被要求掌握最宽广的人类知识，而不是仅仅专攻某一个领域的知识。这种多学科方法的一个后果是，像亚当·斯密探求如今称为社会科学的人认为，牛顿在物理学中建立的科学严密性，他们也可以做到。</p>
+<p>斯密常被称为经济学之父，尽管很多先贤看到了经济学很多方面，但是没有人能够将决定国民财富的力量、培育经济增长与发展的适宜的政策以及通过市场力量有效协调大量经济决策的方式，整合成一个全面的观点。</p>
+<p>斯密对经济学范围的认识继承了英国重商主义的观点。他对解释国民财富的性质与原因感兴趣。但是斯密考察的范围比现代经济学家研究的要宽泛，他用政治的、社会的、历史的材料来填充其经济模型。</p>
+<p>虽然斯密在经济学史上的地位非常重要，但是斯密的理论模型缺少优雅与严密。</p>
+<h1 id="斯密的市场分析与政策结论">斯密的市场分析与政策结论</h1>
+<p>斯密在经济思想史的重要性基于（1）他对经济体相互关联性的广泛了解和（2）他对经济政策的影响。斯密作为一位经济学家的强大实力在于，他洞察了：（1）经济体组成部分的相互依赖；（2）用来推动已过财富的政策。他不仅是一个经济学家，而且是一位指出了经济发展与富足方法的哲学家。</p>
+<h2 id="前后关联的经济政策">前后关联的经济政策</h2>
+<p>斯密的方法论塑造了他对经济体的分析，以及他关注政府政策的决心。斯密对自由放任的主张部分依赖于市场如何产生某些结果的理论模型，还来自于他对现有历史与制度环境的观察。所以，斯密的经济政策是前后关联的。斯密对自由市场的拥护并不是因为他认为市场是完美的，而是因为他所处的时代，英国的历史与制度结构导致，市场通常比政府干预产生更好的结果。</p>
+<p>在之前讨论过，经济学科学处理经济变量之间实证的、事务性的关系，即探讨“是什么”。规范经济学涉及的是“应当怎样”的问题。经济学艺术是以政策为导向的。亚当·斯密是一个超群的经济学艺术大师。因而，前后关联的经济政策，就是另一种表达经济学艺术观点的方式。</p>
+<h2 id="自然秩序和谐和自由放任">自然秩序、和谐和自由放任</h2>
+<p>斯密的经济学与重商主义有很多相同的基本因素。他们认为通过科学的调查能够揭示事务性的因果关系。斯密也像重商主义一样，提出人类本性的基本假设：人类是理性的，是有私心的，很大程度上受经济利己主义的驱使。也就是古典经济学里面的一个基本假设——理性人假设。</p>
+<p>但是斯密体系和重商主义有一个很大的不同点在于，他假设竞争性市场在极大程度上是存在的，在这些市场内部，生产要素自由流动，从而提升了它们的经济优势。第二个区别是，经济体的自然运作，能够比人类做出的任何安排更有效地解决冲突。这也是斯密体系里面一个非常重要的假设基础，就是存在完全竞争市场。实际上，斯密的自由放任政策只有在完全竞争市场下才能成立。</p>
+<p>斯密的推论过程非常简单。人类是理性的，是有私心的，受利己主义驱使。如果放任不管，每个个体都会追求自己的私利，在促进私利的同时也促进了社会利益。政府不应当干预这一过程，而应当遵循自由放任的政策。在斯密体系内，私利与公共利益是和谐的。也就是说，在斯密看来，在没有政府干预的竞争性市场上会出现资源的最佳配置。</p>
+<h2 id="竞争性市场的运作">竞争性市场的运作</h2>
+<p>斯密对经济理论最重要的贡献是他对竞争性市场运作的分析。他能比以前的经济学家更详细说明，源于竞争的价格在长期中为什么等于生产成本这一道理。他对价格形成与资源配置的分析中，他将短期价格称为“市场价格”， 将长期价格称为“自然价格”。他认为，竞争从根本上要求有大量的销售者；数值经济体中利润、工资、租金的一群资源拥有者；资源在行业间自由流动。给定这些条件，资源拥有者的私利将会形成长期自然价格，该价格将经济体不同部门之间的利润率、工资、租金均等化。</p>
+<p>确立了竞争性市场的优越性后，斯密毫无困难地构建起他反对垄断与政府干预的论据。但是斯密的自由放任是基于竞争市场存在的假设的。</p>
+<p>斯密认为，尽管重商主义者关于政府干预的很多主张都声称是促进了社会利益，但是其实是增进了个人私利，这种管制不是有利于国家，而是利于商人。但是斯密也并不主张完全的自由放任，他认为在他所处时代历史的、政治的、制度的背景下，他认为，保护幼稚产业的关税是有必要的；国防的贸易管制也是有必要的；政府还应该提供具有极大社会收益但是私人市场因为没有充足利润而不去提供的产品，以此来限定他对自由放任的主张。</p>
+<h2 id="资本与资本家">资本与资本家</h2>
+<p>斯密提出了关于资本在财富生产过程中和在经济发展中的作用的一些重要概念。首先，他指出，一国的现有财富取决于资本积累，原因在于资本积累决定了劳动分工和参加生产性劳动的人口比例。其次，斯密断定资本积累也会导致经济发展。再次，与资本积累相结合的个人私利导致资本在各产业之间的最佳配置。</p>
+<p>在斯密体系中，资本家在经济体运行中扮演主要的角色。资本家对财富与利润的追逐，引导经济体实现资源的有效配置和经济增长。在私有财产经济体中，资本的来源是个人储蓄。斯密认为，劳动并不能够积累资本，原因在于工资水平仅仅能够满足直接的消费欲望。</p>
+<p>斯密断定，恰恰是一部分正在星期的产业接济是对社会有益的人，他们为了利润而奋斗，努力积累资本，通过储蓄和投资来增加他们的财富。因此有利于资本家的收入不平等分配具有巨大的社会重要性。没有收入的不平等分配，就不可能有经济增长，因为全部的年产出都会被消费掉。</p>
+<h2 id="斯密对政策的影响">斯密对政策的影响</h2>
+<p>斯密的重要贡献在于他对市场经济在多种用途之间配置稀缺资源方式的广泛看法。他的主要政策结论是政府应当接受自由放任的政策。</p>
+<h1 id="国民财富的性质与原因">国民财富的性质与原因</h1>
+<p>斯密不认同重商主义的一国的贵金属就等同于一国财富的观点。他认为，财富是产品与服务的年流量，而不是贵金属的累计储备量。他也解释了出口与进口之间的关系，认识到出口的基本作用是支付进口。此外他暗示，经济活动的最终目的是消费。这将斯密的经济学与重商主义的经济学加以区分，后者将生产视为目的。而在国家财富源泉的认识上，斯密与重农主义也不一样，后者强调的是消费。</p>
+<p>斯密继而建议，国家的财富应当按照人均指标来衡量，这就是现在经常被提及的人均GDP。</p>
+<h2 id="国民财富的原因">国民财富的原因</h2>
+<p>斯密主张，一个国家的财富，也就是国家的收入取决于：（1）劳动生产力；（2）有效使用或者生产性使用的劳动者的比例。因为在他的完全竞争市场下，经济体将自动实现资源的充分利用，因此他只需要考察那些决定一国产品与服务生产能力的因素。</p>
+<h3 id="劳动生产力">劳动生产力</h3>
+<p>斯密认为，劳动生产力取决于劳动分工。专业化与劳动分工提高了劳动生产力。尽管斯密认为专业化与劳动分工的经济利益，但是他也察觉到一些严重的社会成本。劳动分工的一个社会缺点是公认被赋予重复性的任务，这些任务很快变得单调乏味。这一点其实与管理学里面的科学管理法非常相似，另外可以看一下霍桑试验。但是我们不得不承认，劳动分工增加了人类福利。</p>
+<p>劳动分工一次取决于斯密所谓的市场的范围与资本的积累。市场越大，可销售的数量越多，劳动分工的机会就越多。另一方面，有限的市场仅允许有限的劳动分工。劳动分工收到资本积累的限制，原因在于生产过程是耗时的：在生产开始与成品的最终销售之间存在时间间隔。</p>
+<p>在一个简单的经济体中，劳动分工是微小的，只需要很少的资本来维持劳动力。但是随着劳动分工的增加，劳动者不再为其自身的消费生产产品，在耗时的生产过程期间，必须保持一定的消费品储备来维持劳动者。这一定数量的产品来自储蓄，也就是斯密所说的资本。资本家的一个主要功能是缩短生产开始与最终产品销售之间的时间间隔而提供手段。因此可以使用劳动分工的生产过程的范围，收到可以利用的资本积累数量的限制。换而言之，斯密认为，劳动分工随着越来越多的储蓄而越来越细分。如果将这一个观点放到小一点的经济体上，比如公司，我们就会很直观理解，创业公司，一个人当好几个人用，当公司庞大到商业帝国的程度，几个人当一个人用。</p>
+<h3 id="生产性与非生产性劳动">生产性与非生产性劳动</h3>
+<p>按照斯密的观点，资本积累也决定了生产性：劳动者与非生产性劳动者的比例。他主张，生产可销售商品所使用的劳动是生产性劳动，而生产服务所使用的劳动则是非生产性劳动。斯密的观点其实非常的朴素，资本应当用于再生产。他的观点，如果一个做法对个体是正确的，那么对国家也是正确的，因此，国家的资本越多，就更应该用于支持生产性劳动。在斯密的时代，他并没有意识到第三产业的作用。</p>
+<p>斯密强调，将大量收入分配给进行储蓄和投资的资本家，将少量收入分配给地主，可以获得最高的经济增长率。某种程度上，是不是也可以看作是需要大力扶持实业。此外，因为经济增长收到政府非生产性劳动支出的约束，例如军队，所以拥有较小的政府，就可以对资本家征收较少的税，以便他们可以积累更多的资本。这里有一点点小国寡民的意味。</p>
+<h2 id="对国民财富的总结">对国民财富的总结</h2>
+<p>其实在斯密的观点中，这一点一句话就可以概括，资本是国家财富的主要决定因素。</p>
+<p>对斯密而言，资本积累毫无疑问要求一个自由市场与私人财产的制度框架。在自由市场体制中，既定的投资支出水平，在没有政府指导的运转中被加以分配，以确保最高的经济增长率。在私人财产体制中，对高资本积累率的进一步要求就是不平等的收入分配。</p>
+<h1 id="国际贸易">国际贸易</h1>
+<p>在斯密的观点中，只有错误地认为一个国家的财富取决于它所持有的贵金属和借据，贸易顺差才是有利的。而斯密的主张是非规制的对外贸易，理由是如果英国能够以低于法国的成本生产一种产品，例如羊毛，并且法国可以以低于英国的成本生产另一种产品，例如葡萄酒，那么两国各自用生产成本较低的产品，去交换生产成本较高的产品，这种交换对双方来说都是有利的。也就是现在经济学中的对外贸易的绝对成本学说。实际上这种学说不局限于国际贸易，还适用于一国的内部贸易。</p>
+<p>在现代经济学的观点中，随着劳动越来越专业化，存在收益递增（成本递减）的情况。斯密的对外贸易优势的部分观点，明显基于收益递增这一动态概念。但是这种观点是有非常明显的缺陷的，事实上，任何一国国家都不可能长期保持一种生产方式不变。</p>
+<p>在这个方面，古典经济学和重商主义者有一个重大的区别。重商主义者认为国际贸易是一种零和博弈，而古典经济学认为不是。但是斯密只是认识到贸易对各国都有利，而没有认识到贸易过程中的价格机制。这一点在之后的李嘉图等人的理论中得到解释。</p>
+<h1 id="价值理论">价值理论</h1>
+<p>区分价值与价格困惑了早期经济学家。这主要集中于三个问题：（1）什么决定了产品的价格？也就是什么决定了相对价格？（2）什么决定了价格总水平？（3）什么是福利的最佳度量标准。实际上，斯密也没有非常明确给出答案。</p>
+<h2 id="相对价格">相对价格</h2>
+<p>按照现代的经济学术语，相对价格指的是商品间的价格比例关系。实际上相对价格是由李嘉图提出来的。另外一个概念是绝对价格，绝对价格其实就是用货币单位表示的价格水平。</p>
+<p>斯密认为，市场价格或者短期价格是由供需双方决定的。自然价格或者长期均衡价格通常取决与生产成本。在现代经济学里面，我们认为自然价格是达到供需平衡时候的价格。</p>
+<p>斯密对他所处时代经济体中相对价格形成的分析，区分为两个时间段和经济体的两个宽泛的部门，分别是短期与长期、农业与制造业。在短期或者市场阶段，斯密在制造业与农业中都发现了乡下倾斜的需求曲线与向上倾斜的供给曲线；因此市场价格取决于需求与供给。斯密对长期中发生的更为复杂的“自然价格”的分析，包含着一些矛盾。对于农业部门而言，自然价格取决于供给与需求，原因在于长期供给曲线向上倾斜，表明成本递增。但是对制造业部门来说，长期供给曲线有时假定为完全富有弹性（水平的），表明成本不变；在分析的另一些地方又向下倾斜，表明成本递减。在制造业中，当长期供给曲线完全富有弹性时，价格就完全取决于生产成本；但是，当长期供给曲线向下倾斜时，自然价格就取决于需求与供给双方。不过，无视长期供给曲线在制造业中的形状，主要强调生产成本对自然价格的决定，这是斯密以及后来的古典经济学家的特点。</p>
+<p>经院哲学对相对价格问题感兴趣，因为他们关注交换过程中的道德问题；重商主义者则是认为财富在交换过程中产生。斯密认为，一旦经济体实行专业化和劳动分工，交换就变成必需。如果交换发生在斯密时代的市场中，就会出现一些显而易见的问题。第一，如果交换处于高于物物交换水平的状况下，就会存在交换媒介的问题。第二，存在价值或者相对价格的问题。</p>
+<h2 id="价值的含义">价值的含义</h2>
+<p>斯密认为价值一词有两种不同的含义，它有时表示一些特定物品的效用，有时又表示因占有物品而取得的对其他产品的购买力。前者可以称为“使用价值”，后者被称为“交换价值”。使用价值很大的东西，其交换价值往往很小，甚至没有；相反，交换价值很大的东西，其使用价值往往极小。就像水的使用价值非常高，但是交换价值很低；钻石的交换价值很高，但是使用价值非常低。</p>
+<p>这里的交换价值是指一种商品购买其他产品的能力。这是市场所表达的一种客观度量。他关于使用价值的概念是含糊的。一方面，使用价值有道德内涵，这是对经院哲学的回归。另一方面，使用价值是一件商品满足需要的能力，是因持有或消费一件产品而获得的效用。当一件商品被消费时，可以获得几种效用：（1）它的总效用，（2）它的平均效用，（3）它的边际效用。斯密的关注点是总效用，这就模糊了他对需求如何在价格决定中发挥作用的理解。显然，水的总效用超过了钻石的总效用。然而，因为商品的边际效用经常随着其消费得更多而递减，所以水的边际效用比钻石的边际效用低。</p>
+<p>我们愿意为一件商品所支付的价格——我们对获得又一单位商品所寄予的价值——不仅取决于商品的总效用，而且取决于其边际效用。因为斯密没有意识到这一点，因此他既不能为“钻石-水悖论”找到满意的解决办法，也不能了解其使用价值与交换价值之间的关系。某种程度上是不是认为这是供给量上的区别？大多数情况下水比钻石多，所以边际效用就低。</p>
+<h2 id="斯密关于相对价格">斯密关于相对价格</h2>
+<p>因为斯密对相对价格的决定因素有些困惑，所以，他发展了与这些因素相关的三个独立的理论：（1）劳动成本价值理论，（2）劳动支配价值理论，（3）生产成本价值理论。</p>
+<p>他假设了经济体两种截然不同的状态：初期野蛮状态或者原始社会，它被界定为这样的一个经济体，其中资本还没有被积累起来，土地未被使用；发达经济体，其中资本与土地不再是资源充足的产品（它们具有超过零以上的价格）。</p>
+<h2 id="原始社会中的劳动成本理论">原始社会中的劳动成本理论</h2>
+<p>如果在一个狩猎国家，杀死一头海狸所需的劳动通常两倍于杀死一头野鹿所需要的劳动，那么，一头海狸自然就可以换来或者值两头野鹿。按斯密的劳动成本理论，在还不存在土地与资本的经济体中，或者土地与资本还是无限充足的自然资源的经济体中，一件产品的交换价值或者价格，由生产产品所需的劳动量决定。</p>
+<p>这让我们认识到劳动成本价值理论的第一个难点。我们应当如何度量生产一件商品所需要的劳动量。斯密认识到生产一件产品所需的劳动量不能简单地用时钟表示的时间数量来度量，原因在于，除了时间之外，也必须考虑有关的精巧或者技能，以及任务的艰难与困苦。</p>
+<p>在这一点上，斯密遇到了所有的劳动成本价值理论都遇到的，扔未被后来的经济学家成功地予以解决的一个难题。如果劳动量是一个以上变量的函数，那么，我们必须找到一种方法来说明所有变量的相对重要性。斯密主张时间、艰难程度以及精巧程度上的差异都反映在支付给劳动者的工资中。</p>
+<p>但是斯密的观点只是重申了问题，他是在表明一件产品是依照支付给劳动者的工资，而不是依照包含在产品中的劳动量拥有价值。这是一个循环推论。斯密利用一套价格解释另一套价格。</p>
+<h3 id="原始社会中的劳动支配">原始社会中的劳动支配</h3>
+<p>按照斯密的观点，一件产品的价值“对于那些拥有产品的人以及那些想用它去交换一些新产品的人来说，正好等于产品能够使他们购买或支配的劳动量”。也就是说，如果捕获一头海狸或者两头野鹿需要两小时，那么两头野鹿就等于一头海狸。</p>
+<h3 id="发达经济体中的劳动理论">发达经济体中的劳动理论</h3>
+<p>因为资本已经被积累，土地也已经被利用，并且一件产品的最终价格也必须包括当做利润的资本家的收益以及当做地租的地主的收益。最终价格形成了由工资、利润、地租这些要素报酬构成的收入。</p>
+<h3 id="相对价格的生产成本理论">相对价格的生产成本理论</h3>
+<p>斯密最终放弃了任何劳动价值理论都适用于他所处时代一样发达的经济体。斯密似乎发现，一旦资本被积累起来，土地被加以利用，并且一旦必须支付利润、地租，还有劳动，能唯一适当解释价格的就是生产成本理论。</p>
+<p>在成本理论中，一件商品的价值取决于对所有生产要素的支付：除了劳动之外还有土地和资本。在斯密的体系中，利润这一术语既包括今天的利润，也包括利息。在斯密假设平均成本不随着产量的增加而增加的地方，无论使用总成本还是使用平均成本，通过加总工资、利润和地租，这样的相对价格都是不变的。在平均成本随着产量变化的地方，价格就取决于需求与供给双方。然而，在分析长期自然价格的决定时，即使当供给曲线不被假定为完全富有弹性时，斯密也强调供给与生产成本。斯密主张，竞争占优势的地方，商人、劳动者、地主的私利将导致与生产成本相等的自然价格。</p>
+<h1 id="分配理论">分配理论</h1>
+<p>收入的个人分配取决于个人所出售的生产要素的价格与数量。劳动是大部分家庭拥有的唯一生产要素，因此家庭的收入一般取决于工资率与工作时间的长度。拥有财产的那些家庭所获得的财产收入量，取决于家庭所拥有的资本与土地的数量以及这些要素的价格。因为工资、利润、地租都是经济体中的价格，所以它们的相对价格——连同个人出售的劳动、资本、土地数量一起——决定了收入的分配。</p>
+<h2 id="工资">工资</h2>
+<p>斯密认为，在对工资的讨价还价过程中，劳动处于劣势。因为劳动市场是买方市场，雇主少，可以容易联合起来巩固他们的地位。即使罢工，雇主也有足够资源维持他们的生活，但是没有工作，工人生存困难。在这一部分，斯密削弱了市场力量的有益运作过程，并似乎已经意识到其完全竞争市场的假设受到了限制。</p>
+<h2 id="工资基金">工资基金</h2>
+<p>因为生产过程是耗时的，所以从生产过程开始到最终销售，需要一部分的产品库存或资本来维持劳动者的衣食住行，这部分被称为工资基金，来源于资本家的储蓄或者消费中断。给定劳动力和工资基金的规模，工资率=工资基金/劳动力。</p>
+<h2 id="利润">利润</h2>
+<p>斯密很自然接受了利润是因资本家执行了对社会有用的功能而对他的一种支付，这种功能就是在耗时的生产过程期间，为劳动者提供生活必需品，提供工作所用的原料和机器。按照斯密的观点，劳动者允许从其产量中进行利润的扣除，原因在于，劳动者并不拥有工作所用的原料和独立的支持手段。于是利润分为两部分：纯利息收入和风险收入。在原始经济体中，劳动者获得了全部的产品，但是在发达经济体中，劳动者却需要被扣除利润和地租，这一点斯密并没有做出解释。在深信资本主义制度基本和谐的理论家里，这一点是非常自然无需质疑的。</p>
+<h2 id="地租">地租</h2>
+<p>斯密提出了四种地租理论：（1）地主的需求；（2）垄断；（3）差异化的优势；（4）大自然的施舍。在《国富论》前面的部分，地租被视为决定价格的因素，而后面则视为价格被决定的因素。</p>
+<h2 id="随时间变化的利润率">随时间变化的利润率</h2>
+<p>斯密认为一个国家的经济增长取决于资本积累。他预测，随着时间的推移，利润率会下降，原因有三。（1）劳动市场的竞争。资本家的竞争导致工资上升利润下降。（2）商品市场的竞争。生产者竞争家具，商品价格下降，利润减少。（3）投资市场的竞争，因为投资机会有限，所以资本的积累增加会导致利润下降。</p>
+<h1 id="福利与价格总水平">福利与价格总水平</h1>
+<p>斯密努力去发现：第一，决定价格总水平的因素；第二，不同时期福利变化的最佳度量。其实这个问题还是比较复杂的，对于一个生产两种或者更多产品的经济体来说，有没有可能界定和度量其福利的变化。</p>
+<p>如果用总消费或者产量来界定福利，那么需要解决的问题就是，寻找一种度量总消费或者总产品数量的方式。通常而言，这种度量方式就是国家的货币单位。现在的社会，我们通常会用GDP来衡量。</p>
+<p>但是这里会有另外一个问题，那就是货币的本质是一般等价物。这就意味着，货币也是有价格的，它本身也会变化。所以斯密转向劳动，却发现劳动价格也会变化。最后，他采用劳动的复效用作为衡量标准。也就是说，如果我们能够使用较少的劳动生产相同的产量，那么我们就拥有更多的线下，经济状况就会更好。</p>
+<p>事实上这种度量方式比斯密想象的要复杂的多，现在的经济学家在这一方面有了更长远的度量方式，例如度量“生活质量”。</p>
+<p>斯密在经济学史上如此之重要，他对自由放任体系的推崇引导了西方市场经济数百年的发展。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/wechatpay.png" alt="Samael Chen WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/linear_algebra_step13/" rel="prev" title="线性代数 13">
+      <i class="fa fa-chevron-left"></i> 线性代数 13
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/deep_learning_step4/" rel="next" title="台大李宏毅深度学习——神经网络一些骚操作">
+      台大李宏毅深度学习——神经网络一些骚操作 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDg5NS83NDQ0"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%9A%E5%AD%A6%E5%A4%9A%E6%89%8D%E7%9A%84%E7%BB%8F%E6%B5%8E%E5%AD%A6%E5%AE%B6"><span class="nav-number">1.</span> <span class="nav-text">博学多才的经济学家</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%AF%E5%AF%86%E7%9A%84%E5%B8%82%E5%9C%BA%E5%88%86%E6%9E%90%E4%B8%8E%E6%94%BF%E7%AD%96%E7%BB%93%E8%AE%BA"><span class="nav-number">2.</span> <span class="nav-text">斯密的市场分析与政策结论</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E5%90%8E%E5%85%B3%E8%81%94%E7%9A%84%E7%BB%8F%E6%B5%8E%E6%94%BF%E7%AD%96"><span class="nav-number">2.1.</span> <span class="nav-text">前后关联的经济政策</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E7%84%B6%E7%A7%A9%E5%BA%8F%E5%92%8C%E8%B0%90%E5%92%8C%E8%87%AA%E7%94%B1%E6%94%BE%E4%BB%BB"><span class="nav-number">2.2.</span> <span class="nav-text">自然秩序、和谐和自由放任</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%9E%E4%BA%89%E6%80%A7%E5%B8%82%E5%9C%BA%E7%9A%84%E8%BF%90%E4%BD%9C"><span class="nav-number">2.3.</span> <span class="nav-text">竞争性市场的运作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%84%E6%9C%AC%E4%B8%8E%E8%B5%84%E6%9C%AC%E5%AE%B6"><span class="nav-number">2.4.</span> <span class="nav-text">资本与资本家</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%AF%E5%AF%86%E5%AF%B9%E6%94%BF%E7%AD%96%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">2.5.</span> <span class="nav-text">斯密对政策的影响</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%BD%E6%B0%91%E8%B4%A2%E5%AF%8C%E7%9A%84%E6%80%A7%E8%B4%A8%E4%B8%8E%E5%8E%9F%E5%9B%A0"><span class="nav-number">3.</span> <span class="nav-text">国民财富的性质与原因</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BD%E6%B0%91%E8%B4%A2%E5%AF%8C%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="nav-number">3.1.</span> <span class="nav-text">国民财富的原因</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%B3%E5%8A%A8%E7%94%9F%E4%BA%A7%E5%8A%9B"><span class="nav-number">3.1.1.</span> <span class="nav-text">劳动生产力</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E4%BA%A7%E6%80%A7%E4%B8%8E%E9%9D%9E%E7%94%9F%E4%BA%A7%E6%80%A7%E5%8A%B3%E5%8A%A8"><span class="nav-number">3.1.2.</span> <span class="nav-text">生产性与非生产性劳动</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E5%9B%BD%E6%B0%91%E8%B4%A2%E5%AF%8C%E7%9A%84%E6%80%BB%E7%BB%93"><span class="nav-number">3.2.</span> <span class="nav-text">对国民财富的总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%BD%E9%99%85%E8%B4%B8%E6%98%93"><span class="nav-number">4.</span> <span class="nav-text">国际贸易</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%B7%E5%80%BC%E7%90%86%E8%AE%BA"><span class="nav-number">5.</span> <span class="nav-text">价值理论</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%AF%B9%E4%BB%B7%E6%A0%BC"><span class="nav-number">5.1.</span> <span class="nav-text">相对价格</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%B7%E5%80%BC%E7%9A%84%E5%90%AB%E4%B9%89"><span class="nav-number">5.2.</span> <span class="nav-text">价值的含义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%AF%E5%AF%86%E5%85%B3%E4%BA%8E%E7%9B%B8%E5%AF%B9%E4%BB%B7%E6%A0%BC"><span class="nav-number">5.3.</span> <span class="nav-text">斯密关于相对价格</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%A7%8B%E7%A4%BE%E4%BC%9A%E4%B8%AD%E7%9A%84%E5%8A%B3%E5%8A%A8%E6%88%90%E6%9C%AC%E7%90%86%E8%AE%BA"><span class="nav-number">5.4.</span> <span class="nav-text">原始社会中的劳动成本理论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%A7%8B%E7%A4%BE%E4%BC%9A%E4%B8%AD%E7%9A%84%E5%8A%B3%E5%8A%A8%E6%94%AF%E9%85%8D"><span class="nav-number">5.4.1.</span> <span class="nav-text">原始社会中的劳动支配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E8%BE%BE%E7%BB%8F%E6%B5%8E%E4%BD%93%E4%B8%AD%E7%9A%84%E5%8A%B3%E5%8A%A8%E7%90%86%E8%AE%BA"><span class="nav-number">5.4.2.</span> <span class="nav-text">发达经济体中的劳动理论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%AF%B9%E4%BB%B7%E6%A0%BC%E7%9A%84%E7%94%9F%E4%BA%A7%E6%88%90%E6%9C%AC%E7%90%86%E8%AE%BA"><span class="nav-number">5.4.3.</span> <span class="nav-text">相对价格的生产成本理论</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E9%85%8D%E7%90%86%E8%AE%BA"><span class="nav-number">6.</span> <span class="nav-text">分配理论</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E8%B5%84"><span class="nav-number">6.1.</span> <span class="nav-text">工资</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E8%B5%84%E5%9F%BA%E9%87%91"><span class="nav-number">6.2.</span> <span class="nav-text">工资基金</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E6%B6%A6"><span class="nav-number">6.3.</span> <span class="nav-text">利润</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%B0%E7%A7%9F"><span class="nav-number">6.4.</span> <span class="nav-text">地租</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%8F%E6%97%B6%E9%97%B4%E5%8F%98%E5%8C%96%E7%9A%84%E5%88%A9%E6%B6%A6%E7%8E%87"><span class="nav-number">6.5.</span> <span class="nav-text">随时间变化的利润率</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A6%8F%E5%88%A9%E4%B8%8E%E4%BB%B7%E6%A0%BC%E6%80%BB%E6%B0%B4%E5%B9%B3"><span class="nav-number">7.</span> <span class="nav-text">福利与价格总水平</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Samael Chen"
+      src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Samael Chen</p>
+  <div class="site-description" itemprop="description">活该没有性生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:chc199310@gmail.com" title="E-Mail → mailto:chc199310@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamaelChen</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">217k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">3:18</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61310f3070234090" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

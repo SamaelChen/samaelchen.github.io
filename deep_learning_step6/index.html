@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"samaelchen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="这节课的内容讲的有点浅，所以我看到是李沐的gluon教程，配合这节课的内容。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="台大李宏毅深度学习——seq2seq">
+<meta property="og:url" content="https://samaelchen.github.io/deep_learning_step6/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="这节课的内容讲的有点浅，所以我看到是李沐的gluon教程，配合这节课的内容。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2018/09/06/5b90c7ddec62a.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/06/5b90ebf798140.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/06/5b90f03697a3c.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/06/5b90fb86eac3c.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/06/5b90fd0f9519e.png">
+<meta property="article:published_time" content="2018-09-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-31T16:15:25.577Z">
+<meta property="article:author" content="Samael Chen">
+<meta property="article:tag" content="机器学习,深度学习,PyTorch,MXNet,gluon,统计学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2018/09/06/5b90c7ddec62a.png">
+
+<link rel="canonical" href="https://samaelchen.github.io/deep_learning_step6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>台大李宏毅深度学习——seq2seq | 碎碎念</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120854058-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-120854058-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a75b41f44b70e58f40edd582552291cf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="碎碎念" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://samaelchen.github.io/deep_learning_step6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+      <meta itemprop="name" content="Samael Chen">
+      <meta itemprop="description" content="活该没有性生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          台大李宏毅深度学习——seq2seq
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-09-06 00:00:00" itemprop="dateCreated datePublished" datetime="2018-09-06T00:00:00+08:00">2018-09-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-01 00:15:25" itemprop="dateModified" datetime="2021-09-01T00:15:25+08:00">2021-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DeepLearning/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>3 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这节课的内容讲的有点浅，所以我看到是李沐的gluon教程，配合这节课的内容。</p>
+<span id="more"></span>
+<h1 id="seq2seq">Seq2Seq</h1>
+<p>这个是encode-decode的过程。之前写的LSTM做文档分类是限定了输入的长度。超出规定长度的句子我们是截断，没达到长度的我们是padding。但是用seq2seq可以接受不定长的输入和不定长的输出。</p>
+实际上seq2seq是有两个循环神经网络，一个处理输入序列，另一个处理输出序列。处理输入序列的叫编码器，处理输出序列的叫解码器。流程上如下图：
+<p align="center">
+<img data-src='https://i.loli.net/2018/09/06/5b90c7ddec62a.png'>
+</p>
+<h2 id="encoder">encoder</h2>
+<p>编码器是将一个不定长的输入序列变换成一个定长的背景向量<span class="math inline">\(c\)</span>。根据不一样的任务，编码器可以是不一样的网络。例如在对话系统或者机器翻译的场景下，我们用的编码器可以是LSTM，如果在caption的场景下，CNN就是编码器。</p>
+<p>现在假设我们做一个机器翻译的任务，那么有一句话可以拆成<span class="math inline">\(x_1, \dots, x_T\)</span>个词的序列。下一个时刻的隐藏状态可以表示为<span class="math inline">\(h_t = f(x_t, h_{t-1})\)</span>。<span class="math inline">\(f\)</span>是循环网络隐藏层的变换函数。</p>
+<p>然后我们定义一个函数<span class="math inline">\(q\)</span>将每个时间步的隐藏状态变成背景向量：<span class="math inline">\(c=q(h_1, \dots, h_T)\)</span>。</p>
+<h2 id="decoder">decoder</h2>
+<p>之前的编码器将整个输入序列的信息编码成了背景向量<span class="math inline">\(c\)</span>。而解码器就是根据背景信息输出序列<span class="math inline">\(y_1, y_2, \dots, y_{T&#39;}\)</span>。解码器每一步的输出要基于上一步的输出和背景向量，所以表示为<span class="math inline">\(P(y_{t&#39;}|y_1, \dots, y_{t&#39;-1}, c)\)</span>。</p>
+<p>像机器翻译的时候，我们的解码器也会是一个循环网络。我们用<span class="math inline">\(g\)</span>表示这个循环网络的函数，那么当前步的隐藏状态<span class="math inline">\(s_{t&#39;}=g(y_{t&#39;-1}, c, s_{t&#39;-1})\)</span>。然后我就可以自定义一个输出层来计算输出序列的概率分布。</p>
+<h2 id="损失函数">损失函数</h2>
+<p>一般而言，会用最大似然法来最大化输出序列基于输入序列的条件概率： <span class="math display">\[
+\begin{split}\begin{aligned}
+\mathbb{P}(y_1, \ldots, y_{T&#39;} \mid x_1, \ldots, x_T)
+&amp;= \prod_{t&#39;=1}^{T&#39;} \mathbb{P}(y_{t&#39;} \mid y_1, \ldots, y_{t&#39;-1}, x_1, \ldots, x_T)\\
+&amp;= \prod_{t&#39;=1}^{T&#39;} \mathbb{P}(y_{t&#39;} \mid y_1, \ldots, y_{t&#39;-1}, \boldsymbol{c}),
+\end{aligned}\end{split}
+\]</span></p>
+<p>因此损失函数可以表示为： <span class="math display">\[
+- \log\mathbb{P}(y_1, \ldots, y_{T&#39;} \mid x_1, \ldots, x_T) = -\sum_{t&#39;=1}^{T&#39;} \log \mathbb{P}(y_{t&#39;} \mid y_1, \ldots, y_{t&#39;-1}, \boldsymbol{c})
+\]</span></p>
+<h1 id="beam-search">beam search</h1>
+<p>通常情况下，我们会在输入和输出序列前后分别加一个特殊符号'&lt;bos&gt;'和'&lt;eos&gt;'，分别表示句子的开始和结束。不过很多时候好像'&lt;bos&gt;'不是必须加的，虽然我觉得不加很奇怪。</p>
+<p>假设我们输出一段文本序列，那么输出辞典<span class="math inline">\(\mathcal{Y}\)</span>，大小为<span class="math inline">\(|\mathcal{Y}|\)</span>，输出的序列长度为<span class="math inline">\(T&#39;\)</span>，那么我们一共有<span class="math inline">\(|\mathcal{Y}|^{T&#39;}\)</span>种可能。</p>
+<p>那么如果按照穷举检索，我们要评估的序列数量就是全部的可能性。假设我们有10000个词，输出长度为10的序列，那么我们的可能性就是<span class="math inline">\(10000^{10}\)</span>这么多种可能性。这几乎是不可能评估完的。</p>
+<p>那么换个思路，如果每一次我们都只拿概率最高的那一个词，也就是说每一次拿的是<span class="math inline">\(y_{t&#39;} = \arg\max_{y_{t&#39;} \in \mathcal{Y}} P(y_{t&#39;}|y_1, \dots, y_{t&#39;-1}, c)\)</span>。只要遇到'&lt;eos&gt;'就停止检索。这就是一个非常典型的贪婪算法。这样的话我们的计算开销会显著下降。</p>
+但是贪婪算法会有典型的问题，就是检索空间太小，无法保证最优解。比如下图：
+<p align="center">
+<img data-src='https://i.loli.net/2018/09/06/5b90ebf798140.png'>
+</p>
+<p>这里的数字表示每一个state，ABC表示每一个词。中间的数字是条件概率，比如B2这里的0.4表示在<span class="math inline">\(P(B|A)\)</span>，而A2就是表示<span class="math inline">\(P(A|A)\)</span>。如果我们按照贪婪算法的话，我们会得到的结果是ABC，那么概率是<span class="math inline">\(0.5 \times 0.4 \times 0.2 \times 0.6\)</span>，而如果不是贪婪算法的话，我们得到ACB，概率是<span class="math inline">\(0.5 \times 0.3 \times 0.6 \times 0.6\)</span>明显概率更大。</p>
+<p>所以我们为了保证有更大的概率可以检索到较多的可能性，我们可以采用束搜索的方法，也就是说，我们每一次不再只看概率最高的那一个词，而是看概率最高的数个词。我们用束宽（beam size）<span class="math inline">\(k\)</span>来表示。之后根据<span class="math inline">\(k\)</span>个候选词输出下一个阶段的序列，接着再选出概率最高的<span class="math inline">\(k\)</span>个序列，不断重复这件事情。最后我们会在各个状态的候选序列中筛选出包含特殊符号'&lt;eos&gt;'的序列，并将这个符号后的子序列舍弃，得到最后的输出序列。然后再在这些序列中选择分数最高的作为最后的输出序列： <span class="math display">\[
+\frac{1}{L^\alpha} \log \mathbb{P}(y_1, \ldots, y_{L}) = \frac{1}{L^\alpha} \sum_{t&#39;=1}^L \log \mathbb{P}(y_{t&#39;} \mid y_1, \ldots, y_{t&#39;-1}, \boldsymbol{c}),
+\]</span> 其中<span class="math inline">\(L\)</span>是最终序列的长度，<span class="math inline">\(\alpha\)</span>一般选0.75。这<span class="math inline">\(L\)</span>的系数起到的作用是惩罚太长的序列得分过高的情况。</p>
+事实上，贪婪搜索可以看做是beam size为1的束搜索。过程上就像下图：
+<p align="center">
+<img data-src='https://i.loli.net/2018/09/06/5b90f03697a3c.png'>
+</p>
+<p>那么不同于贪婪搜索，束搜索其实并不知道什么时候停下来，所以一般来说要定义一个最长的输出序列长度。</p>
+<h1 id="attention">Attention</h1>
+<p>前面说的解码器是将编码器的整个序列都作为背景来学习。那比如说机器翻译里面，我们翻译的时候其实可能没必要全部都看一遍，只要看一部分，然后就可以将这部分翻译出来。比如说“机器学习”翻译为“machine learning”，“机器”对应的是“machine”，而“学习”是“learning”，所以翻译machine的时候只要关注机器就可以了。</p>
+其实所谓的关注点，如果用数据来表示也就是权重大小，关注度越高权重越高。如下图：
+<p align="center">
+<img data-src='https://i.loli.net/2018/09/06/5b90fb86eac3c.png' width=70%>
+</p>
+<p>我们在输出背景向量的时候做一个softmax，然后每一个state给一个权重，作为<span class="math inline">\(t&#39;\)</span>时刻的输入，这样jointly训练就可以学出一个attention的形式。</p>
+那么这里的<span class="math inline">\(\alpha\)</span>是这样计算出来的：
+<p align="center">
+<img data-src='https://i.loli.net/2018/09/06/5b90fd0f9519e.png' width=70%>
+</p>
+<p>其实就是每一个state的decoder的input拿来和encoder的hidden做一个match。至于match的函数可以自己随意定义。</p>
+<p>这样一来，我们就可以让解码器在不同的state的时候关注输入序列的不同部分。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/wechatpay.png" alt="Samael Chen WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/deep_learning_step5/" rel="prev" title="台大李宏毅深度学习——Batch normalization & SELU">
+      <i class="fa fa-chevron-left"></i> 台大李宏毅深度学习——Batch normalization & SELU
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/depressed/" rel="next" title="日常的丧">
+      日常的丧 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDg5NS83NDQ0"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#seq2seq"><span class="nav-number">1.</span> <span class="nav-text">Seq2Seq</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#encoder"><span class="nav-number">1.1.</span> <span class="nav-text">encoder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#decoder"><span class="nav-number">1.2.</span> <span class="nav-text">decoder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="nav-number">1.3.</span> <span class="nav-text">损失函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#beam-search"><span class="nav-number">2.</span> <span class="nav-text">beam search</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#attention"><span class="nav-number">3.</span> <span class="nav-text">Attention</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Samael Chen"
+      src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Samael Chen</p>
+  <div class="site-description" itemprop="description">活该没有性生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:chc199310@gmail.com" title="E-Mail → mailto:chc199310@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamaelChen</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">217k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">3:18</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61310f3070234090" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

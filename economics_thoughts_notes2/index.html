@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"samaelchen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="“我们从哪儿出发？”红皇后问。 “从开始出发。”渡渡鸟答道。——Lewis Carroll">
+<meta property="og:type" content="article">
+<meta property="og:title" content="经济思想史读书笔记——早期古典经济学">
+<meta property="og:url" content="https://samaelchen.github.io/economics_thoughts_notes2/index.html">
+<meta property="og:site_name" content="碎碎念">
+<meta property="og:description" content="“我们从哪儿出发？”红皇后问。 “从开始出发。”渡渡鸟答道。——Lewis Carroll">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-07-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-31T16:15:25.577Z">
+<meta property="article:author" content="Samael Chen">
+<meta property="article:tag" content="机器学习,深度学习,PyTorch,MXNet,gluon,统计学习">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://samaelchen.github.io/economics_thoughts_notes2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>经济思想史读书笔记——早期古典经济学 | 碎碎念</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120854058-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-120854058-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a75b41f44b70e58f40edd582552291cf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="碎碎念" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">碎碎念</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好久不更新，四月重新开始！</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://samaelchen.github.io/economics_thoughts_notes2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+      <meta itemprop="name" content="Samael Chen">
+      <meta itemprop="description" content="活该没有性生活">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="碎碎念">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          经济思想史读书笔记——早期古典经济学
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-07-08 00:00:00" itemprop="dateCreated datePublished" datetime="2018-07-08T00:00:00+08:00">2018-07-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-01 00:15:25" itemprop="dateModified" datetime="2021-09-01T00:15:25+08:00">2021-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ReadingNotes/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>3 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>“我们从哪儿出发？”红皇后问。 “从开始出发。”渡渡鸟答道。——Lewis Carroll</p>
+<span id="more"></span>
+<p>早期的经济研究并不系统，没有出现重大的分析体系。直到18世纪中期，随着Adam Smith引领的“古典经济学”的出现，经济学才向着成熟的社会科学状态大踏步前进。</p>
+<p>古典经济学始于1776年Adam Smith《国富论》的出版，通常将1776年之前划分为两个部分。公元前800年到1500年的早期前古典阶段，以及从1500年1776年的前古典时期。</p>
+<p>从时间线上看，早期前古典经济思想可以分为中国、希腊、阿拉伯——伊斯兰思想以及经院哲学。</p>
+<h1 id="东方经济思想">东方经济思想</h1>
+<p>中国的早期经济思想以管仲为代表。熊彼特认为早期的著作“基本上被限制在道德的框架内考察公共事务管理，而不是严格的、‘科学的’研究”。但是《管子》极大程度上超越了公共事务管理的模子。</p>
+<p>管仲的经济思想核心可以用“轻/重”理论来表达。他提出当一种产品充裕时，就会变“轻”，价格就会下降。当产品被“锁藏”时，就会变“重”，价格上涨。产品会依据这种变化进入或退出市场，最后向一个均衡的价格运动。</p>
+<p>事实上，这种理论是非常类似微观经济学里的供需理论。只不过，这样的供需理论需要基于一个基本的前提，就是市场是完全竞争的市场。</p>
+<p>管仲甚至将这一理论延伸到了货币数量。也就是说，货币“重”的时候，货币价格上涨，产品价格就下降了，反之，货币价格下降，产品价格上涨。如果类比到现在的概念，就是通货紧缩和通货膨胀。而管仲认为，应对通货紧缩时候国家应该购买产品，目的是让价格上涨；而通货膨胀的时候就应该卖出产品，让产品价格下降。</p>
+<p>当代应对通货膨胀或者通货紧缩的问题一般都是采取货币政策，也就是央妈通过操控市场上的现金解决问题。最简单的，通货膨胀时，减少货币供给量，提高银行准备金率，提高储蓄利率等等。而通货紧缩就反过来。</p>
+<p>齐桓公曾向管仲询问，丰收之年如何来遏制粮食价格的过度下滑。管仲认为应当减少粮食的流通量，为此必须采取政府强制手段，他说：“请以令与大夫城藏，使卿诸侯藏千钟，令大夫藏五百钟，列大夫藏百钟，富商蓄贾藏五十钟。内可以为国委，外可以益农夫之事。”这里需要注意的是，在春秋时代粮食实际上不仅是一种商品，也具备一定的货币功能。管仲认为强制减少粮食流通量，自然可以制止价格的下滑。既可以增加国家的粮食储备，又可以维护农民的利益；相反，在歉收之年，则将储备之粮食投入市场。以遏制粮商囤积哄抬价格，又可以使政府得到一笔收入，所以管仲说：“夫民有余则轻之，故人君敛之以轻；民不足则重之，故人君散之以重。敛积之以轻，散行之以重，故君必有十倍之利。”</p>
+<p>如果将粮食当做是一种流通货币，那么这不就是现在的货币政策么？</p>
+<p>在管仲的思想体系下，一方面存在市场“无形的手”，另一方面，又存在国家调控这样“有形的手”。是不是听上去又很像某种经济形式。</p>
+<h1 id="希腊思想">希腊思想</h1>
+<h2 id="赫西奥德和色诺芬">赫西奥德和色诺芬</h2>
+<p>赫西奥德和色诺芬都对效率感兴趣。经济学家通常用产出和投入的比率衡量效率。早期的经济学家对社会层面的效率问题并不感兴趣。他们更多关注一组和生产者与家庭层面的效率相关的问题。而色诺芬则在赫西奥德之后采用了有效管理的概念，并且在家庭、生产者、军事和公关事务层面使用了这些概念。这种思想的进步在于，他充分认识到了劳动分工可以提高效率。</p>
+<p>这种思想影响了包括亚里士多德在内的很多希腊经济学家。并且在之后的时间里也影响了经院哲学。</p>
+<h2 id="亚里士多德">亚里士多德</h2>
+<p>德谟克利特认为，不仅需要劳动分工，而且认为财产私有化可以促进更多的经济活动。但是亚里士多德的老师柏拉图则认为，统治者不应该拥有私人财产，而应该掌控公共财产，避免对财产的争夺。</p>
+<p>但是亚里士多德则不一样。亚里士多德一方面谴责追求经济利益的行为，一方面又认可私有财产的权利。亚里士多德对经济思想的最大贡献在于商品交换与交换中货币的使用。</p>
+<p>亚里士多德认为人的需要是适度的，但是欲望是无穷的。因此满足需要的商品生产是恰当的，但是力图满足无穷欲望的产品生产就是不正常的。他推崇以物易物的交易方式，而不是通过货币这一媒介，通过交易获取货币收益。事实上，现在主流的经济学家不区分人类的需求和欲望，在高度分工化的现在，客观上区分需求和欲望是不太现实的。</p>
+<p>亚里士多德一个值得关注的论点是，减少消费来改变人们的态度，希望通过排除稀缺性固有的冲突来解决社会冲突。这是大多数乌托邦人士和社会主义者的有力观点。</p>
+<h1 id="阿拉伯伊斯兰思想">阿拉伯——伊斯兰思想</h1>
+<p>阿拉伯——伊斯兰思想填补了亚里士多德到经院哲学之间的空白。</p>
+<p>艾布·哈米德·安萨里认识到了物物交换的困难，以及货币对交易的便利。同时他也考察了很多其他的经济话题，例如公共支出、征税与借贷等等。</p>
+<p>而伊本·赫勒敦考察的更多是人口、利润、供给、需求、价格、奢侈品、总剩余、资本等。</p>
+<h1 id="经院哲学">经院哲学</h1>
+<p>经院哲学的基础是封建社会。经院哲学经济学家们试图提供适用于世俗活动的宗教指导方针。他们的的目的不是分析发生了什么样的经济活动，而是订立与宗教教义相一致的经济行为规则。经院哲学关注价格体系中的公正或公正缺失。最重要的经院哲学经济学家是圣托马斯·阿奎那。</p>
+<p>经院哲学的核心经济问题还是：私有财产制度以及公平价格与高利贷的概念。</p>
+<p>在私有财产方面，阿奎那的杰出贡献在于，他融合了宗教教义与亚里士多德的著作。在《圣经》中，基督教思想谴责私人财产，但是他认为，私人财产不是违背自然法则，而是自然法则的一种补充。他论证说，裸体是自然法则，但是服装是对自然法则的补充，私有财产也是为了人们的利益而设计的。他认可私人财产的不平等分配，但是对于坚定投身宗教的人，短缺与公共生活是一种理想状态。</p>
+<p>而对于产品价格，经院哲学经济学家不关心经济体中价格的形成，或者去了解价格在稀缺资源配置中所扮演的角色。他们关心价格的道德性，也就是价格的公平与公正的概念。不同的理论史学家对公正价格的理解是不一样的。但是经院哲学的公正价格可以看作是李嘉图——马克思劳动价值理论、边际效用观点，以及古典——新古典理论中按时的竞争性市场产生理想公正价格观点的先驱。另一些主张也认为，所谓的公正价格就是市场上的所有价格。但是经院哲学对于经济分析的缺失让我们难以确定究竟“公正价格”意味着什么。</p>
+<p>从公正价格会很自然推论到高利贷的观点。高利贷在现在代表着索要过高的利率，但是在经院哲学和亚里士多德的著作里，高利贷代表着任意的（any）获利行为。但是相对于亚里士多德对借贷的谴责以及宗教对通过货币获利的严厉禁止，经院哲学至少在为了商业目的通过货币获利这点上观点逐渐缓和。</p>
+<p>阿奎那本身也是一个充满矛盾的思想家，一方面他强调道德问题来抑制经济思想；另一方面，又推动了经济学与所有社会科学的前进。</p>
+<h1 id="小结">小结</h1>
+<p>事实上，早期的经济思想并没有关注价格系统的特性与关注，只有管仲是例外的。而希腊思想则考察了私人财产的作用，亚里士多德的许多观点成为后来经院哲学的考察焦点。阿拉伯——伊斯兰思想有效填补了希腊思想到经院哲学之间的历史空白。而经院哲学的目的更多在于确定宗教标准，借此判断经济行为，而不是分析经济体。不过，经院哲学的存在背景是封建制度，随着技术变革的破坏，经济生活对精神生活构成了极大的挑战。但是从历史的进程上看，将经济体从教会下解放出来，既发生在实践层面上，也发生在学术层面上。实际上，这种解放极大促进了西方资本主义的发展，从而构建起现代金融货币体系。关于货币从宗教解放的资料可以看看央视的纪录片《货币》第二集，犹太人最早从宗教总解脱出来，施展金融才华，这一步在货币历史上至关重要。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://github.com/SamaelChen/samaelchen.github.io/raw/hexo/images/wechatpay.png" alt="Samael Chen WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/economics_thoughts_notes1/" rel="prev" title="经济思想史读书笔记——导言">
+      <i class="fa fa-chevron-left"></i> 经济思想史读书笔记——导言
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/linear_algebra_step10/" rel="next" title="线性代数 10">
+      线性代数 10 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDg5NS83NDQ0"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%9C%E6%96%B9%E7%BB%8F%E6%B5%8E%E6%80%9D%E6%83%B3"><span class="nav-number">1.</span> <span class="nav-text">东方经济思想</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%8C%E8%85%8A%E6%80%9D%E6%83%B3"><span class="nav-number">2.</span> <span class="nav-text">希腊思想</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%AB%E8%A5%BF%E5%A5%A5%E5%BE%B7%E5%92%8C%E8%89%B2%E8%AF%BA%E8%8A%AC"><span class="nav-number">2.1.</span> <span class="nav-text">赫西奥德和色诺芬</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%9A%E9%87%8C%E5%A3%AB%E5%A4%9A%E5%BE%B7"><span class="nav-number">2.2.</span> <span class="nav-text">亚里士多德</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%98%BF%E6%8B%89%E4%BC%AF%E4%BC%8A%E6%96%AF%E5%85%B0%E6%80%9D%E6%83%B3"><span class="nav-number">3.</span> <span class="nav-text">阿拉伯——伊斯兰思想</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%8F%E9%99%A2%E5%93%B2%E5%AD%A6"><span class="nav-number">4.</span> <span class="nav-text">经院哲学</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Samael Chen"
+      src="https://raw.githubusercontent.com/SamaelChen/samaelchen.github.io/hexo/images/profile/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Samael Chen</p>
+  <div class="site-description" itemprop="description">活该没有性生活</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:chc199310@gmail.com" title="E-Mail → mailto:chc199310@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamaelChen</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">217k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">3:18</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61310f3070234090" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>
